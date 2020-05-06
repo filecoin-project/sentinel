@@ -1,0 +1,25 @@
+version: '3'
+services:
+  timescaledb:
+    container_name: timescaledb
+    image: timescale/timescaledb:latest-pg10
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - timescaledb:/var/lib/postgresql
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    links:
+      - timescaledb
+    volumes:
+      - grafana:/var/lib/grafana
+
+volumes:
+  grafana:
+  timescaledb:

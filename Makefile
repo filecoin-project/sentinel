@@ -24,6 +24,10 @@ CLEAN+=build/.update_submodules
 deps: build/.update_submodules
 .PHONY: deps
 
+build-services:
+	docker-compose build
+.PHONY: build-services
+
 telegraf: build/.update_submodules
 .PHONY: telegraf
 
@@ -32,19 +36,21 @@ build/telegraf: telegraf
 	mv ${TELEGRAF_PATH}telegraf build/telegraf
 BINS+=build/telegraf
 
-build: build/telegraf
+build: build/telegraf build-services
 .PHONY: build
 
-run: telegraf
+run: build/telegraf
+	docker-compose up -d
 	build/telegraf --config telegraf.conf --debug & echo $$! > .telegraf.pid
 .PHONY: run
 CLEAN+=.telegraf.pid
 
 stop:
 	@if [ -a .telegraf.pid ]; then kill -TERM $$(cat .telegraf.pid); rm .telegraf.pid || true; fi;
+	docker-compose stop
 .PHONY: stop
 
-# MISC
+## MISC
 
 conf: telegraf
 	build/telegraf --input-filter lotus --output-filter postgresql --section-filter agent:global_tags:outputs:inputs config > telegraf.conf
@@ -53,6 +59,7 @@ conf: telegraf
 clean:
 	rm -rf $(CLEAN) $(BINS)
 	-$(MAKE) -C $(TELEGRAF_PATH) clean
+	docker-compose down -v
 .PHONY: clean
 
 dist-clean:
