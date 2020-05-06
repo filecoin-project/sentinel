@@ -16,18 +16,33 @@ endif
 
 ## MAIN BINARIES
 
-deps:
+build/.update_submodules:
 	git submodule update --init --recursive
+	touch $@
+CLEAN+=build/.update_submodules
+
+deps: build/.update_submodules
 .PHONY: deps
 
-telegraf: deps
-	@$(MAKE) -C ${TELEGRAF_PATH} telegraf
-	mv ${TELEGRAF_PATH}telegraf build/telegraf
+telegraf: build/.update_submodules
 .PHONY: telegraf
+
+build/telegraf: telegraf
+	$(MAKE) -C ${TELEGRAF_PATH} telegraf
+	mv ${TELEGRAF_PATH}telegraf build/telegraf
 BINS+=build/telegraf
 
-build: telegraf
+build: build/telegraf
 .PHONY: build
+
+run: telegraf
+	build/telegraf --config telegraf.conf --debug & echo $$! > .telegraf.pid
+.PHONY: run
+CLEAN+=.telegraf.pid
+
+stop:
+	@if [ -a .telegraf.pid ]; then kill -TERM $$(cat .telegraf.pid); rm .telegraf.pid || true; fi;
+.PHONY: stop
 
 # MISC
 
