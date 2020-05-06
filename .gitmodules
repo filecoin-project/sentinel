@@ -1,0 +1,3 @@
+[submodule "telegraf"]
+	path = telegraf
+	url = git@github.com:filecoin-shipyard/telegraf-lotus.git
