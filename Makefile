@@ -14,34 +14,45 @@ ifneq ($(strip $(LDFLAGS)),)
 	ldflags+=-extldflags=$(LDFLAGS)
 endif
 
+#############
 ## MAIN BINARIES
+#############
+
+data/grafana:
+	mkdir -p ./data/grafana
+	sudo chmod -R a+w ./data/grafana
+CLEAN+=data/grafana
+
+build: telegraf build-services
+.PHONY: build
 
 build/.update_submodules:
 	git submodule update --init --recursive
 	touch $@
 CLEAN+=build/.update_submodules
 
-deps: build/.update_submodules
-.PHONY: deps
-
-build-services:
+build-services: data/grafana
 	docker-compose build
 .PHONY: build-services
-
-telegraf: build/.update_submodules build/telegraf
-.PHONY: telegraf
 
 build/telegraf:
 	$(MAKE) -C ${TELEGRAF_PATH} telegraf
 	mv ${TELEGRAF_PATH}telegraf build/telegraf
 BINS+=build/telegraf
 
-build: telegraf build-services
-.PHONY: build
+deps: build/.update_submodules
+.PHONY: deps
+
+telegraf: deps build/telegraf
+.PHONY: telegraf
+
+#############
+## MISC
+#############
 
 run: build/telegraf
 	docker-compose up -d
-	build/telegraf --config telegraf.conf --debug & echo $$! > .telegraf.pid
+	build/telegraf --config build/telegraf.conf --debug & echo $$! > .telegraf.pid
 .PHONY: run
 CLEAN+=.telegraf.pid
 
@@ -50,27 +61,32 @@ stop:
 	docker-compose stop
 .PHONY: stop
 
-## MISC
-
-conf: telegraf
-	build/telegraf --input-filter lotus --output-filter postgresql --section-filter agent:global_tags:outputs:inputs config > telegraf.conf
+conf:
+	@if [ -a build/telegraf.conf ]; then mv build/telegraf.conf build/telegraf.old || true; fi;
+	build/telegraf --input-filter lotus --output-filter postgresql --section-filter agent:global_tags:outputs:inputs config > build/telegraf.conf
+	@echo
+	@echo "Produced default config file at ./build/telegraf.conf. Please edit with your changes before using."
 .PHONY: conf
 
-clean:
+clean-state: state-check
 	rm -rf $(CLEAN) $(BINS)
 	-$(MAKE) -C $(TELEGRAF_PATH) clean
 	docker-compose down -v
 .PHONY: clean
 
-dist-clean: danger-check
+state-check:
+	@( read -p "Removing saved data! Sure? [y/N]: " ans && case "$$ans" in [yY]) true;; *) false;; esac )
+.PHONY: danger-check
+
+clean-all: uncommitted-check
 	git clean -xdff
 	git submodule deinit --all -f
 .PHONY: dist-clean
 
-danger-check:
-	@( read -p "Are you sure?! Remove uncommitted changes? [y/N]: " ans && case "$$ans" in [yY]) true;; *) false;; esac )
+uncommitted-check:
+	@( read -p "Removing uncommitted changes! Sure? [y/N]: " ans && case "$$ans" in [yY]) true;; *) false;; esac )
 .PHONY: danger-check
 
 deploy-dev:
-	rsync -rv --include=.* --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-dev:~/sentinel/
+	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-dev:~/sentinel/
 .PHONY: deploy-dev
