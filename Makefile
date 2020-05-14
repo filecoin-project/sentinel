@@ -28,15 +28,15 @@ build-services:
 	docker-compose build
 .PHONY: build-services
 
-telegraf: build/.update_submodules
+telegraf: build/.update_submodules build/telegraf
 .PHONY: telegraf
 
-build/telegraf: telegraf
+build/telegraf:
 	$(MAKE) -C ${TELEGRAF_PATH} telegraf
 	mv ${TELEGRAF_PATH}telegraf build/telegraf
 BINS+=build/telegraf
 
-build: build/telegraf build-services
+build: telegraf build-services
 .PHONY: build
 
 run: build/telegraf
@@ -62,10 +62,15 @@ clean:
 	docker-compose down -v
 .PHONY: clean
 
-dist-clean:
+dist-clean: danger-check
 	git clean -xdff
 	git submodule deinit --all -f
 .PHONY: dist-clean
 
-print-%:
-	@echo $*=$($*)
+danger-check:
+	@( read -p "Are you sure?! Remove uncommitted changes? [y/N]: " ans && case "$$ans" in [yY]) true;; *) false;; esac )
+.PHONY: danger-check
+
+deploy-dev:
+	rsync -rv --include=.* --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-dev:~/sentinel/
+.PHONY: deploy-dev
