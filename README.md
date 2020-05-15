@@ -3,10 +3,15 @@
 A Filecoin Network Analysis System
 
 ## Background
-TODO
+Sentinel is a network analysis system. It reads data from the chain, writes it to a ___ database, and makes it available to ___ via ___.
+
+Something something about stack, data flow, dependencies, services/APIs, or whatever.
+
+For a list of available [endpoints/services/data], see (code location? or keep a manual list in a later section).
 
 ## Install
 TODO
+<!-- Install example: https://github.com/RichardLitt/standard-readme#install -->
 
 ## Usage
 
