@@ -31,7 +31,7 @@ build/.update_submodules:
 	touch $@
 CLEAN+=build/.update_submodules
 
-build-services: data/grafana
+build-services:
 	docker-compose build
 .PHONY: build-services
 
@@ -50,7 +50,7 @@ telegraf: deps build/telegraf
 ## MISC
 #############
 
-run: build/telegraf
+run: build/telegraf data/grafana
 	docker-compose up -d
 	build/telegraf --config build/telegraf.conf --debug & echo $$! > .telegraf.pid
 .PHONY: run
@@ -89,4 +89,8 @@ uncommitted-check:
 
 deploy-dev:
 	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-dev:~/sentinel/
+.PHONY: deploy-dev
+
+deploy-stag:
+	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-staging:~/sentinel/
 .PHONY: deploy-dev
