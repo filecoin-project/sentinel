@@ -50,16 +50,28 @@ telegraf: deps build/telegraf
 ## MISC
 #############
 
-run: build/telegraf data/grafana
-	docker-compose up -d
-	build/telegraf --config build/telegraf.conf --debug & echo $$! > .telegraf.pid
+run: build/telegraf data/grafana run-services run-telegraf
 .PHONY: run
 CLEAN+=.telegraf.pid
 
-stop:
-	@if [ -a .telegraf.pid ]; then kill -TERM $$(cat .telegraf.pid); rm .telegraf.pid || true; fi;
-	docker-compose stop
+run-services:
+	docker-compose up -d
+.PHONY: run-services
+
+run-telegraf:
+	build/telegraf --config build/telegraf.conf --debug & echo $$! > .telegraf.pid
+.PHONY: run-telegraf
+
+stop: stop-telegraf stop-services
 .PHONY: stop
+
+stop-services:
+	docker-compose stop
+.PHONY: stop-services
+
+stop-telegraf:
+	@if [ -a .telegraf.pid ]; then kill -TERM $$(cat .telegraf.pid); rm .telegraf.pid || true; fi;
+.PHONY: stop-telegraf
 
 conf:
 	@if [ -a build/telegraf.conf ]; then mv build/telegraf.conf build/telegraf.old || true; fi;
@@ -91,6 +103,10 @@ deploy-dev:
 	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-dev:~/sentinel/
 .PHONY: deploy-dev
 
-deploy-stag:
+deploy-staging:
 	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-staging:~/sentinel/
+.PHONY: deploy-dev
+
+deploy-testnet:
+	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-testnet:~/sentinel/
 .PHONY: deploy-dev
