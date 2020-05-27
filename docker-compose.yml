@@ -18,7 +18,8 @@ services:
     links:
       - timescaledb
     volumes:
-      - ./data/grafana/:/var/lib/grafana/
+      - grafana-data:/var/lib/grafana/
 
 volumes:
   timescaledb:
+  grafana-data:

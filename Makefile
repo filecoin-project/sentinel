@@ -18,11 +18,6 @@ endif
 ## MAIN BINARIES
 #############
 
-data/grafana:
-	mkdir -p ./data/grafana
-	sudo chmod -R a+w ./data/grafana
-CLEAN+=data/grafana
-
 build: telegraf build-services
 .PHONY: build
 
@@ -50,7 +45,7 @@ telegraf: deps build/telegraf
 ## MISC
 #############
 
-run: build/telegraf data/grafana run-services run-telegraf
+run: build/telegraf run-services run-telegraf
 .PHONY: run
 CLEAN+=.telegraf.pid
 
