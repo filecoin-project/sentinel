@@ -15,7 +15,7 @@ ifneq ($(strip $(LDFLAGS)),)
 endif
 
 #############
-## MAIN BINARIES
+## BUILD
 #############
 
 build: telegraf build-services
@@ -42,7 +42,7 @@ telegraf: deps build/telegraf
 .PHONY: telegraf
 
 #############
-## MISC
+## EXECUTE
 #############
 
 run: build/telegraf run-services run-telegraf
@@ -67,6 +67,23 @@ stop-services:
 stop-telegraf:
 	@if [ -a .telegraf.pid ]; then kill -TERM $$(cat .telegraf.pid); rm .telegraf.pid || true; fi;
 .PHONY: stop-telegraf
+
+#############
+## MANAGE
+#############
+
+install-telegraf-service:
+	# linux-only package
+	(cd ./telegraf && ./scripts/build.py --package --platform=linux --arch=amd64 -o ../build -n telegraf)
+	dpkg -i build/telegraf*.deb
+	cp ./build/telegraf.conf /etc/telegraf/telegraf.conf
+	@echo
+	@echo "Telegraf service installed. Don't forget to edit /etc/telegraf/telegraf.conf as needed."
+.PHONY: install-telegraf-service
+
+clean-telegraf-service:
+	sudo dpkg -r telegraf
+.PHONY: clean-telegraf-service
 
 conf:
 	@if [ -a build/telegraf.conf ]; then mv build/telegraf.conf build/telegraf.old || true; fi;
