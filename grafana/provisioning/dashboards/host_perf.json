@@ -38,6 +38,7 @@
       "legend": {
         "avg": false,
         "current": false,
+        "hideEmpty": false,
         "hideZero": true,
         "max": false,
         "min": false,
@@ -57,7 +58,7 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": true,
+      "stack": false,
       "steppedLine": false,
       "targets": [
         {
@@ -825,7 +826,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -848,5 +849,5 @@
   "variables": {
     "list": []
   },
-  "version": 6
+  "version": 7
 }

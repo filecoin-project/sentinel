@@ -42,7 +42,7 @@
       "dashes": false,
       "datasource": null,
       "decimals": 0,
-      "description": "Number of blocks found on chain by Miner ID.",
+      "description": "Number of blocks reported by network by Miner ID.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -163,7 +163,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Blocks on Chain",
+      "title": "Reported Blocks",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -507,7 +507,6 @@
                 "none"
               ],
               "type": "time"
-            }
           ],
           "metricColumn": "none",
           "rawQuery": true,
@@ -724,62 +723,67 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": null,
-      "description": "Lifetime Total blocks per Tipset",
+      "description": "Time between block header arrival and the epoch time expected for the tipset of that block.",
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 3,
-        "w": 4,
+        "h": 6,
+        "w": 8,
         "x": 16,
         "y": 12
       },
-      "id": 16,
-      "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "hiddenSeries": false,
+      "id": 18,
+      "interval": "1s",
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
       },
-      "pluginVersion": "6.7.3",
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(cid)::float/max(height)::float AS \"block_tipset_ratio\"\nFROM \"blocks\"",
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "pledged_collateral"
+                  "used_percent"
                 ],
                 "type": "column"
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "disk",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -791,154 +795,46 @@
           ]
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Block-to-Tipset Ratio",
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "description": "Total Tipsets on Chain",
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 12
+      "title": "Block Header Delay",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
       },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
       },
-      "pluginVersion": "6.7.3",
-      "targets": [
+      "yaxes": [
         {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  NOW() AS \"time\",\n  max(height) AS \"total_tipsets\"\nFROM \"blocks\"",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "pledged_collateral"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "\"chain.economics\"",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
+          "format": "ns",
+          "label": null,
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Total Tipsets",
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "description": "Total Blocks on Chain",
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 15
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto"
-      },
-      "pluginVersion": "6.7.3",
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(*) AS \"total_blocks\"\nFROM \"blocks\"",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "pledged_collateral"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "\"chain.economics\"",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Total Blocks",
-      "type": "stat"
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "aliasColors": {},
@@ -951,8 +847,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 24,
+        "h": 8,
+        "w": 16,
         "x": 0,
         "y": 18
       },
@@ -1077,9 +973,699 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "datasource": null,
+      "description": "Lifetime Total blocks per Tipset",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 18
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "decimals": 2,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(cid)::float/max(height)::float AS \"block_tipset_ratio\"\nFROM \"blocks\"",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "pledged_collateral"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "\"chain.economics\"",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Block-to-Tipset Ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "Total Tipsets on Chain",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 18
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  NOW() AS \"time\",\n  max(height) AS \"total_tipsets\"\nFROM \"blocks\"",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "pledged_collateral"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "\"chain.economics\"",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total Tipsets",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "Total Blocks on Chain",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 22
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(*) AS \"total_blocks\"\nFROM \"blocks\"",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "pledged_collateral"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "\"chain.economics\"",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total Blocks",
+      "type": "stat"
+    },
+    {
+      "content": "# Lotus Daemon",
+      "datasource": null,
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 21,
+      "mode": "markdown",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 22,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 0.5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Failure",
+          "color": "#E02F44"
+        },
+        {
+          "alias": "Success",
+          "color": "#96D98D"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  counter - lag(counter) OVER (ORDER BY \"time\") AS \"Success\"\nFROM lotus_message_success\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "delta"
+                ],
+                "type": "window"
+              },
+              {
+                "params": [
+                  "Success"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "lotus_message_success",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamptz",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  counter - lag(counter) OVER (ORDER BY \"time\") AS \"Failure\"\nFROM lotus_message_failure\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "delta"
+                ],
+                "type": "window"
+              },
+              {
+                "params": [
+                  "Failure"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "lotus_message_failure",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamptz",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Messages Recieved",
+      "tooltip": {
+        "shared": true,
+        "sort": 1,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Number of peers connected to the lotus node.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 8,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 24,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  gauge\nFROM lotus_peer_count\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "gauge"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_peer_count",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamptz",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Connected Peers Count",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Duration reported by lotus between receipt and validation of a block.",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 17,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 20,
+      "legend": {
+        "alignAsTable": false,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Average Duration",
+          "legend": false,
+          "lines": true,
+          "points": false
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  gauge AS \"Validation Duration\"\nFROM lotus_block_validation_ms\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "gauge"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "Validation Duration"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "lotus_block_validation_ms",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamptz",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  avg(gauge) OVER (ORDER BY \"time\" ROWS 20 PRECEDING) AS \"Average Duration\"\nFROM lotus_block_validation_ms\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "gauge"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "avg",
+                  "20"
+                ],
+                "type": "moving_window"
+              },
+              {
+                "params": [
+                  "Average Duration"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "lotus_block_validation_ms",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamptz",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Block Validation Time",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "ms",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
-  "refresh": "",
+  "refresh": "30s",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -1087,7 +1673,7 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -1110,5 +1696,5 @@
   "variables": {
     "list": []
   },
-  "version": 4
+  "version": 13
 }
