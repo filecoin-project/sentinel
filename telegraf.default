@@ -1,14 +1,5 @@
 # Telegraf Configuration
 #
-# Telegraf is entirely plugin driven. All metrics are gathered from the
-# declared inputs, and sent to the declared outputs.
-#
-# Plugins must be declared in here to be active.
-# To deactivate a plugin, comment out the name and any variables.
-#
-# Use 'telegraf -config telegraf.conf -test' to see what metrics a config
-# file would generate.
-#
 # Environment variables can be used anywhere in this config file, simply surround
 # them with ${}. For strings the variable must be within quotes (ie, "${STR_VAR}"),
 # for numbers and booleans they should be plain (ie, ${INT_VAR}, ${BOOL_VAR})
@@ -16,13 +7,10 @@
 
 # Global tags can be specified here in key="value" format.
 [global_tags]
-  # dc = "us-east-1" # will tag all metrics with dc=us-east-1
-  # rack = "1a"
-  ## Environment variables can be used as tags, and throughout the config file
-  # user = "$USER"
+  # dc = "us-east-1" # example will tag all metrics with dc=us-east-1
 
 
-# Configuration for telegraf agent
+# Telegraf Agent
 [agent]
   ## Default data collection interval for all inputs
   interval = "10s"
@@ -38,7 +26,7 @@
   ## Maximum number of unwritten metrics per output.  Increasing this value
   ## allows for longer periods of output downtime without dropping metrics at the
   ## cost of higher maximum memory usage.
-  metric_buffer_limit = 50000
+  metric_buffer_limit = 100000
 
   ## Collection jitter is used to jitter the collection by a random amount.
   ## Each plugin will sleep for a random time within jitter before collecting.
@@ -48,11 +36,11 @@
 
   ## Default flushing interval for all outputs. Maximum flush_interval will be
   ## flush_interval + flush_jitter
-  flush_interval = "3s"
-  ## Jitter the flush interval by a random amount. This is primarily to avoid
+  flush_interval = "5s"
+  ## Jitter the flush interval by a random amount. This is primaily to avoid
   ## large write spikes for users running a large number of telegraf instances.
   ## ie, a jitter of 5s and interval 10s means flushes will happen every 10-15s
-  flush_jitter = "2s"
+  flush_jitter = "1s"
 
   ## By default or when set to "0s", precision will be set to the same
   ## timestamp order as the collection interval, with the maximum being 1s.
@@ -64,9 +52,9 @@
   precision = "s"
 
   ## Log at debug level.
-  # debug = false
+  debug = false
   ## Log only error level messages.
-  # quiet = false
+  quiet = true
 
   ## Log target controls the destination for logs and can be one of "file",
   ## "stderr" or, on Windows, "eventlog".  When set to "file", the output file
@@ -157,6 +145,7 @@
 #                               HOST METRICS                                  #
 ###############################################################################
 
+
 # Capture telemetry produced by a local instance of Lotus
 [[inputs.lotus]]
   ## Provide the multiaddr that the lotus API is listening on. If API multiaddr is empty,
@@ -166,13 +155,18 @@
   ## Provide the token that telegraf can use to access the lotus API. The token only requires
   ## "read" privileges. This is useful for restricting metrics to a seperate token.
   ## Default: ""
-  lotus_api_token = ""
+  # lotus_api_token = ""
 
   ## Provide the Lotus working path. The input plugin will scan the path contents
   ## for the correct listening address/port and API token. Note: Path must be readable
   ## by the telegraf process otherwise, the value should be manually set in api_listen_addr
   ## and api_token. Default: $HOME/.lotus
   lotus_datapath = "${HOME}/.lotus"
+
+[[inputs.prometheus]]
+  urls = [
+    "http://localhost:1234/debug/metrics", # lotus daemon
+  ]
 
 [[inputs.kernel]] # Get kernel statistics from /proc/stat
   ## no configuration
@@ -193,7 +187,7 @@
   ## no configuration
 [[inputs.disk]] # Read metrics about disk usage by mount point
   ## Setting mountpoints will restrict the stats to the specified mountpoints. Default: all
-  # mount_points = ["/"]
+  mount_points = ["/"]
 
   ## Ignore some mountpoints by filesystem type. For example (dev)tmpfs (usually
   ## present on /run, /var/run, /dev/shm or /dev).

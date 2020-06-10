@@ -9,37 +9,28 @@ BINS:=
 TELEGRAF_PATH:=telegraf/
 BUILD_PATH:=build/
 
-ldflags=-X=github.com/filecoin-project/lotus/build.CurrentCommit='+git$(subst -,.,$(shell git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null))'
-ifneq ($(strip $(LDFLAGS)),)
-	ldflags+=-extldflags=$(LDFLAGS)
-endif
-
 #############
 ## BUILD
 #############
 
-build: telegraf build-services
+build: build-services
 .PHONY: build
 
-build/.update_submodules:
-	git submodule update --init --recursive
-	touch $@
-CLEAN+=build/.update_submodules
-
-build-services:
+build-services: telegraf
 	docker-compose build
 .PHONY: build-services
+
+telegraf: deps build/telegraf
+.PHONY: telegraf
 
 build/telegraf:
 	$(MAKE) -C ${TELEGRAF_PATH} telegraf
 	mv ${TELEGRAF_PATH}telegraf build/telegraf
 BINS+=build/telegraf
 
-deps: build/.update_submodules
+deps:
+	git submodule update --init --recursive
 .PHONY: deps
-
-telegraf: deps build/telegraf
-.PHONY: telegraf
 
 #############
 ## EXECUTE
@@ -84,13 +75,6 @@ install-telegraf-service:
 clean-telegraf-service:
 	sudo dpkg -r telegraf
 .PHONY: clean-telegraf-service
-
-conf:
-	@if [ -a build/telegraf.conf ]; then mv build/telegraf.conf build/telegraf.old || true; fi;
-	build/telegraf --input-filter lotus --output-filter postgresql --section-filter agent:global_tags:outputs:inputs config > build/telegraf.conf
-	@echo
-	@echo "Produced default config file at ./build/telegraf.conf. Please edit with your changes before using."
-.PHONY: conf
 
 clean-state: state-check
 	rm -rf $(CLEAN) $(BINS)
