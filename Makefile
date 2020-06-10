@@ -77,8 +77,6 @@ clean-telegraf-service:
 .PHONY: clean-telegraf-service
 
 clean-state: state-check
-	rm -rf $(CLEAN) $(BINS)
-	-$(MAKE) -C $(TELEGRAF_PATH) clean
 	docker-compose down -v
 .PHONY: clean
 
@@ -86,7 +84,9 @@ state-check:
 	@( read -p "Removing saved data! Sure? [y/N]: " ans && case "$$ans" in [yY]) true;; *) false;; esac )
 .PHONY: danger-check
 
-clean-all: uncommitted-check
+clean: uncommitted-check
+	rm -rf $(CLEAN) $(BINS)
+	-$(MAKE) -C $(TELEGRAF_PATH) clean
 	git clean -xdff
 	git submodule deinit --all -f
 .PHONY: dist-clean
