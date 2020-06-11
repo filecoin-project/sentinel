@@ -26,6 +26,7 @@ telegraf: deps build/telegraf
 build/telegraf:
 	$(MAKE) -C ${TELEGRAF_PATH} telegraf
 	mv ${TELEGRAF_PATH}telegraf build/telegraf
+	@if [ ! -f ./build/telegraf.conf ]; then cp ./telegraf.default build/telegraf.conf; fi;
 BINS+=build/telegraf
 
 deps:
