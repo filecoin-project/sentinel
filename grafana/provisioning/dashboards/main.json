@@ -507,6 +507,7 @@
                 "none"
               ],
               "type": "time"
+            }
           ],
           "metricColumn": "none",
           "rawQuery": true,
