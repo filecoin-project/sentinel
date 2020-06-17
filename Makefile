@@ -96,14 +96,14 @@ uncommitted-check:
 	@( read -p "Removing uncommitted changes! Sure? [y/N]: " ans && case "$$ans" in [yY]) true;; *) false;; esac )
 .PHONY: danger-check
 
-deploy-dev:
-	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-dev:~/sentinel/
-.PHONY: deploy-dev
+deploy-painnet:
+	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-painnet:~/sentinel/
+.PHONY: deploy-painnet
 
-deploy-staging:
-	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-staging:~/sentinel/
-.PHONY: deploy-dev
+deploy-interopnet:
+	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-interopnet:~/sentinel/
+.PHONY: deploy-interopnet
 
 deploy-testnet:
 	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* ${PWD}/. sentinel-testnet:~/sentinel/
-.PHONY: deploy-dev
+.PHONY: deploy-testnet
