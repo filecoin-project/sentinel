@@ -14,18 +14,23 @@ The metrics are pushed to TimescaleDB from Telegraf-based remote-host agents and
 
 ### Build and Start Sentinel
 
+_TODO: Add missing build dep installation steps._
+
 0. Start lotus daemon.
 1. `git clone git@github.com:filecoin-project/sentinel.git`
 2. `cd sentinel`
-3. `make run`
+3. `make run-lotus`
+4. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
+5. `make run-docker` to start Docker services
+6. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
 
 ### Configure Grafana Datasource
 
 Note: This process will eventually be automatically provisioned on startup.
 
-4. Visit [http://localhost:3000](http://localhost:3000) to open Grafana.
-5. Login with username and password as `admin`. Change the admin password.
-6. Follow prompt to setup a PostgreSQL Datasource with the following setttings:
+7. Visit [http://localhost:3000](http://localhost:3000) to open Grafana.
+8. Login with username and password as `admin`. Change the admin password.
+9. Follow prompt to setup a PostgreSQL Datasource with the following setttings:
 
 #### PostgreSQL Connection
 
@@ -42,42 +47,71 @@ Note: This process will eventually be automatically provisioned on startup.
 - TimescaleDB: `true`
 - Min Time Interval: `1s`
 
-7. Click Save and Test.
+10. Click Save and Test.
 
 ### Configure Grafana Dashboards
 
-8. Return to Home and follow prompt to add new dashboards. Find the Import option in the top right of the screen.
-9. Upload the desired dashboard JSON from the available dashboard payloads found in [grafana/provisioning/dashboards/](https://github.com/filecoin-project/sentinel/tree/master/grafana/provisioning/dashboards).
-10. Click Import (or if you already have the dashboard imported with this name, select Overwrite).
+11. Return to Home and follow prompt to add new dashboards. Find the Import option in the top right of the screen.
+12. Upload the desired dashboard JSON from the available dashboard payloads found in [grafana/provisioning/dashboards/](https://github.com/filecoin-project/sentinel/tree/master/grafana/provisioning/dashboards).
+13. Click Import (or if you already have the dashboard imported with this name, select Overwrite).
 
 
 ## Managing Sentinel
 
-`make` - produces the telegraf agent binary and any docker services which are not prebuilt images
+### Build
 
-`make telegraf` - only builds the telegraf agent
+Note: Build artifacts are put into `./build` path. If you want to force building without `make clean`ing first, you can also `make -B <target>`.
 
-`make run` - starts the collection agent and related services
+`make` - produces all build targets (lotus, chainwatch, and telegraf)
+
+`make lotus` - only builds the lotus daemon binary
+
+`make chainwatch` - only builds the chainwatch binary
+
+`make telegraf` - only builds the telegraf agent binary
+
+### Run/Stop
 
 `make run-telegraf` - start development Telegraf process with debug output (uses configuration at `build/telegraf.conf`)
 
-`make run-services` - start all docker services (currently TimescaleDB, Grafana)
+`make run-lotus` - start lotus daemon with default settings (lotus repo at `$(HOME)/.lotus`)
 
-`make stop` - stops the collection agent and related services
+`make run-chainwatch` - start chwinatch binary. The database and repo path can be changed from default via `LOTUS_DB` and `LOTUS_REPO` environment variables. (Defaults to `LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disabled` and `LOTUS_REPO ?= $(HOME)/.lotus`.
+
+`make run-docker` - start docker services (currently TimescaleDB, Grafana)
 
 `make stop-telegraf` - stop development Telegraf process
 
-`make stop-services` - stop all docker services
+`make stop-chainwatch` - stop chainwatch process
+
+`make stop-lotus` - stop lotus daemon process
+
+`make stop-docker` - stop all docker services
+
+### Management/Installation
+
+`make install-services` - Install lotus, telegraf, chainwatch as systemd services
+
+`make clean-services` - Uninstall lotus, telegraf, chainwatch as systemd services (not logs or configuration)
+
+Install individual services like so:
+
+`make install-telegraf-service`
+
+`make install-lotus-service`
+
+`make install-chainwatch-service`
+
+Also works with their `make clean-*-service` counterparts.
 
 `make clean` - removes build artifacts
 
 `make clean-state` - stops and destroys docker service volumes (which resets TimescaleDB and Grafana settings and configuration)
 
-
 ## Maintainers
 
 - [@placer14](https://github.com/placer14)
-
+- [@frrist](https://github.com/frrist)
 
 ## Code of Conduct
 
