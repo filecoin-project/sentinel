@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.14
+    working_directory: /go/src/github.com/filecoin-project/sentinel
+    steps:
+      - checkout
+      - run: sudo apt update -q && sudo apt install -yq mesa-opencl-icd ocl-icd-opencl-dev
+      - run: make
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
