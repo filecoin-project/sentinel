@@ -2,6 +2,7 @@
 
 A Filecoin Network Monitoring and Analysis System
 
+[![CircleCI](https://circleci.com/gh/filecoin-project/sentinel.svg?style=svg&circle-token=6dee046c14c81af4e1c526fa36ebcb486677be69)](https://app.circleci.com/pipelines/github/filecoin-project/sentinel)
 
 ## Background
 
@@ -92,15 +93,25 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 `make install-services` - Install lotus, telegraf, chainwatch as systemd services
 
+`make upgrade-services` - Build lotus, telegraf, chainwatch and replace existing binaries without deploying configuration files
+
 `make clean-services` - Uninstall lotus, telegraf, chainwatch as systemd services (not logs or configuration)
 
-Install individual services like so:
+Install individual services:
 
 `make install-telegraf-service`
 
 `make install-lotus-service`
 
 `make install-chainwatch-service`
+
+Upgrade individual services:
+
+`make upgrade-telegraf-service`
+
+`make upgrade-lotus-service`
+
+`make upgrade-chainwatch-service`
 
 Also works with their `make clean-*-service` counterparts.
 
