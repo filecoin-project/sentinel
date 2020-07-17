@@ -36,6 +36,44 @@
       "type": "text"
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [],
+              "type": "no_value"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "count"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "2m",
+        "frequency": "1m",
+        "handler": 1,
+        "message": "Blocks production has halted on network for 2 minutes. Please investigate immediately.",
+        "name": "Sustained Null Blocks",
+        "noDataState": "alerting",
+        "notifications": [
+          {
+            "uid": "F7zrp_GGk"
+          }
+        ]
+      },
       "aliasColors": {},
       "bars": true,
       "dashLength": 10,
@@ -457,25 +495,26 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "Size of block headers.",
-      "fill": 1,
+      "description": "Total message size found per 30 minute interval.",
+      "fill": 5,
       "fillGradient": 0,
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 8,
         "x": 16,
         "y": 7
       },
       "hiddenSeries": false,
-      "id": 13,
+      "id": 25,
+      "interval": "30m",
       "legend": {
         "alignAsTable": true,
         "avg": true,
-        "current": true,
+        "current": false,
         "max": true,
         "min": true,
         "rightSide": false,
@@ -483,9 +522,9 @@
         "total": true,
         "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
         "dataLinks": []
       },
@@ -511,13 +550,13 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  avg(header_size) AS \"header_size\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Total\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "header_size"
+                  "pledged_collateral"
                 ],
                 "type": "column"
               },
@@ -529,13 +568,13 @@
               },
               {
                 "params": [
-                  "header_size"
+                  "pledged_collateral"
                 ],
                 "type": "alias"
               }
             ]
           ],
-          "table": "\"chain.block\"",
+          "table": "\"chain.economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -551,7 +590,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Block Header Size",
+      "title": "Total Messages per 30 minutes",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -567,8 +606,9 @@
       },
       "yaxes": [
         {
-          "format": "decbytes",
-          "label": "bytes",
+          "decimals": 0,
+          "format": "none",
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -580,7 +620,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -729,27 +769,26 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "Time between block header arrival and the epoch time expected for the tipset of that block.",
+      "description": "Size of block headers.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 8,
         "x": 16,
-        "y": 12
+        "y": 13
       },
       "hiddenSeries": false,
-      "id": 18,
-      "interval": "1s",
+      "id": 13,
       "legend": {
         "alignAsTable": true,
         "avg": true,
-        "current": false,
+        "current": true,
         "max": true,
         "min": true,
         "rightSide": false,
         "show": true,
-        "total": false,
+        "total": true,
         "values": true
       },
       "lines": true,
@@ -769,22 +808,42 @@
       "targets": [
         {
           "format": "time_series",
-          "group": [],
+          "group": [
+            {
+              "params": [
+                "$__interval",
+                "none"
+              ],
+              "type": "time"
+            }
+          ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  avg(header_size) AS \"header_size\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
               {
                 "params": [
-                  "used_percent"
+                  "header_size"
                 ],
                 "type": "column"
+              },
+              {
+                "params": [
+                  "avg"
+                ],
+                "type": "aggregate"
+              },
+              {
+                "params": [
+                  "header_size"
+                ],
+                "type": "alias"
               }
             ]
           ],
-          "table": "disk",
+          "table": "\"chain.block\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -800,7 +859,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Block Header Delay",
+      "title": "Block Header Size",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -816,9 +875,9 @@
       },
       "yaxes": [
         {
-          "format": "ns",
-          "label": null,
-          "logBase": 10,
+          "format": "decbytes",
+          "label": "bytes",
+          "logBase": 1,
           "max": null,
           "min": null,
           "show": true
@@ -829,7 +888,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": false
+          "show": true
         }
       ],
       "yaxis": {
@@ -976,13 +1035,127 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Time between block header arrival and the epoch time expected for the tipset of that block.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 18
+      },
+      "hiddenSeries": false,
+      "id": 18,
+      "interval": "1s",
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "used_percent"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "disk",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Block Header Delay",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ns",
+          "label": null,
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "datasource": null,
       "description": "Lifetime Total blocks per Tipset",
       "gridPos": {
         "h": 4,
         "w": 4,
         "x": 16,
-        "y": 18
+        "y": 24
       },
       "id": 16,
       "options": {
@@ -1055,7 +1228,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 18
+        "y": 24
       },
       "id": 6,
       "options": {
@@ -1127,7 +1300,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 22
+        "y": 28
       },
       "id": 5,
       "options": {
@@ -1199,7 +1372,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 32
       },
       "id": 21,
       "mode": "markdown",
@@ -1222,7 +1395,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 28
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 22,
@@ -1398,7 +1571,7 @@
         "h": 8,
         "w": 9,
         "x": 8,
-        "y": 28
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 24,
@@ -1509,7 +1682,7 @@
         "h": 8,
         "w": 7,
         "x": 17,
-        "y": 28
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 20,
@@ -1674,7 +1847,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -1697,5 +1870,5 @@
   "variables": {
     "list": []
   },
-  "version": 13
+  "version": 16
 }
