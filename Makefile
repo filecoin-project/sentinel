@@ -38,8 +38,8 @@ BINS+=build/lotus
 chainwatch: deps build/chainwatch
 
 build/chainwatch:
-	$(MAKE) -C $(LOTUS_PATH) deps chainwatch
-	cp $(LOTUS_PATH)chainwatch build/chainwatch
+	$(MAKE) -C $(LOTUS_PATH) deps lotus-chainwatch
+	cp $(LOTUS_PATH)lotus-chainwatch build/chainwatch
 BINS+=build/chainwatch
 
 .PHONY: deps
