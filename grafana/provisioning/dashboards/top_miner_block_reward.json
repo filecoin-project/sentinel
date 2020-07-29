@@ -15,19 +15,99 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 1,
   "links": [],
   "panels": [
+    {
+      "datasource": null,
+      "description": "The Epoch Miner Ranks was last update at.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 11,
+        "x": 7,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^current_height$/",
+          "values": false
+        }
+      },
+      "pluginVersion": "7.0.3",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n NOW() as time,\n *\nFROM\n  top_miners_by_base_reward_max_height\n\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Updated At",
+      "type": "stat"
+    },
     {
       "columns": [],
       "datasource": null,
       "description": "All accumulated rewards for miners updated each day at midnight.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
-        "h": 13,
+        "h": 25,
         "w": 11,
         "x": 7,
-        "y": 0
+        "y": 3
       },
       "id": 2,
       "pageSize": 50,
@@ -88,10 +168,11 @@
       "title": "Top Miners by Block Reward",
       "transform": "table",
       "transparent": true,
-      "type": "table"
+      "type": "table-old"
     }
   ],
-  "schemaVersion": 22,
+  "refresh": "30s",
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -103,7 +184,6 @@
   },
   "timepicker": {
     "refresh_intervals": [
-      "5s",
       "10s",
       "30s",
       "1m",
@@ -118,8 +198,5 @@
   "timezone": "",
   "title": "Top Miners by Block Reward",
   "uid": "P_Q13JnMz",
-  "variables": {
-    "list": []
-  },
-  "version": 1
+  "version": 2
 }
