@@ -185,7 +185,7 @@
               }
             ]
           ],
-          "table": "\"chain.block\"",
+          "table": "\"chain_block\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -297,7 +297,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -387,7 +387,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  min(message_size) AS \"Minimum\",\n  avg(message_size) AS \"Average\",\n  max(message_size) AS \"Maximum\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  min(message_size) AS \"Minimum\",\n  avg(message_size) AS \"Average\",\n  max(message_size) AS \"Maximum\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -411,7 +411,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -427,7 +427,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Count\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Count\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -439,7 +439,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -550,7 +550,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Total\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Total\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -574,7 +574,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -685,7 +685,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  sum(message_size) AS \"Total\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  sum(message_size) AS \"Total\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -709,7 +709,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -819,7 +819,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  avg(header_size) AS \"header_size\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  avg(header_size) AS \"header_size\"\nFROM \"chain_block\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -843,7 +843,7 @@
               }
             ]
           ],
-          "table": "\"chain.block\"",
+          "table": "\"chain_block\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -956,7 +956,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval, 0),\n  CONCAT(actor,'/',method,' -> ',exitcode) AS \"metric\",\n  sum(count) AS \"count\"\nFROM \"chain.actors\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1, 2\nORDER BY 1, 2",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval, 0),\n  CONCAT(actor,'/',method,' -> ',exitcode) AS \"metric\",\n  sum(count) AS \"count\"\nFROM \"chain_actors\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1, 2\nORDER BY 1, 2",
           "refId": "A",
           "select": [
             [
@@ -980,7 +980,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1083,7 +1083,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain_block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -1204,7 +1204,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1276,7 +1276,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1477,7 +1477,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [

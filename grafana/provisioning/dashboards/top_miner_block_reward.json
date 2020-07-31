@@ -152,7 +152,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
