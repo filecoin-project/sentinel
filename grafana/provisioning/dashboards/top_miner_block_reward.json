@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 6,
   "links": [],
   "panels": [
     {
@@ -91,6 +91,84 @@
       "timeShift": null,
       "title": "Updated At",
       "type": "stat"
+    },
+    {
+      "columns": [],
+      "datasource": null,
+      "description": "The height of the chain when the current ranking was produced.",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 2,
+        "y": 0
+      },
+      "id": 4,
+      "pageSize": null,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "right",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "current_timestamp",
+          "type": "date"
+        },
+        {
+          "alias": "Height",
+          "align": "left",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": null,
+          "pattern": "current_height",
+          "thresholds": [],
+          "type": "number",
+          "unit": "none"
+        }
+      ],
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  current_timestamp,\n  current_height\nFROM top_miners_by_base_reward_max_height\nLIMIT 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "pledged_collateral"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "\"chain.economics\"",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Top Miners Processed At",
+      "transform": "table",
+      "type": "table"
     },
     {
       "columns": [],
@@ -198,5 +276,8 @@
   "timezone": "",
   "title": "Top Miners by Block Reward",
   "uid": "P_Q13JnMz",
+  "variables": {
+    "list": []
+  },
   "version": 2
 }
