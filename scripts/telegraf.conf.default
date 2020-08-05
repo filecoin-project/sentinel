@@ -165,9 +165,12 @@
   lotus_datapath = "${HOME}/.lotus"
 
 [[inputs.prometheus]]
-  urls = [
-    "http://localhost:1234/debug/metrics", # lotus daemon
-  ]
+   urls = [
+      "http://localhost:1234/debug/metrics", # lotus daemon
+    ]
+    namedrop = [
+      "lotus_info",
+    ]
 
 [[inputs.kernel]] # Get kernel statistics from /proc/stat
   ## no configuration
