@@ -185,7 +185,7 @@
               }
             ]
           ],
-          "table": "\"chain.block\"",
+          "table": "\"chain_block\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -297,7 +297,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -387,7 +387,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  min(message_size) AS \"Minimum\",\n  avg(message_size) AS \"Average\",\n  max(message_size) AS \"Maximum\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  min(message_size) AS \"Minimum\",\n  avg(message_size) AS \"Average\",\n  max(message_size) AS \"Maximum\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -411,7 +411,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -427,7 +427,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Count\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Count\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -439,7 +439,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -550,7 +550,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Total\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  count(message_size) AS \"Total\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -574,7 +574,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -685,7 +685,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  sum(message_size) AS \"Total\"\nFROM \"chain.messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  sum(message_size) AS \"Total\"\nFROM \"chain_messages\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -709,7 +709,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -819,7 +819,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  avg(header_size) AS \"header_size\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval),\n  avg(header_size) AS \"header_size\"\nFROM \"chain_block\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -843,7 +843,7 @@
               }
             ]
           ],
-          "table": "\"chain.block\"",
+          "table": "\"chain_block\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -956,7 +956,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval, 0),\n  CONCAT(actor,'/',method,' -> ',exitcode) AS \"metric\",\n  sum(count) AS \"count\"\nFROM \"chain.actors\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1, 2\nORDER BY 1, 2",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"time\",$__interval, 0),\n  CONCAT(actor,'/',method,' -> ',exitcode) AS \"metric\",\n  sum(count) AS \"count\"\nFROM \"chain_actors\"\nWHERE\n  $__timeFilter(\"time\")\nGROUP BY 1, 2\nORDER BY 1, 2",
           "refId": "A",
           "select": [
             [
@@ -980,7 +980,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1083,7 +1083,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain.block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (recorded_at - header_timestamp) AS \"Delay\"\nFROM \"chain_block\"\nWHERE\n  $__timeFilter(\"time\") AND (recorded_at - header_timestamp) < 50000000000\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -1204,7 +1204,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1276,7 +1276,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1292,6 +1292,135 @@
       "timeShift": null,
       "title": "Total Tipsets",
       "type": "stat"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": 0,
+      "description": "Total and failed Proof of SpaceTime being captured on-chain.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 0,
+        "y": 26
+      },
+      "hiddenSeries": false,
+      "id": 27,
+      "interval": "5s",
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "failed",
+          "color": "#F2495C",
+          "zindex": 3
+        },
+        {
+          "alias": "total",
+          "color": "#73BF69",
+          "pointradius": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n\t$__unixEpochGroupAlias(b.timestamp,'5s'),\n-- \tm.cid,\n\tcount(1) filter (where r.exit != 0) AS failed,\n\tcount(1) AS total\nFROM messages m\nINNER JOIN receipts r ON m.cid = r.msg\nINNER JOIN block_messages bm ON m.cid = bm.message\nINNER JOIN blocks b ON bm.block = b.cid\nWHERE m.method = 5\nAND $__unixEpochFilter(b.timestamp)\nGROUP BY 1\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_message_success",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "PoSt Submissions",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "short",
+          "label": "count",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "datasource": null,
@@ -1348,7 +1477,7 @@
               }
             ]
           ],
-          "table": "\"chain.economics\"",
+          "table": "\"chain_economics\"",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -1372,7 +1501,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 33
       },
       "id": 21,
       "mode": "markdown",
@@ -1395,7 +1524,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 34
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 22,
@@ -1571,7 +1700,7 @@
         "h": 8,
         "w": 9,
         "x": 8,
-        "y": 34
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 24,
@@ -1682,7 +1811,7 @@
         "h": 8,
         "w": 7,
         "x": 17,
-        "y": 34
+        "y": 35
       },
       "hiddenSeries": false,
       "id": 20,
