@@ -151,7 +151,7 @@
 
 
 ###############################################################################
-#                               HOST METRICS                                  #
+#                              INPUT PLUGINS                                  #
 ###############################################################################
 
 
@@ -180,35 +180,3 @@
   namedrop = [
     "lotus_info",
   ]
-
-[[inputs.kernel]] # Get kernel statistics from /proc/stat
-  ## no configuration
-[[inputs.mem]] # Read metrics about memory usage
-  ## no configuration
-[[inputs.processes]] # Get the number of processes and group them by status
-  ## no configuration
-[[inputs.cpu]]
-  ## Whether to report per-cpu stats or not
-  percpu = false
-  ## Whether to report total system cpu stats or not
-  totalcpu = true
-  ## If true, collect raw CPU time metrics.
-  collect_cpu_time = true
-[[inputs.system]] # General stats on load, uptime, users; Similar to uptime
-  ## no configuration
-[[inputs.nstat]] # Metrics from netstat, snmp, snmp6
-  ## no configuration
-[[inputs.disk]] # Read metrics about disk usage by mount point
-  ## Setting mountpoints will restrict the stats to the specified mountpoints. Default: all
-  mount_points = ["/"]
-
-  ## Ignore some mountpoints by filesystem type. For example (dev)tmpfs (usually
-  ## present on /run, /var/run, /dev/shm or /dev).
-  ignore_fs = ["tmpfs", "devtmpfs"]
-[[inputs.diskio]] # diskio plugin gathers metrics about disk traffic and timing.
-  ## Setting devices will restrict the stats to the specified devices. Default: all
-  # devices = ["sda", "sdb"]
-[[inputs.swap]] # Collect system swap metrics
-  ## no configuration
-[[inputs.linux_sysctl_fs]] # System level file metrics (Linux only).
-  ## no configuration
