@@ -64,23 +64,23 @@
   ## Name of the file to be logged to when using the "file" logtarget.  If set to
   ## the empty string then logs are written to stderr.
   # logfile = ""
-  logfile = "/var/log/telegraf/telegraf.log"
+  logfile = "{{ sentinel_telegraf_log_file }}"
 
   ## The logfile will be rotated after the time interval specified.  When set
   ## to 0 no time based rotation is performed.  Logs are rotated only when
   ## written to, if there is no log activity rotation may be delayed.
-  # logfile_rotation_interval = "1w"
+  logfile_rotation_interval = "0"
 
   ## The logfile will be rotated when it becomes larger than the specified
   ## size.  When set to 0 no size based rotation is performed.
-  logfile_rotation_max_size = "10MB"
+  #logfile_rotation_max_size = "10MB"
 
   ## Maximum number of rotated archives to keep, any older logs are deleted.
   ## If set to -1, no archives are removed.
-  logfile_rotation_max_archives = 5
+  #logfile_rotation_max_archives = 5
 
   ## Override default hostname, if empty use os.Hostname()
-  hostname = ""
+  #hostname = ""
   ## If set to true, do no set the "host" tag in the telegraf agent.
   omit_hostname = false
 
@@ -107,7 +107,7 @@
   ## connection with the server and doesn't restrict the databases we are trying
   ## to grab metrics for.
   ##
-  connection = "host=localhost user=postgres password=password sslmode=disable"
+  connection = "{{ sentinel_telegraf_outputs_postgresql_conn }}"
 
   ## Update existing tables to match the incoming metrics automatically. Default is true
   # do_schema_updates = true
@@ -143,63 +143,40 @@
 
 
 ###############################################################################
-#                               HOST METRICS                                  #
+#                            PROCESSOR PLUGINS                                #
+###############################################################################
+[[processors.lotus_peer_id]]
+  lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
+  lotus_datapath = "{{ lotus_path }}"
+
+
+###############################################################################
+#                              INPUT PLUGINS                                  #
 ###############################################################################
 
 
 # Capture telemetry produced by a local instance of Lotus
 [[inputs.lotus]]
   ## Provide the multiaddr that the lotus API is listening on. If API multiaddr is empty,
-  ## telegraf will check lotus_datapath for values. Default: "/ip4/0.0.0.0/tcp/1347"
-  lotus_api_multiaddr = "/ip4/0.0.0.0/tcp/1234"
+  ## telegraf will check lotus_datapath for values. Default: "/ip4/0.0.0.0/tcp/1234"
+  lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
+
 
   ## Provide the token that telegraf can use to access the lotus API. The token only requires
   ## "read" privileges. This is useful for restricting metrics to a seperate token.
   ## Default: ""
-  # lotus_api_token = ""
+  lotus_api_token = "{{ lotus_jwt_token }}"
 
   ## Provide the Lotus working path. The input plugin will scan the path contents
   ## for the correct listening address/port and API token. Note: Path must be readable
   ## by the telegraf process otherwise, the value should be manually set in api_listen_addr
   ## and api_token. Default: $HOME/.lotus
-  lotus_datapath = "${HOME}/.lotus"
+  # lotus_datapath = ""
 
 [[inputs.prometheus]]
-   urls = [
-      "http://localhost:1234/debug/metrics", # lotus daemon
-    ]
-    namedrop = [
-      "lotus_info",
-    ]
-
-[[inputs.kernel]] # Get kernel statistics from /proc/stat
-  ## no configuration
-[[inputs.mem]] # Read metrics about memory usage
-  ## no configuration
-[[inputs.processes]] # Get the number of processes and group them by status
-  ## no configuration
-[[inputs.cpu]]
-  ## Whether to report per-cpu stats or not
-  percpu = false
-  ## Whether to report total system cpu stats or not
-  totalcpu = true
-  ## If true, collect raw CPU time metrics.
-  collect_cpu_time = true
-[[inputs.system]] # General stats on load, uptime, users; Similar to uptime
-  ## no configuration
-[[inputs.nstat]] # Metrics from netstat, snmp, snmp6
-  ## no configuration
-[[inputs.disk]] # Read metrics about disk usage by mount point
-  ## Setting mountpoints will restrict the stats to the specified mountpoints. Default: all
-  mount_points = ["/"]
-
-  ## Ignore some mountpoints by filesystem type. For example (dev)tmpfs (usually
-  ## present on /run, /var/run, /dev/shm or /dev).
-  ignore_fs = ["tmpfs", "devtmpfs"]
-[[inputs.diskio]] # diskio plugin gathers metrics about disk traffic and timing.
-  ## Setting devices will restrict the stats to the specified devices. Default: all
-  # devices = ["sda", "sdb"]
-[[inputs.swap]] # Collect system swap metrics
-  ## no configuration
-[[inputs.linux_sysctl_fs]] # System level file metrics (Linux only).
-  ## no configuration
+  urls = [
+    "{{ lotus_prometheus_url }}", # lotus daemon
+   ]
+  namedrop = [
+    "lotus_info",
+  ]

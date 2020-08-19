@@ -92,7 +92,7 @@ stop-chainwatch:
 install-services: install-telegraf-service install-chainwatch-service install-lotus-service install-sentinel-service
 
 .PHONY: replace-services
-replace-services: replace-telegraf-service replace-chainwatch-service replace-lotus-service
+replace-services: replace-lotus-service replace-chainwatch-service replace-telegraf-service
 
 .PHONY: clean-services
 clean-services: clean-sentinel-service clean-lotus-service clean-chainwatch-service clean-telegraf-service
@@ -111,6 +111,7 @@ clean-sentinel-service: check-sudo
 .PHONY: install-telegraf-pkg
 install-telegraf-pkg: check-sudo deps
 	# linux-only package
+	rm -f build/*x86_64.rpm build/*amd64.tar.gz build/*amd64.deb
 	(cd ./telegraf && ./scripts/build.py --package --platform=linux --arch=amd64 -o ../build -n telegraf)
 	dpkg -i build/telegraf*.deb
 
@@ -136,7 +137,10 @@ replace-telegraf-service: check-sudo telegraf
 			echo "Preserving /lib/systemd/system/telegraf.service..."; \
 			cp /lib/systemd/system/telegraf.service /lib/systemd/system/telegraf.service.keep; \
 		fi;
+	systemctl stop telegraf
 	$(MAKE) install-telegraf-pkg
+	systemctl daemon-reload
+	systemctl start telegraf
 	# restore existing configuration
 	@if [ -f /etc/telegraf/telegraf.keep ]; then \
 			echo "Restoring /etc/telegraf/telegraf.conf..."; \
@@ -165,7 +169,10 @@ install-lotus-service: check-sudo lotus
 
 .PHONY: replace-lotus-service
 replace-lotus-service: check-sudo lotus
+	systemctl stop lotus-daemon
 	install -C ./build/lotus /usr/local/bin/lotus
+	systemctl daemon-reload
+	systemctl start lotus-daemon
 
 .PHONY: clean-lotus-service
 clean-lotus-service: check-sudo
@@ -186,7 +193,10 @@ install-chainwatch-service: check-sudo chainwatch
 
 .PHONY: replace-chainwatch-service
 replace-chainwatch-service: check-sudo chainwatch
+	systemctl stop chainwatch
 	install -C ./build/chainwatch /usr/local/bin/chainwatch
+	systemctl daemon-reload
+	systemctl start chainwatch
 
 .PHONY: clean-chainwatch-service
 clean-chainwatch-service: check-sudo
