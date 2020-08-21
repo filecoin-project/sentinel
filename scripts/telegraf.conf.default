@@ -147,7 +147,7 @@
 ###############################################################################
 [[processors.lotus_peer_id]]
   lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
-  lotus_datapath = "{{ lotus_path }}"
+  lotus_api_token = "{{ lotus_jwt_token }}"
 
 
 ###############################################################################
