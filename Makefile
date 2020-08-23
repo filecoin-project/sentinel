@@ -137,7 +137,7 @@ replace-telegraf-service: check-sudo telegraf
 			echo "Preserving /lib/systemd/system/telegraf.service..."; \
 			cp /lib/systemd/system/telegraf.service /lib/systemd/system/telegraf.service.keep; \
 		fi;
-	systemctl stop telegraf
+	-systemctl stop telegraf
 	$(MAKE) install-telegraf-pkg
 	systemctl daemon-reload
 	systemctl start telegraf
@@ -169,7 +169,7 @@ install-lotus-service: check-sudo lotus
 
 .PHONY: replace-lotus-service
 replace-lotus-service: check-sudo lotus
-	systemctl stop lotus-daemon
+	-systemctl stop lotus-daemon
 	install -C ./build/lotus /usr/local/bin/lotus
 	systemctl daemon-reload
 	systemctl start lotus-daemon
@@ -193,7 +193,7 @@ install-chainwatch-service: check-sudo chainwatch
 
 .PHONY: replace-chainwatch-service
 replace-chainwatch-service: check-sudo chainwatch
-	systemctl stop chainwatch
+	-systemctl stop chainwatch
 	install -C ./build/chainwatch /usr/local/bin/chainwatch
 	systemctl daemon-reload
 	systemctl start chainwatch
