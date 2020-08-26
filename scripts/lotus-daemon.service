@@ -12,8 +12,8 @@ Restart=always
 RestartSec=30
 
 MemoryAccounting=true
-MemoryHigh=8G
-MemoryMax=10G
+MemoryHigh=10G
+MemoryMax=12G
 LimitNOFILE=8192:10240
 
 [Install]
