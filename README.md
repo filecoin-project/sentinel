@@ -15,15 +15,16 @@ The metrics are pushed to TimescaleDB from Telegraf-based remote-host agents and
 
 ### Build and Start Sentinel
 
-_TODO: Add missing build dep installation steps._
+Follow the [Lotus installation instructions](read https://lotu.sh/en+getting-started) to install dependencies for your operating system.
 
 0. Start lotus daemon.
 1. `git clone git@github.com:filecoin-project/sentinel.git`
 2. `cd sentinel`
-3. `make run-lotus`
-4. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
-5. `make run-docker` to start Docker services
-6. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
+3. `make deps`
+4. `make run-lotus`
+5. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
+6. `make run-docker` to start Docker services
+7. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
 
 ### Configure Grafana Datasource
 
@@ -77,7 +78,7 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 `make run-lotus` - start lotus daemon with default settings (lotus repo at `$(HOME)/.lotus`)
 
-`make run-chainwatch` - start chwinatch binary. The database and repo path can be changed from default via `LOTUS_DB` and `LOTUS_REPO` environment variables. (Defaults to `LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disabled` and `LOTUS_REPO ?= $(HOME)/.lotus`.
+`make run-chainwatch` - start chainwatch binary. The database and repo path can be changed from default via `LOTUS_DB` and `LOTUS_REPO` environment variables. (Defaults to `LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disabled` and `LOTUS_REPO ?= $(HOME)/.lotus`.
 
 `make run-docker` - start docker services (currently TimescaleDB, Grafana)
 
