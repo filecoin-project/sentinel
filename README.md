@@ -26,37 +26,15 @@ Follow the [Lotus installation instructions](read https://lotu.sh/en+getting-sta
 6. `make run-docker` to start Docker services
 7. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
 
-### Configure Grafana Datasource
+### Configure Grafana
 
-Note: This process will eventually be automatically provisioned on startup.
+1. Visit [http://localhost:3000](http://localhost:3000) to open Grafana.
+2. Login with username and password as `admin`. Change the admin password.
 
-7. Visit [http://localhost:3000](http://localhost:3000) to open Grafana.
-8. Login with username and password as `admin`. Change the admin password.
-9. Follow prompt to setup a PostgreSQL Datasource with the following setttings:
+The datasource and dashboards are provisioned by the config in 
 
-#### PostgreSQL Connection
-
-- Name (optional): `TimescaleDB`
-- Host: `timescaledb:5432`
-- Database: `postgres`
-- User: `postgres`
-- Password: `password`
-- SSL Mode: `disabled`
-
-#### PostgreSQL details
-
-- Version: `10`
-- TimescaleDB: `true`
-- Min Time Interval: `1s`
-
-10. Click Save and Test.
-
-### Configure Grafana Dashboards
-
-11. Return to Home and follow prompt to add new dashboards. Find the Import option in the top right of the screen.
-12. Upload the desired dashboard JSON from the available dashboard payloads found in [grafana/provisioning/dashboards/](https://github.com/filecoin-project/sentinel/tree/master/grafana/provisioning/dashboards).
-13. Click Import (or if you already have the dashboard imported with this name, select Overwrite).
-
+- `grafana/provisioning/dashboards/dashboards.yml`
+- `grafana/provisioning/datasources/timescaledb.yml`
 
 ## Managing Sentinel
 
