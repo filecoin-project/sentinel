@@ -55,17 +55,17 @@ run-docker:
 	docker-compose up -d
 
 .PHONY: run-lotus
-run-lotus:
+run-lotus: build/lotus
 	build/lotus daemon & echo $$! > ./build/.lotus.pid
 
 .PHONY: run-telegraf
-run-telegraf:
+run-telegraf: build/telegraf
 	build/telegraf --config build/telegraf.conf --debug & echo $$! > ./build/.telegraf.pid
 
 LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disable
 LOTUS_REPO ?= $(HOME)/.lotus
 .PHONY: run-chainwatch
-run-chainwatch:
+run-chainwatch: build/chainwatch
 	build/chainwatch --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.chainwatch.pid
 
 .PHONY: stop-docker
