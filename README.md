@@ -10,6 +10,7 @@ Sentinel is a collection of services which monitor the health and function of th
 
 The metrics are pushed to TimescaleDB from Telegraf-based remote-host agents and a centralized data processing pipeline. [Lotus](https://github.com/filecoin-project/lotus/) is attached to the processing pipeline as a source of truth for immutable network state.
 
+![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92404078-a48f5a00-f12a-11ea-8987-8b5a42091ad2.png)
 
 ## Setup
 
