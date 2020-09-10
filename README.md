@@ -16,7 +16,7 @@ The metrics are pushed to TimescaleDB from Telegraf-based remote-host agents and
 
 ### Build and Start Sentinel
 
-Follow the [Lotus installation instructions](read https://lotu.sh/en+getting-started) to install dependencies for your operating system.
+Follow the [Lotus installation instructions](https://lotu.sh/en+getting-started) to install dependencies for your operating system.
 
 0. Start lotus daemon.
 1. `git clone git@github.com:filecoin-project/sentinel.git`
