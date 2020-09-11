@@ -1,16 +1,18 @@
 # Sentinel
 
-A Filecoin Network Monitoring and Analysis System
+> The Filecoin Network Monitoring and Analysis System
 
 [![CircleCI](https://circleci.com/gh/filecoin-project/sentinel.svg?style=svg&circle-token=6dee046c14c81af4e1c526fa36ebcb486677be69)](https://app.circleci.com/pipelines/github/filecoin-project/sentinel)
 
-## Background
+Sentinel is a collection of services which monitor the health and function of the Filecoin network. 
 
-Sentinel is a collection of services which monitor the health and function of the Filecoin network. The system consists of TimescaleDB, a time-series and relational datastore, which captures metrics from interesting parts of the network and is exposed via Grafana, which presents the data via helpful and informative graphs and provides alerting and annotating for real-time monitoring.
+A **Visor** process collects _permenant_ Filecoin chain meterics from a [**Lotus**](https://github.com/filecoin-project/lotus/) daemon, and writes them to a [**TimescaleDB**](https://github.com/timescale/timescaledb), a time-series and relational datastore.
 
-The metrics are pushed to TimescaleDB from Telegraf-based remote-host agents and a centralized data processing pipeline. [Lotus](https://github.com/filecoin-project/lotus/) is attached to the processing pipeline as a source of truth for immutable network state.
+Many [**Drone**](https://github.com/filecoin-shipyard/sentinel-drone) instances collect _ephemeral_, node-specific Lotus metrics and write them to the same TimescaleDB.
 
-![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92404078-a48f5a00-f12a-11ea-8987-8b5a42091ad2.png)
+The metrics are displayed in [**Grafana**](https://github.com/grafana/grafana). A set of _very important queries_ are captured in Grafana to track and alert on critical performance and economic health indicators over time.
+
+![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92904320-ae5ed900-f41a-11ea-8c92-fd28c0223b74.png)
 
 ## Setup
 
