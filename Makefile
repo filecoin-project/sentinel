@@ -6,7 +6,7 @@ all: build
 CLEAN:=
 BINS:=
 
-TELEGRAF_PATH:=telegraf/
+DRONE_PATH:=drone/
 LOTUS_PATH:=lotus/
 BUILD_PATH:=build/
 
@@ -15,16 +15,16 @@ BUILD_PATH:=build/
 #############
 
 .PHONY: build
-build: telegraf lotus chainwatch
+build: drone lotus chainwatch
 
-.PHONY: telegraf
-telegraf: deps build/telegraf
+.PHONY: drone
+drone: deps build/drone
 
-build/telegraf:
-	$(MAKE) -C $(TELEGRAF_PATH) telegraf
-	cp $(TELEGRAF_PATH)telegraf build/telegraf
-	@if [ ! -f ./build/telegraf.conf ]; then cp ./scripts/telegraf.conf.default build/telegraf.conf; fi;
-BINS+=build/telegraf
+build/drone:
+	$(MAKE) -C $(DRONE_PATH) telegraf
+	cp $(DRONE_PATH)telegraf build/drone
+	@if [ ! -f ./build/sentinel-drone.conf ]; then cp ./scripts/sentinel-drone.conf.default build/sentinel-drone.conf; fi;
+BINS+=build/drone
 
 .PHONY: lotus
 lotus: deps build/lotus
@@ -58,9 +58,9 @@ run-docker:
 run-lotus: build/lotus
 	build/lotus daemon & echo $$! > ./build/.lotus.pid
 
-.PHONY: run-telegraf
-run-telegraf: build/telegraf
-	build/telegraf --config build/telegraf.conf --debug & echo $$! > ./build/.telegraf.pid
+.PHONY: run-drone
+run-drone: build/drone
+	build/drone --config build/sentinel-drone.conf --debug & echo $$! > ./build/.sentinel-drone.pid
 
 LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disable
 LOTUS_REPO ?= $(HOME)/.lotus
@@ -76,9 +76,9 @@ stop-docker:
 stop-lotus:
 	@if [ -a ./build/.lotus.pid ]; then kill -TERM $$(cat ./build/.lotus.pid); rm ./build/.lotus.pid || true; fi;
 
-.PHONY: stop-telegraf
-stop-telegraf:
-	@if [ -a ./build/.telegraf.pid ]; then kill -TERM $$(cat ./build/.telegraf.pid); rm ./build/.telegraf.pid || true; fi;
+.PHONY: stop-drone
+stop-drone:
+	@if [ -a ./build/.sentinel-drone.pid ]; then kill -TERM $$(cat ./build/.sentinel-drone.pid); rm ./build/.sentinel-drone.pid || true; fi;
 
 .PHONY: stop-chainwatch
 stop-chainwatch:
@@ -89,13 +89,13 @@ stop-chainwatch:
 #############
 
 .PHONY: install-services
-install-services: install-telegraf-service install-chainwatch-service install-lotus-service install-sentinel-service
+install-services: install-drone-service install-chainwatch-service install-lotus-service install-sentinel-service
 
 .PHONY: replace-services
-replace-services: replace-lotus-service replace-chainwatch-service replace-telegraf-service
+replace-services: replace-lotus-service replace-chainwatch-service replace-drone-service
 
 .PHONY: clean-services
-clean-services: clean-sentinel-service clean-lotus-service clean-chainwatch-service clean-telegraf-service
+clean-services: clean-sentinel-service clean-lotus-service clean-chainwatch-service clean-drone-service
 
 .PHONY: install-sentinel-service
 install-sentinel-service: check-sudo
@@ -108,51 +108,57 @@ clean-sentinel-service: check-sudo
 	rm -f /usr/local/lib/systemd/system/sentinel.service
 	systemctl daemon-reload
 
-.PHONY: install-telegraf-pkg
-install-telegraf-pkg: check-sudo deps
+.PHONY: install-drone-pkg
+install-drone-pkg: check-sudo deps
 	# linux-only package
 	rm -f build/*x86_64.rpm build/*amd64.tar.gz build/*amd64.deb
-	(cd ./telegraf && ./scripts/build.py --package --platform=linux --arch=amd64 -o ../build -n telegraf)
+	(cd ./drone && ./scripts/build.py --package --platform=linux --arch=amd64 -o ../build -n telegraf)
 	dpkg -i build/telegraf*.deb
 
-.PHONY: install-telegraf-service
-install-telegraf-service: check-sudo install-telegraf-pkg
-	cp ./build/telegraf.conf /etc/telegraf/telegraf.conf # matches deb pkg destination
-	cp ./scripts/telegraf.service /lib/systemd/system/telegraf.service # matches deb pkg destination
+.PHONY: install-drone-service
+install-drone-service: check-sudo install-drone-pkg
+	cp ./build/sentinel-drone.conf /etc/telegraf/telegraf.conf # matches deb pkg destination
+	cp ./scripts/sentinel-drone.service /lib/systemd/system/sentinel-drone.service # matches deb pkg destination
 	mkdir -p /etc/sentinel
 	mkdir -p /var/log/sentinel
 	@echo
-	@echo "Telegraf service installed. Don't forget to edit /etc/telegraf/telegraf.conf or to"
-	@echo "'systemctl enable telegraf' for it to be enabled on startup."
+	@echo "Sentinel Drone service installed. Don't forget to edit /etc/telegraf/telegraf.conf or to"
+	@echo "'systemctl enable sentinel-drone' for it to be enabled on startup."
 	@echo
 
-.PHONY: replace-telegraf-service
-replace-telegraf-service: check-sudo telegraf
+.PHONY: replace-drone-service
+replace-drone-service: check-sudo drone
 	# keep existing configuration
 	@if [ -f /etc/telegraf/telegraf.conf ]; then \
 			echo "Preserving /etc/telegraf/telegraf.conf..."; \
 			cp /etc/telegraf/telegraf.conf /etc/telegraf/telegraf.keep; \
 		fi;
 	@if [ -f /lib/systemd/system/telegraf.service ]; then \
-			echo "Preserving /lib/systemd/system/telegraf.service..."; \
-			cp /lib/systemd/system/telegraf.service /lib/systemd/system/telegraf.service.keep; \
+			# TODO: Remove legacy service path
+			echo "Migrating legacy service path (/lib/systemd/system/telegraf.service -> /lib/systemd/system/sentinel-drone.service)..."; \
+			cp /lib/systemd/system/telegraf.service /lib/systemd/system/sentinel-drone.service; \
 		fi;
-	-systemctl stop telegraf
-	$(MAKE) install-telegraf-pkg
-	systemctl daemon-reload
-	systemctl start telegraf
+	@if [ -f /lib/systemd/system/sentinel-drone.service ]; then \
+			echo "Preserving /lib/systemd/system/sentinel-drone.service..."; \
+			cp /lib/systemd/system/sentinel-drone.service /lib/systemd/system/sentinel-drone.service.keep; \
+		fi;
+	# TODO: Remove legacy service name
+	-systemctl stop telegraf sentinel-drone
+	$(MAKE) install-drone-pkg
 	# restore existing configuration
 	@if [ -f /etc/telegraf/telegraf.keep ]; then \
 			echo "Restoring /etc/telegraf/telegraf.conf..."; \
 			mv -f /etc/telegraf/telegraf.keep /etc/telegraf/telegraf.conf; \
 		fi;
-	@if [ -f /lib/systemd/system/telegraf.service.keep ]; then \
-			echo "Restoring /lib/systemd/system/telegraf.service..."; \
-			mv -f /lib/systemd/system/telegraf.service.keep /lib/systemd/system/telegraf.service; \
+	@if [ -f /lib/systemd/system/sentinel-drone.service.keep ]; then \
+			echo "Restoring /lib/systemd/system/sentinel-drone.service..."; \
+			mv -f /lib/systemd/system/sentinel-drone.service.keep /lib/systemd/system/sentinel-drone.service; \
 		fi;
+	systemctl daemon-reload
+	systemctl start sentinel-drone
 
-.PHONY: clean-telegraf-service
-clean-telegraf-service: check-sudo
+.PHONY: clean-drone-service
+clean-drone-service: check-sudo
 	sudo dpkg -r telegraf
 
 .PHONY: install-lotus-service
@@ -214,7 +220,7 @@ check-state:
 
 .PHONY: clean
 clean: check-uncommitted
-	-$(MAKE) -C $(TELEGRAF_PATH) clean
+	-$(MAKE) -C $(DRONE_PATH) clean
 	-$(MAKE) -C $(LOTUS_PATH) clean
 	rm -rf $(CLEAN) $(BINS)
 	git clean -xdff
@@ -234,12 +240,12 @@ check-sudo:
 
 .PHONY: deploy-painnet
 deploy-painnet:
-	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-painnet:~/sentinel/
+	rsync -rv --include=.* --exclude=build/drone --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-painnet:~/sentinel/
 
 .PHONY: deploy-interopnet
 deploy-interopnet:
-	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-interopnet:~/sentinel/
+	rsync -rv --include=.* --exclude=build/drone --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-interopnet:~/sentinel/
 
 .PHONY: deploy-testnet
 deploy-testnet:
-	rsync -rv --include=.* --exclude=build/telegraf --exclude=telegraf/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-testnet:~/sentinel/
+	rsync -rv --include=.* --exclude=build/drone --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-testnet:~/sentinel/

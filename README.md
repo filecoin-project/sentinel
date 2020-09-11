@@ -8,7 +8,7 @@ A Filecoin Network Monitoring and Analysis System
 
 Sentinel is a collection of services which monitor the health and function of the Filecoin network. The system consists of TimescaleDB, a time-series and relational datastore, which captures metrics from interesting parts of the network and is exposed via Grafana, which presents the data via helpful and informative graphs and provides alerting and annotating for real-time monitoring.
 
-The metrics are pushed to TimescaleDB from Telegraf-based remote-host agents and a centralized data processing pipeline. [Lotus](https://github.com/filecoin-project/lotus/) is attached to the processing pipeline as a source of truth for immutable network state.
+The metrics are pushed to TimescaleDB from Telegraf-based agents refered to as Sentinel Drones and a centralized data processing pipeline driven by [Chainwatch](https://github.com/filecoin-project/lotus/tree/master/cmd/lotus-chainwatch) with [Lotus](https://github.com/filecoin-project/lotus/) attached as a source of truth for immutable network state.
 
 ![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92404078-a48f5a00-f12a-11ea-8987-8b5a42091ad2.png)
 
@@ -25,7 +25,7 @@ Follow the [Lotus installation instructions](read https://lotu.sh/en+getting-sta
 4. `make run-lotus`
 5. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
 6. `make run-docker` to start Docker services
-7. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
+7. (In separate windows) `make run-drone` and `make run-chainwatch`.
 
 ### Configure Grafana
 
@@ -43,17 +43,17 @@ The datasource and dashboards are provisioned by the config in
 
 Note: Build artifacts are put into `./build` path. If you want to force building without `make clean`ing first, you can also `make -B <target>`.
 
-`make` - produces all build targets (lotus, chainwatch, and telegraf)
+`make` - produces all build targets (lotus, chainwatch, and drone binaries)
 
 `make lotus` - only builds the lotus daemon binary
 
 `make chainwatch` - only builds the chainwatch binary
 
-`make telegraf` - only builds the telegraf agent binary
+`make drone` - only builds the Sentinel Drone agent binary
 
 ### Run/Stop
 
-`make run-telegraf` - start development Telegraf process with debug output (uses configuration at `build/telegraf.conf`)
+`make run-drone` - start development Sentinel Drone process with debug output (uses configuration at `build/drone.conf`)
 
 `make run-lotus` - start lotus daemon with default settings (lotus repo at `$(HOME)/.lotus`)
 
@@ -61,7 +61,7 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 `make run-docker` - start docker services (currently TimescaleDB, Grafana)
 
-`make stop-telegraf` - stop development Telegraf process
+`make stop-drone` - stop development Sentinel Drone process
 
 `make stop-chainwatch` - stop chainwatch process
 
@@ -71,15 +71,15 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 ### Management/Installation
 
-`make install-services` - Install lotus, telegraf, chainwatch as systemd services
+`make install-services` - Install lotus-daemon, sentinel-drone, chainwatch as systemd services
 
-`make upgrade-services` - Build lotus, telegraf, chainwatch and replace existing binaries without deploying configuration files
+`make upgrade-services` - Build lotus-daemon, sentinel-drone, chainwatch and replace existing binaries without deploying configuration files
 
-`make clean-services` - Uninstall lotus, telegraf, chainwatch as systemd services (not logs or configuration)
+`make clean-services` - Uninstall lotus-daemon, sentinel-drone, chainwatch as systemd services (not logs or configuration)
 
 Install individual services:
 
-`make install-telegraf-service`
+`make install-drone-service`
 
 `make install-lotus-service`
 
@@ -87,7 +87,7 @@ Install individual services:
 
 Upgrade individual services:
 
-`make upgrade-telegraf-service`
+`make upgrade-drone-service`
 
 `make upgrade-lotus-service`
 
