@@ -12,7 +12,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:latest
+    image: grafana/grafana:7.1.5-ubuntu
     ports:
       - "3000:3000"
     links:
@@ -27,7 +27,7 @@ services:
       GF_LOG_FILTERS: rendering:debug
 
   renderer:
-    image: grafana/grafana-image-renderer:latest
+    image: grafana/grafana-image-renderer:2.0.0
     ports:
       - 8081
 
