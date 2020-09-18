@@ -14,30 +14,103 @@ The metrics are displayed in [**Grafana**](https://github.com/grafana/grafana). 
 
 ![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92904320-ae5ed900-f41a-11ea-8c92-fd28c0223b74.png)
 
-## Setup
+## Quick start
 
-### Build and Start Sentinel
+In their own shells, run Lotus and wait:
 
-Follow the [Lotus installation instructions](https://lotu.sh/en+getting-started) to install dependencies for your operating system.
+- `lotus damon`
+- `lotus sync wait` 
 
-0. Start lotus daemon.
-1. `git clone git@github.com:filecoin-project/sentinel.git`
-2. `cd sentinel`
-3. `make deps`
-4. `make run-lotus`
-5. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
-6. `make run-docker` to start Docker services
-7. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
+Then from this repo, with the submodules updated, run all the Sentinel components:
 
-### Configure Grafana
+- `make run-docker`
+- `make run-telegraf`
+- `make run-chainwatch`
 
-1. Visit [http://localhost:3000](http://localhost:3000) to open Grafana.
-2. Login with username and password as `admin`. Change the admin password.
+## Getting Started
 
-The datasource and dashboards are provisioned by the config in 
+Clone the repo and fetch the submodules. `make` will help you out:
 
-- `grafana/provisioning/dashboards/dashboards.yml`
-- `grafana/provisioning/datasources/timescaledb.yml`
+```console
+$ git clone git@github.com:filecoin-project/sentinel.git
+$ cd sentinel
+$ make deps
+git submodule update --init --recursive
+...
+```
+
+Now we need to get Lotus built and syncing the chain.
+
+### Lotus
+
+Sentinel requires a running lotus daemon that has completed synching the chain locally. A full sync of the [Testnet](https://network.filecoin.io/#testnet) takes days. You can test against the [Nerpa network](https://network.filecoin.io/#nerpa) to try sentinel out.
+
+Follow the [Lotus install and setup instructions](https://docs.filecoin.io/get-started/lotus/installation), to install the dependencies, check out the branch for the network you want to join, (e.g. `ntwrk-nerpa`), and build a local copy of lotus. See [Testing against Testnet](#testing-against-testnet)
+
+Run Lotus to start syncing.
+```console
+$ lotus daemon
+```
+
+In a sperate shell, ask lotus to tell us when it has finished syncing.
+```console
+$ lotus sync wait
+lotus sync wait
+Worker 0: Target Height: 9099	Target: [bafy2bzacecqrt46shkioecxkt6mrdvi5xd73wh2gonrp3bhxfut6szc2labj6]	State: complete	Height: 9099
+Done!
+```
+
+Now let's set up the Database.
+
+### TimescaleDB
+
+A [`docker-compose`](./docker-compose.yml) file is provided that will spin up a TimescaleDB and a Grafana instance to query it. Check that you have `docker` and `docker-compose` installed. [Docker Desktop](https://docs.docker.com/desktop/) is relatively painless.
+
+```console
+$ make run-docker
+```
+
+Now we need to generate some data with Visor and Drone
+
+### Visor
+
+In a new shell run Visor. [By default](https://github.com/filecoin-project/sentinel/blob/fc8e8556e2f336c2a46db066571d46400d978d85/Makefile#L65-L69) it will read lotus data from `$(HOME)/.lotus` and write to the local database container we just started at `localhost:5432`.
+
+```shell
+$ make run-chainwatch
+...
+2020-09-18T15:22:12.283+0100	INFO	chainwatch	lotus-chainwatch/main.go:17	Starting chainwatch v0.5.7+git.b8bbbf3e
+2020-09-18T15:22:12.286+0100	INFO	chainwatch	lotus-chainwatch/run.go:74	Remote version: 0.7.0+git.992073d2
+2020-09-18T15:22:12.305+0100	INFO	syncer	syncer/blockssub.go:18	Capturing incoming blocks
+2020-09-18T15:22:12.343+0100	INFO	syncer	syncer/sync.go:173	Found starting point for syncing	{"blockCID": "bafy2bzaceaqnt4n37od7aqwbvp2qa2bqrb533wbztdwmxzgqtcl5xtbay5gqg", "height": 3715}
+...
+```
+
+If there are no `ERROR`sm then it is now writing filecoin chain metrics to the database.
+
+### Drone
+
+In another shell, run Drone. [By default](./scripts/telegraf.conf.default) it reads prometheus metrics from Lotus at http://127.0.0.1:1234/debug/metrics and the Lotus data dir at `$(HOME)/.lotus`. It writes to the database container `localhost:5432`. Edit `scripts/telegraf.conf` if you need to customise those values.
+
+```shell
+$ make run-telegraf
+...
+2020-09-18T11:24:22Z D! [agent] Successfully connected to outputs.postgresql
+2020-09-18T11:24:31Z D! [outputs.postgresql] Wrote batch of 38 metrics in 588.361501ms
+2020-09-18T11:24:32Z D! [inputs.lotus] Recorded lotus info
+2020-09-18T11:24:32Z D! [inputs.lotus] Recorded pending mpool messages
+2020-09-18T11:24:32Z I! [inputs.lotus] Service workers started
+...
+```
+
+Verify that it connects to postgresql and is able to read data from lotus without errors.
+
+### Grafana
+
+Grafana and a set of Sentinel dashboards are provisioned in a container along with the TimescaleDB as part of the `make run-docker` target.
+
+Visit http://localhost:3000 to open Grafana and login with username and password as `admin`. You should now see a `sentinel` folder with dashboards in. Have an explore, and make some more! Look at [`./grafana/provisioning/dashboards/dashboards.yml`](./grafana/provisioning/dashboards/dashboards.yml) to see how the existing dashboards are provisioned. You can export new dashboards as JSON from the grafana UI and update that file to add new ones.
+
 
 ## Managing Sentinel
 
@@ -100,6 +173,18 @@ Also works with their `make clean-*-service` counterparts.
 `make clean` - removes build artifacts
 
 `make clean-state` - stops and destroys docker service volumes (which resets TimescaleDB and Grafana settings and configuration)
+
+## Testing against Testnet
+
+A complete local sync of the `testnet` takes days. To complete it in a reasonable time you need a copy of an already sync'd lotus data dir from a friendly filecoin operator.At present, regular chain snapshots, as described in https://docs.filecoin.io/get-started/lotus/chain-snapshots don't work for chainwatch because they are incomplete exports.
+
+To take a full copy of a Lotus data dir
+
+- shutdown existing lotus
+- run lotus daemon on your new box for just a moment (to initialize the repo path)
+- tar/copy/transport .../.lotus/datastore into the same path on your destination
+- start old and new daemons
+- 🎉
 
 ## Maintainers
 

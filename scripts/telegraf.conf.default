@@ -63,8 +63,7 @@
 
   ## Name of the file to be logged to when using the "file" logtarget.  If set to
   ## the empty string then logs are written to stderr.
-  # logfile = ""
-  logfile = "{{ sentinel_telegraf_log_file }}"
+  logfile = ""
 
   ## The logfile will be rotated after the time interval specified.  When set
   ## to 0 no time based rotation is performed.  Logs are rotated only when
@@ -107,7 +106,9 @@
   ## connection with the server and doesn't restrict the databases we are trying
   ## to grab metrics for.
   ##
-  connection = "{{ sentinel_telegraf_outputs_postgresql_conn }}"
+  # note: Removed ?sslmode=disabled here because it triggers the error
+  # `couldn't parse connection string: postgres://postgres:password@localhost:5432/postgres?sslmode=disabled sslmode is invalid`
+  connection = "postgres://postgres:password@localhost:5432/postgres"
 
   ## Update existing tables to match the incoming metrics automatically. Default is true
   # do_schema_updates = true
@@ -146,36 +147,36 @@
 #                            PROCESSOR PLUGINS                                #
 ###############################################################################
 [[processors.lotus_peer_id]]
-  lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
-  lotus_api_token = "{{ lotus_jwt_token }}"
+  # lotus_api_multiaddr = ""
+  # lotus_api_token = ""
+  lotus_datapath = "${HOME}/.lotus"
 
 
 ###############################################################################
 #                              INPUT PLUGINS                                  #
 ###############################################################################
-
-
 # Capture telemetry produced by a local instance of Lotus
 [[inputs.lotus]]
   ## Provide the multiaddr that the lotus API is listening on. If API multiaddr is empty,
   ## telegraf will check lotus_datapath for values. Default: "/ip4/0.0.0.0/tcp/1234"
-  lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
-
+  #lotus_api_multiaddr = "/ip4/127.0.0.1/tcp/1234/http"
 
   ## Provide the token that telegraf can use to access the lotus API. The token only requires
   ## "read" privileges. This is useful for restricting metrics to a seperate token.
   ## Default: ""
-  lotus_api_token = "{{ lotus_jwt_token }}"
+  #lotus_api_token = ""
 
   ## Provide the Lotus working path. The input plugin will scan the path contents
   ## for the correct listening address/port and API token. Note: Path must be readable
   ## by the telegraf process otherwise, the value should be manually set in api_listen_addr
   ## and api_token. Default: $HOME/.lotus
-  # lotus_datapath = ""
+  lotus_datapath = "${HOME}/.lotus"
 
+# lotus exposes prometheus metrics at /debug/metrics
+# see: https://github.com/filecoin-project/lotus/blob/cd2e794d3fe00a42b85620cdba331b37ebfeaeff/cmd/lotus/rpc.go#L56
 [[inputs.prometheus]]
   urls = [
-    "{{ lotus_prometheus_url }}", # lotus daemon
+    "http://127.0.0.1:1234/debug/metrics",
    ]
   namedrop = [
     "lotus_info",
