@@ -45,7 +45,7 @@ Now we need to get Lotus built and syncing the chain.
 
 Sentinel requires a running lotus daemon that has completed synching the chain locally. A full sync of the [Testnet](https://network.filecoin.io/#testnet) takes days. You can test against the [Nerpa network](https://network.filecoin.io/#nerpa) to try sentinel out.
 
-Follow the [Lotus install and setup instructions](https://docs.filecoin.io/get-started/lotus/installation), to install the dependencies, check out the branch for the network you want to join, (e.g. `ntwrk-nerpa`), and build a local copy of lotus. See [Testing against Testnet](#testing-against-testnet)
+Follow the [Lotus install and setup instructions](https://docs.filecoin.io/get-started/lotus/installation), to install the dependencies, check out the branch for the network you want to join, (e.g. `ntwrk-nerpa`), and build a local copy of lotus. If you need to test against testnet, see [Testing against Testnet](#testing-against-testnet).
 
 Run Lotus to start syncing.
 ```console
@@ -110,7 +110,6 @@ Verify that it connects to postgresql and is able to read data from lotus withou
 Grafana and a set of Sentinel dashboards are provisioned in a container along with the TimescaleDB as part of the `make run-docker` target.
 
 Visit http://localhost:3000 to open Grafana and login with username and password as `admin`. You should now see a `sentinel` folder with dashboards in. Have an explore, and make some more! Look at [`./grafana/provisioning/dashboards/dashboards.yml`](./grafana/provisioning/dashboards/dashboards.yml) to see how the existing dashboards are provisioned. You can export new dashboards as JSON from the grafana UI and update that file to add new ones.
-
 
 ## Managing Sentinel
 
