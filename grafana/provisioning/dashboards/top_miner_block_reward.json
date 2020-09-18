@@ -15,15 +15,18 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 6,
+  "id": 1,
   "links": [],
   "panels": [
     {
+      "columns": [],
       "datasource": null,
-      "description": "The Epoch Miner Ranks was last update at.",
+      "description": "The height of the chain when the current ranking was produced.",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
+          "custom": {
+            "align": null
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -31,71 +34,16 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
-          },
-          "unit": "none"
+          }
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 3,
-        "w": 11,
-        "x": 7,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/^current_height$/",
-          "values": false
-        }
-      },
-      "pluginVersion": "7.0.3",
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT\n NOW() as time,\n *\nFROM\n  top_miners_by_base_reward_max_height\n\n",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Updated At",
-      "type": "stat"
-    },
-    {
-      "columns": [],
-      "datasource": null,
-      "description": "The height of the chain when the current ranking was produced.",
       "fontSize": "100%",
       "gridPos": {
         "h": 3,
@@ -104,7 +52,11 @@
         "y": 0
       },
       "id": 4,
+      "options": {
+        "showHeader": true
+      },
       "pageSize": null,
+      "pluginVersion": "7.1.5",
       "showHeader": true,
       "sort": {
         "col": 0,
@@ -171,6 +123,81 @@
       "type": "table"
     },
     {
+      "datasource": null,
+      "description": "The Epoch Miner Ranks was last update at.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 2,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^current_height$/",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.1.5",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n NOW() as time,\n *\nFROM\n  top_miners_by_base_reward_max_height\n\n",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Updated At",
+      "type": "stat"
+    },
+    {
       "columns": [],
       "datasource": null,
       "description": "All accumulated rewards for miners updated each day at midnight.",
@@ -185,7 +212,7 @@
         "h": 25,
         "w": 11,
         "x": 7,
-        "y": 3
+        "y": 0
       },
       "id": 2,
       "pageSize": 50,
@@ -250,7 +277,7 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 25,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -276,8 +303,5 @@
   "timezone": "",
   "title": "Top Miners by Block Reward",
   "uid": "P_Q13JnMz",
-  "variables": {
-    "list": []
-  },
   "version": 2
 }
