@@ -64,19 +64,21 @@ Now let's set up the Database.
 
 ### TimescaleDB
 
-A [`docker-compose`](./docker-compose.yml) file is provided that will spin up a TimescaleDB and a Grafana instance to query it. Check that you have `docker` and `docker-compose` installed. [Docker Desktop](https://docs.docker.com/desktop/) is relatively painless.
+A [`docker-compose`](./docker-compose.yml) file is provided that will spin up a TimescaleDB and a Grafana instance to query it. Check that you have `docker` and `docker-compose` installed. [Docker Desktop](https://docs.docker.com/desktop/) is relatively painless. 
 
 ```console
 $ make run-docker
 ```
 
+Note that TimescaleDB is packaged as an Postgres extension, so some other components will refer to it as Postgres.
+
 Now we need to generate some data with Visor and Drone
 
 ### Visor
 
-In a new shell run Visor. [By default](https://github.com/filecoin-project/sentinel/blob/fc8e8556e2f336c2a46db066571d46400d978d85/Makefile#L65-L69) it will read lotus data from `$(HOME)/.lotus` and write to the local database container we just started at `localhost:5432`.
+In a new shell run Visor. [By default](https://github.com/filecoin-project/sentinel/blob/fc8e8556e2f336c2a46db066571d46400d978d85/Makefile#L65-L69) it will read Lotus data from `$(HOME)/.lotus` and writes to the local TimescaleDB container we just started at `localhost:5432`.
 
-```shell
+```console
 $ make run-chainwatch
 ...
 2020-09-18T15:22:12.283+0100	INFO	chainwatch	lotus-chainwatch/main.go:17	Starting chainwatch v0.5.7+git.b8bbbf3e
@@ -86,13 +88,13 @@ $ make run-chainwatch
 ...
 ```
 
-If there are no `ERROR`sm then it is now writing filecoin chain metrics to the database.
+If there are no `ERROR`s then it is now writing filecoin chain metrics to the database.
 
 ### Drone
 
-In another shell, run Drone. [By default](./scripts/telegraf.conf.default) it reads prometheus metrics from Lotus at http://127.0.0.1:1234/debug/metrics and the Lotus data dir at `$(HOME)/.lotus`. It writes to the database container `localhost:5432`. Edit `scripts/telegraf.conf` if you need to customise those values.
+In another shell, run Drone. [By default](./scripts/telegraf.conf.default) it reads the Lotus data dir at `$(HOME)/.lotus` and Lotus Prometheus metrics from http://127.0.0.1:1234/debug/metrics and writes to the TimescaleDB container at `localhost:5432`. Edit `build/telegraf.conf` if you need to customise those values.
 
-```shell
+```console
 $ make run-telegraf
 ...
 2020-09-18T11:24:22Z D! [agent] Successfully connected to outputs.postgresql
@@ -103,7 +105,7 @@ $ make run-telegraf
 ...
 ```
 
-Verify that it connects to postgresql and is able to read data from lotus without errors.
+Verify that it connects to postgres (TimescaleDB is a postgres extention) and is able to read data from lotus without errors.
 
 ### Grafana
 
