@@ -4,3 +4,6 @@
 [submodule "lotus"]
 	path = lotus
 	url = https://github.com/filecoin-project/lotus
+[submodule "sentinel-visor"]
+	path = sentinel-visor
+	url = https://github.com/filecoin-project/sentinel-visor

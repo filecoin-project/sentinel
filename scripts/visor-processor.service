@@ -1,0 +1,17 @@
+[Unit]
+Description=Sentinel Visor Processor
+After=lotus-daemon.service
+Requires=lotus-daemon.service
+
+[Service]
+Environment=GOLOG_FILE="/var/log/sentinel/visor-processor.log"
+Environment=GOLOG_LOG_FMT="json"
+Environment=LOTUS_DB="postgres://postgres:password@localhost:5432/postgres?sslmode=disable"
+Environment=LOTUS_PATH="%h/.lotus"
+EnvironmentFile=-/etc/sentinel/visor-processor.env
+ExecStart=/usr/local/bin/sentinel-visor run processor
+Restart=always
+RestartSec=35
+
+[Install]
+WantedBy=sentinel.service

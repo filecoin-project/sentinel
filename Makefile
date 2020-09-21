@@ -8,6 +8,7 @@ BINS:=
 
 TELEGRAF_PATH:=telegraf/
 LOTUS_PATH:=lotus/
+VISOR_PATH:=sentinel-visor/
 BUILD_PATH:=build/
 
 #############
@@ -15,7 +16,7 @@ BUILD_PATH:=build/
 #############
 
 .PHONY: build
-build: telegraf lotus chainwatch
+build: telegraf lotus chainwatch visor
 
 .PHONY: telegraf
 telegraf: deps build/telegraf
@@ -41,6 +42,14 @@ build/chainwatch:
 	$(MAKE) -C $(LOTUS_PATH) deps lotus-chainwatch
 	cp $(LOTUS_PATH)lotus-chainwatch build/chainwatch
 BINS+=build/chainwatch
+
+.PHONY: visor
+visor: deps build/visor
+
+build/visor:
+	$(MAKE) -C $(VISOR_PATH) deps sentinel-visor
+	cp $(VISOR_PATH)sentinel-visor build/sentinel-visor
+BINS+=build/visor
 
 .PHONY: deps
 deps:
@@ -68,6 +77,14 @@ LOTUS_REPO ?= $(HOME)/.lotus
 run-chainwatch: build/chainwatch
 	build/chainwatch --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.chainwatch.pid
 
+.PHONY: run-visor-indexer
+run-visor-indexer: build/visor
+	build/sentinel-visor --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run indexer & echo $$! > ./build/.visor-indexer.pid
+
+.PHONY: run-visor-processor
+run-visor-processor: build/visor
+	build/sentinel-visor --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run processor & echo $$! > ./build/.visor-processor.pid
+
 .PHONY: stop-docker
 stop-docker:
 	docker-compose stop
@@ -83,6 +100,14 @@ stop-telegraf:
 .PHONY: stop-chainwatch
 stop-chainwatch:
 	@if [ -a ./build/.chainwatch.pid ]; then kill -TERM $$(cat ./build/.chainwatch.pid); rm ./build/.chainwatch.pid || true; fi;
+
+.PHONY: stop-visor-indexer
+stop-visor-indexer:
+	@if [ -a ./build/.visor-indexer.pid ]; then kill -TERM $$(cat ./build/.visor-indexer.pid); rm ./build/.visor-indexer.pid || true; fi;
+
+.PHONY: stop-visor-processor
+stop-visor-processor:
+	@if [ -a ./build/.visor-processor.pid ]; then kill -TERM $$(cat ./build/.visor-processor.pid); rm ./build/.visor-processor.pid || true; fi;
 
 #############
 ## MANAGE
@@ -202,6 +227,52 @@ replace-chainwatch-service: check-sudo chainwatch
 clean-chainwatch-service: check-sudo
 	rm -f /usr/local/bin/chainwatch
 	rm -f /usr/local/lib/systemd/system/chainwatch.service
+	systemctl daemon-reload
+
+.PHONY: install-visor-indexer-service
+install-visor-indexer-service: check-sudo visor
+	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
+	mkdir -p /usr/local/lib/systemd/system
+	install -C -m 0644 ./scripts/visor-indexer.service /usr/local/lib/systemd/system/visor-indexer.service
+	systemctl daemon-reload
+	mkdir -p /etc/sentinel
+	@echo
+	@echo "Visor indexer service installed. Don't forget to 'systemctl enable visor-indexer' for it to be enabled on startup."
+	@echo
+
+.PHONY: replace-visor-indexer-service
+replace-visor-indexer-service: check-sudo visor
+	-systemctl stop visor-indexer
+	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
+	systemctl daemon-reload
+	systemctl start visor-indexer
+
+.PHONY: clean-visor-indexer-service
+clean-visor-indexer-service: check-sudo
+	rm -f /usr/local/lib/systemd/system/visor-indexer.service
+	systemctl daemon-reload
+
+.PHONY: install-visor-processor-service
+install-visor-processor-service: check-sudo visor
+	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
+	mkdir -p /usr/local/lib/systemd/system
+	install -C -m 0644 ./scripts/visor-processor.service /usr/local/lib/systemd/system/visor-processor.service
+	systemctl daemon-reload
+	mkdir -p /etc/sentinel
+	@echo
+	@echo "Visor processor service installed. Don't forget to 'systemctl enable visor-processor' for it to be enabled on startup."
+	@echo
+
+.PHONY: replace-visor-processor-service
+replace-visor-processor-service: check-sudo visor
+	-systemctl stop visor-processor
+	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
+	systemctl daemon-reload
+	systemctl start visor-processor
+
+.PHONY: clean-visor-processor-service
+clean-visor-processor-service: check-sudo
+	rm -f /usr/local/lib/systemd/system/visor-processor.service
 	systemctl daemon-reload
 
 .PHONY: clean-state
