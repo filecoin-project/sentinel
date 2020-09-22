@@ -49,7 +49,7 @@ visor: deps build/visor
 build/visor:
 	$(MAKE) -C $(VISOR_PATH) deps sentinel-visor
 	cp $(VISOR_PATH)sentinel-visor build/sentinel-visor
-BINS+=build/visor
+BINS+=build/sentinel-visor
 
 .PHONY: deps
 deps:
