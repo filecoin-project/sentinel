@@ -1,6 +1,6 @@
-[submodule "telegraf"]
-	path = telegraf
-	url = https://github.com/filecoin-shipyard/telegraf-lotus
 [submodule "lotus"]
 	path = lotus
 	url = https://github.com/filecoin-project/lotus
+[submodule "drone"]
+	path = drone
+	url = https://github.com/filecoin-project/sentinel-drone
