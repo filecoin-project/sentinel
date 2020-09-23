@@ -27,7 +27,7 @@ Follow the [Lotus installation instructions](https://lotu.sh/en+getting-started)
 4. `make run-lotus`
 5. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
 6. `make run-docker` to start Docker services
-7. (In separate windows) `make run-telegraf` and `make run-chainwatch`.
+7. (In separate windows) `make run-drone` and `make run-chainwatch`.
 
 ### Configure Grafana
 
@@ -45,17 +45,17 @@ The datasource and dashboards are provisioned by the config in
 
 Note: Build artifacts are put into `./build` path. If you want to force building without `make clean`ing first, you can also `make -B <target>`.
 
-`make` - produces all build targets (lotus, chainwatch, and telegraf)
+`make` - produces all build targets (lotus, chainwatch, and drone binaries)
 
 `make lotus` - only builds the lotus daemon binary
 
 `make chainwatch` - only builds the chainwatch binary
 
-`make telegraf` - only builds the telegraf agent binary
+`make drone` - only builds the Sentinel Drone agent binary
 
 ### Run/Stop
 
-`make run-telegraf` - start development Telegraf process with debug output (uses configuration at `build/telegraf.conf`)
+`make run-drone` - start development Sentinel Drone process with debug output (uses configuration at `build/drone.conf`)
 
 `make run-lotus` - start lotus daemon with default settings (lotus repo at `$(HOME)/.lotus`)
 
@@ -63,7 +63,7 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 `make run-docker` - start docker services (currently TimescaleDB, Grafana)
 
-`make stop-telegraf` - stop development Telegraf process
+`make stop-drone` - stop development Sentinel Drone process
 
 `make stop-chainwatch` - stop chainwatch process
 
@@ -73,15 +73,15 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 ### Management/Installation
 
-`make install-services` - Install lotus, telegraf, chainwatch as systemd services
+`make install-services` - Install lotus-daemon, sentinel-drone, chainwatch as systemd services
 
-`make upgrade-services` - Build lotus, telegraf, chainwatch and replace existing binaries without deploying configuration files
+`make upgrade-services` - Build lotus-daemon, sentinel-drone, chainwatch and replace existing binaries without deploying configuration files
 
-`make clean-services` - Uninstall lotus, telegraf, chainwatch as systemd services (not logs or configuration)
+`make clean-services` - Uninstall lotus-daemon, sentinel-drone, chainwatch as systemd services (not logs or configuration)
 
 Install individual services:
 
-`make install-telegraf-service`
+`make install-drone-service`
 
 `make install-lotus-service`
 
@@ -89,7 +89,7 @@ Install individual services:
 
 Upgrade individual services:
 
-`make upgrade-telegraf-service`
+`make upgrade-drone-service`
 
 `make upgrade-lotus-service`
 
