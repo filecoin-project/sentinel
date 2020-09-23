@@ -9,10 +9,15 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - timescaledb:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:latest
+    image: grafana/grafana:7.1.5-ubuntu
     ports:
       - "3000:3000"
     links:
@@ -25,12 +30,47 @@ services:
       GF_RENDERING_SERVER_URL: http://renderer:8081/render
       GF_RENDERING_CALLBACK_URL: http://grafana:3000/
       GF_LOG_FILTERS: rendering:debug
+    depends_on:
+      - timescaledb
+
 
   renderer:
-    image: grafana/grafana-image-renderer:latest
+    image: grafana/grafana-image-renderer:2.0.0
     ports:
       - 8081
+    depends_on:
+      - grafana
+
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:1.19
+    ports:
+      - "6831:6831/udp"
+      - "5778:5778"
+      - "16686:16686"
+
+  redis:
+    container_name: redis
+    image: redis:6
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis-data:/var/lib/redis
+
+  redis-commander:
+    container_name: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"
+    depends_on:
+      - redis
 
 volumes:
   timescaledb:
   grafana-data:
+  redis-data:

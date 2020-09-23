@@ -1,0 +1,84 @@
+name, comment
+actor_states, (chainwatch) Associates actors states as single-level trees with CIDs pointing to complete state tree with the root CID (head) for that actor's state.
+actors, (chainwatch) Associates the actor's state root CID (head) with the chain state root CID from which it decends. Includes account ID nonce and balance at each state.
+block_cids, (chainwatch) All distinct block CIDs seen on network independent of its validity
+block_drand_entries, (chainwatch) Block CIDs and the Drand round used within
+block_messages, (chainwatch) Message CIDs and the Blocks CID which contain them
+block_parents, (chainwatch) Block CIDs to many parent Block CIDs
+blocks, (chainwatch) Block Header data for all blocks seen on network independent of its validity
+blocks_synced, (chainwatch) Work management table for chainwatch tracking synced_at when the block was first seen and processed_at when the block was successfully processed
+chain_block, (telegraf) Reports of blocks seen by nodes across the network along with timing information. Includes libp2p peer ID and the hostname of the reporting telegraf agent. Some metadata about block headers are included here.
+chain_economics, (chainwatch) Economic summaries per state root CID.
+chain_mpool, (telegraf) Reports of messages seen by nodes across the network along with timing information (time and recorded_at are the same value as timestamp_tz and unix nanoseconds respectively)
+chain_power, (chainwatch) Power summaries per state root CID.
+chain_reward, (chainwatch) Reward summaries per state root CID.
+chain_tipset, (telegraf) Reports of tipsets seen by nodes across the network along with timing information (time is expected epoch time according to FIL and recorded_at is when the tipset was last updated by the reporting node). New reports will update the old such that the block counts on the most recent records may be volatile as new data arrives from those nodes while the tipset forms.
+cpu, (telegraf) CPU metrics over time from Sentinel-managed hosts
+disk, (telegraf) Disk metrics over time from Sentinel-managed hosts
+diskio, (telegraf) Disk IO metrics over time from Sentinel-managed hosts
+drand_entries, (chainwatch) Drand round and data used on-chain
+id_address_map, (chainwatch) Mapping of Account IDs ([ft]0) to their Address ID ([ft][1-3]) as represented on the heaviest chain. These should update after reorgs to their new values.
+kernel, (telegraf) Kernel metrics over time from Sentinel-managed hosts
+linux_sysctl_fs, (telegraf) Metrics from sysctl files from Sentinel-managed hosts (https://www.kernel.org/doc/Documentation/sysctl/fs.txt)
+lotus_block_failure, (telegraf) (via lotus prometheus)
+lotus_block_received, (telegraf) (via lotus prometheus)
+lotus_block_success, (telegraf) (via lotus prometheus)
+lotus_block_validation_ms, (telegraf) (via lotus prometheus)
+lotus_chain_node_height, (telegraf) (via lotus prometheus)
+lotus_chain_node_height_expected, (telegraf) (via lotus prometheus)
+lotus_chain_node_worker_height, (telegraf) (via lotus prometheus)
+lotus_info, (telegraf) Captures lotus node version data per host/peer ID. One record on startup from each deployed agent.
+lotus_message_failure, (telegraf) (via lotus prometheus)
+lotus_message_published, (telegraf) (via lotus prometheus)
+lotus_message_received, (telegraf) (via lotus prometheus)
+lotus_message_success, (telegraf) (via lotus prometheus)
+lotus_peer_count, (telegraf) (via lotus prometheus)
+lotus_process_cpu_cgo_calls, (telegraf) (via lotus prometheus)
+lotus_process_cpu_goroutines, (telegraf) (via lotus prometheus)
+lotus_process_heap_alloc, (telegraf) (via lotus prometheus)
+lotus_process_heap_idle, (telegraf) (via lotus prometheus)
+lotus_process_heap_inuse, (telegraf) (via lotus prometheus)
+lotus_process_heap_objects, (telegraf) (via lotus prometheus)
+lotus_process_heap_release, (telegraf) (via lotus prometheus)
+lotus_process_memory_alloc, (telegraf) (via lotus prometheus)
+lotus_process_memory_frees, (telegraf) (via lotus prometheus)
+lotus_process_memory_lookups, (telegraf) (via lotus prometheus)
+lotus_process_memory_malloc, (telegraf) (via lotus prometheus)
+lotus_process_stack_inuse, (telegraf) (via lotus prometheus)
+lotus_process_stack_mcache_inuse, (telegraf) (via lotus prometheus)
+lotus_process_stack_mspan_inuse, (telegraf) (via lotus prometheus)
+lotus_process_sys_heap, (telegraf) (via lotus prometheus)
+lotus_process_sys_memory_alloc, (telegraf) (via lotus prometheus)
+lotus_process_sys_stack, (telegraf) (via lotus prometheus)
+lotus_process_sys_stack_mcache, (telegraf) (via lotus prometheus)
+lotus_process_sys_stack_mspan, (telegraf) (via lotus prometheus)
+lotus_process_total_memory_alloc, (telegraf) (via lotus prometheus)
+lotus_pubsub_delivered, (telegraf) (via lotus prometheus)
+lotus_pubsub_drop_rpc, (telegraf) (via lotus prometheus)
+lotus_pubsub_duplicate, (telegraf) (via lotus prometheus)
+lotus_pubsub_published, (telegraf) (via lotus prometheus)
+lotus_pubsub_recv_rpc, (telegraf) (via lotus prometheus)
+lotus_pubsub_rejected, (telegraf) (via lotus prometheus)
+lotus_pubsub_send_rpc, (telegraf) (via lotus prometheus)
+lotus_rpc_invalid_method, (telegraf) (via lotus prometheus)
+lotus_rpc_request_error, (telegraf) (via lotus prometheus)
+lotus_rpc_response_error, (telegraf) (via lotus prometheus)
+market_deal_proposals, (chainwatch) All deal states with latest values applied to end_epoch and slashed_epoch when updates are detected on-chain
+market_deal_states, (chainwatch) All deal state transitions detected on-chain (currently only sector_start_epoch and slash_epoch with their associated state root CID)
+mem, (telegraf) Memory metrics over time from Sentinel-managed hosts
+messages, (chainwatch) Validated on-chain messages by their CID and their metadata
+miner_info, (chainwatch) Miner Account IDs for all associated addresses plus peer ID
+miner_power, (chainwatch) Power breakdown per Miner ID per state root CID
+miner_sector_events, (chainwatch) Sector events on-chain per Miner ID/ Sector ID/ and the state root CID it occured in
+minerid_dealid_sectorid, (chainwatch) Mapping of Deal IDs to their respective Miner and Sector IDs
+mpool_messages, (chainwatch) Capturing messages added to the mempool by CID and unix epoch seconds
+nstat, (telegraf) Network metrics over time from Sentinel-managed hosts
+processes, (telegraf) Process metrics over time from Sentinel-managed hosts
+receipts, (chainwatch) Message reciepts after being applied to chain state by message CID and parent state root CID of tipset when message was applied
+sector_info, (chainwatch) Latest state of sectors by Miner Account ID/ Sector ID/ and the state root CID when the change applied
+sector_precommit_info, (chainwatch) Precommit info for each Miner Account ID/ Sector ID and the state root CID where the message was applied
+state_heights, (chainwatch) A view over distinct heights and their parent state root CIDs (Note: does not prefer heaviest state roots in the event of reorgs)
+swap, (telegraf) Memory metrics over time from Sentinel-managed hosts
+system, (telegraf) Memory metrics over time from Sentinel-managed hosts
+top_miners_by_base_reward, (chainwatch) A view over chain_reward.new_reward/5 * blocks.win_count per miner and sorted by the sum per Miner ID
+top_miners_by_base_reward_max_height, (chainwatch) A view indicating the maximum height and timestamp of the blocks considered in the top_miners_by_base_reward view.
