@@ -3,13 +3,28 @@ SHELL=/usr/bin/env bash
 .PHONY: all
 all: build
 
-CLEAN:=
 BINS:=
+CLEAN:=
 
 DRONE_PATH:=drone/
 LOTUS_PATH:=lotus/
-VISOR_PATH:=sentinel-visor/
+VISOR_PATH:=visor/
+
 BUILD_PATH:=build/
+CHAINWATCH_BUILD_PATH:=$(BUILD_PATH)chainwatch
+DRONE_BUILD_PATH:=$(BUILD_PATH)drone
+LOTUS_BUILD_PATH:=$(BUILD_PATH)lotus
+VISOR_BUILD_PATH:=$(BUILD_PATH)visor
+
+INSTALL_PATH:=/usr/local/bin/
+CHAINWATCH_INSTALL_PATH:=$(INSTALL_PATH)lotus-chainwatch
+LOTUS_INSTALL_PATH:=$(INSTALL_PATH)lotus
+VISOR_INSTALL_PATH:=$(INSTALL_PATH)sentinel-visor
+#DRONE_INSTALL_PATH:=NOTSET # managed by deb pkg installation
+
+CONFIG_INSTALL_PATH:=/etc/sentinel/
+LOG_INSTALL_PATH:=/var/log/sentinel/
+SYSTEMD_INSTALL_PATH:=/usr/local/lib/systemd/system/
 
 #############
 ## BUILD
@@ -19,37 +34,37 @@ BUILD_PATH:=build/
 build: drone lotus chainwatch visor
 
 .PHONY: drone
-drone: deps build/drone
+drone: deps $(DRONE_BUILD_PATH)
 
-build/drone:
+$(DRONE_BUILD_PATH):
 	$(MAKE) -C $(DRONE_PATH) telegraf
-	cp $(DRONE_PATH)telegraf build/drone
-	@if [ ! -f ./build/sentinel-drone.conf ]; then cp ./scripts/sentinel-drone.conf.default build/sentinel-drone.conf; fi;
-BINS+=build/drone
+	cp $(DRONE_PATH)telegraf $(DRONE_BUILD_PATH)
+	@if [ ! -f ./build/drone.conf ]; then cp ./scripts/drone.conf.default build/drone.conf; fi;
+BINS+=$(DRONE_BUILD_PATH)
 
 .PHONY: lotus
-lotus: deps build/lotus
+lotus: deps $(LOTUS_BUILD_PATH)
 
-build/lotus:
+$(LOTUS_BUILD_PATH):
 	$(MAKE) -C $(LOTUS_PATH) deps lotus
-	cp $(LOTUS_PATH)lotus build/lotus
-BINS+=build/lotus
+	cp $(LOTUS_PATH)lotus $(LOTUS_BUILD_PATH)
+BINS+=$(LOTUS_BUILD_PATH)
 
 .PHONY: chainwatch
-chainwatch: deps build/chainwatch
+chainwatch: deps $(CHAINWATCH_BUILD_PATH)
 
-build/chainwatch:
+$(CHAINWATCH_BUILD_PATH):
 	$(MAKE) -C $(LOTUS_PATH) deps lotus-chainwatch
-	cp $(LOTUS_PATH)lotus-chainwatch build/chainwatch
-BINS+=build/chainwatch
+	cp $(LOTUS_PATH)lotus-chainwatch $(CHAINWATCH_BUILD_PATH)
+BINS+=$(CHAINWATCH_BUILD_PATH)
 
 .PHONY: visor
-visor: deps build/visor
+visor: deps $(VISOR_BUILD_PATH)
 
-build/visor:
-	$(MAKE) -C $(VISOR_PATH) deps sentinel-visor
-	cp $(VISOR_PATH)sentinel-visor build/sentinel-visor
-BINS+=build/sentinel-visor
+$(VISOR_BUILD_PATH):
+	$(MAKE) -C $(VISOR_PATH) deps visor
+	cp $(VISOR_PATH)visor $(VISOR_BUILD_PATH)
+BINS+=$(VISOR_BUILD_PATH)
 
 .PHONY: deps
 deps:
@@ -64,26 +79,26 @@ run-docker:
 	docker-compose up -d
 
 .PHONY: run-lotus
-run-lotus: build/lotus
-	build/lotus daemon & echo $$! > ./build/.lotus.pid
+run-lotus: $(LOTUS_BUILD_PATH)
+	$(LOTUS_BUILD_PATH) daemon & echo $$! > ./build/.lotus.pid
 
 .PHONY: run-drone
-run-drone: build/drone
-	build/drone --config build/sentinel-drone.conf --debug & echo $$! > ./build/.sentinel-drone.pid
+run-drone: $(DRONE_BUILD_PATH)
+	$(DRONE_BUILD_PATH) --config build/drone.conf --debug & echo $$! > ./build/.drone.pid
 
 LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disable
 LOTUS_REPO ?= $(HOME)/.lotus
 .PHONY: run-chainwatch
-run-chainwatch: build/chainwatch
-	build/chainwatch --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.chainwatch.pid
+run-chainwatch: $(CHAINWATCH_BUILD_PATH)
+	$(CHAINWATCH_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.chainwatch.pid
 
 .PHONY: run-visor-indexer
-run-visor-indexer: build/visor
-	build/sentinel-visor --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run indexer & echo $$! > ./build/.visor-indexer.pid
+run-visor-indexer: $(VISOR_BUILD_PATH)
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run indexer & echo $$! > ./build/.visor-indexer.pid
 
 .PHONY: run-visor-processor
-run-visor-processor: build/visor
-	build/sentinel-visor --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run processor & echo $$! > ./build/.visor-processor.pid
+run-visor-processor: $(VISOR_BUILD_PATH)
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run processor & echo $$! > ./build/.visor-processor.pid
 
 .PHONY: stop-docker
 stop-docker:
@@ -95,7 +110,7 @@ stop-lotus:
 
 .PHONY: stop-drone
 stop-drone:
-	@if [ -a ./build/.sentinel-drone.pid ]; then kill -TERM $$(cat ./build/.sentinel-drone.pid); rm ./build/.sentinel-drone.pid || true; fi;
+	@if [ -a ./build/.drone.pid ]; then kill -TERM $$(cat ./build/.drone.pid); rm ./build/.drone.pid || true; fi;
 
 .PHONY: stop-chainwatch
 stop-chainwatch:
@@ -124,28 +139,30 @@ clean-services: clean-sentinel-service clean-lotus-service clean-chainwatch-serv
 
 .PHONY: install-sentinel-service
 install-sentinel-service: check-sudo
-	mkdir -p /usr/local/lib/systemd/system
-	install -C -m 0644 ./scripts/sentinel.service /usr/local/lib/systemd/system/sentinel.service
+	mkdir -p $(SYSTEMD_INSTALL_PATH)
+	install -C -m 0644 ./scripts/sentinel.service $(SYSTEMD_INSTALL_PATH)sentinel.service
 	systemctl daemon-reload
 
 .PHONY: clean-sentinel-service
 clean-sentinel-service: check-sudo
-	rm -f /usr/local/lib/systemd/system/sentinel.service
+	rm -f $(SYSTEMD_INSTALL_PATH)sentinel.service
 	systemctl daemon-reload
 
 .PHONY: install-drone-pkg
 install-drone-pkg: check-sudo deps
 	# linux-only package
 	rm -f build/*x86_64.rpm build/*amd64.tar.gz build/*amd64.deb
-	(cd ./drone && ./scripts/build.py --package --platform=linux --arch=amd64 -o ../build -n telegraf)
+	(cd $(DRONE_PATH) && ./scripts/build.py --package --platform=linux --arch=amd64 -o ../build -n telegraf)
 	dpkg -i build/telegraf*.deb
 
 .PHONY: install-drone-service
 install-drone-service: check-sudo install-drone-pkg
-	cp ./build/sentinel-drone.conf /etc/telegraf/telegraf.conf # matches deb pkg destination
-	cp ./scripts/sentinel-drone.service /lib/systemd/system/sentinel-drone.service # matches deb pkg destination
-	mkdir -p /etc/sentinel
-	mkdir -p /var/log/sentinel
+	cp ./build/drone.conf /etc/telegraf/telegraf.conf # overwrite deb pkg default config
+	rm /lib/systemd/system/telegraf.service # rm deb pkg default service
+	cp ./scripts/drone.service /lib/systemd/system/sentinel-drone.service
+	systemctl daemon-reload
+	mkdir -p $(CONFIG_INSTALL_PATH)
+	mkdir -p $(LOG_INSTALL_PATH)
 	@echo
 	@echo "Sentinel Drone service installed. Don't forget to edit /etc/telegraf/telegraf.conf or to"
 	@echo "'systemctl enable sentinel-drone' for it to be enabled on startup."
@@ -188,12 +205,12 @@ clean-drone-service: check-sudo
 
 .PHONY: install-lotus-service
 install-lotus-service: check-sudo lotus
-	install -C ./build/lotus /usr/local/bin/lotus
-	mkdir -p /usr/local/lib/systemd/system
-	install -C -m 0644 ./scripts/lotus-daemon.service /usr/local/lib/systemd/system/lotus-daemon.service
+	install -C $(LOTUS_BUILD_PATH) $(LOTUS_INSTALL_PATH)
+	mkdir -p $(SYSTEMD_INSTALL_PATH)
+	install -C -m 0644 ./scripts/lotus-daemon.service $(SYSTEMD_INSTALL_PATH)lotus-daemon.service
 	systemctl daemon-reload
-	mkdir -p /etc/sentinel
-	mkdir -p /var/log/sentinel
+	mkdir -p $(CONFIG_INSTALL_PATH)
+	mkdir -p $(LOG_INSTALL_PATH)
 	@echo
 	@echo "Lotus service installed. Don't forget to 'systemctl enable lotus' for it to be enabled on startup."
 	@echo
@@ -201,23 +218,23 @@ install-lotus-service: check-sudo lotus
 .PHONY: replace-lotus-service
 replace-lotus-service: check-sudo lotus
 	-systemctl stop lotus-daemon
-	install -C ./build/lotus /usr/local/bin/lotus
+	install -C $(LOTUS_BUILD_PATH) $(LOTUS_INSTALL_PATH)
 	systemctl daemon-reload
 	systemctl start lotus-daemon
 
 .PHONY: clean-lotus-service
 clean-lotus-service: check-sudo
-	rm -f /usr/local/bin/lotus
-	rm -f /usr/local/lib/systemd/system/lotus-daemon.service
+	rm -f $(LOTUS_INSTALL_PATH)
+	rm -f $(SYSTEMD_INSTALL_PATH)lotus-daemon.service
 	systemctl daemon-reload
 
 .PHONY: install-chainwatch-service
 install-chainwatch-service: check-sudo chainwatch
-	install -C ./build/chainwatch /usr/local/bin/chainwatch
-	mkdir -p /usr/local/lib/systemd/system
-	install -C -m 0644 ./scripts/chainwatch.service /usr/local/lib/systemd/system/chainwatch.service
+	install -C $(CHAINWATCH_BUILD_PATH) $(CHAINWATCH_INSTALL_PATH)
+	mkdir -p $(SYSTEMD_INSTALL_PATH)
+	install -C -m 0644 ./scripts/chainwatch.service $(SYSTEMD_INSTALL_PATH)chainwatch.service
 	systemctl daemon-reload
-	mkdir -p /etc/sentinel
+	mkdir -p $(CONFIG_INSTALL_PATH)
 	@echo
 	@echo "Chainwatch service installed. Don't forget to 'systemctl enable chainwatch' for it to be enabled on startup."
 	@echo
@@ -225,60 +242,60 @@ install-chainwatch-service: check-sudo chainwatch
 .PHONY: replace-chainwatch-service
 replace-chainwatch-service: check-sudo chainwatch
 	-systemctl stop chainwatch
-	install -C ./build/chainwatch /usr/local/bin/chainwatch
+	install -C $(CHAINWATCH_BUILD_PATH) $(CHAINWATCH_INSTALL_PATH)
 	systemctl daemon-reload
 	systemctl start chainwatch
 
 .PHONY: clean-chainwatch-service
 clean-chainwatch-service: check-sudo
-	rm -f /usr/local/bin/chainwatch
-	rm -f /usr/local/lib/systemd/system/chainwatch.service
+	rm -f $(CHAINWATCH_INSTALL_PATH)
+	rm -f $(SYSTEMD_INSTALL_PATH)chainwatch.service
 	systemctl daemon-reload
 
 .PHONY: install-visor-indexer-service
 install-visor-indexer-service: check-sudo visor
-	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
-	mkdir -p /usr/local/lib/systemd/system
-	install -C -m 0644 ./scripts/visor-indexer.service /usr/local/lib/systemd/system/visor-indexer.service
+	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
+	mkdir -p $(SYSTEMD_INSTALL_PATH)
+	install -C -m 0644 ./scripts/visor-indexer.service $(SYSTEMD_INSTALL_PATH)sentinel-visor-indexer.service
 	systemctl daemon-reload
-	mkdir -p /etc/sentinel
+	mkdir -p $(CONFIG_INSTALL_PATH)
 	@echo
-	@echo "Visor indexer service installed. Don't forget to 'systemctl enable visor-indexer' for it to be enabled on startup."
+	@echo "Visor indexer service installed. Don't forget to 'systemctl enable sentinel-visor-indexer' for it to be enabled on startup."
 	@echo
 
 .PHONY: replace-visor-indexer-service
 replace-visor-indexer-service: check-sudo visor
-	-systemctl stop visor-indexer
-	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
+	-systemctl stop sentinel-visor-indexer
+	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
 	systemctl daemon-reload
-	systemctl start visor-indexer
+	systemctl start sentinel-visor-indexer
 
 .PHONY: clean-visor-indexer-service
 clean-visor-indexer-service: check-sudo
-	rm -f /usr/local/lib/systemd/system/visor-indexer.service
+	rm -f $(SYSTEMD_INSTALL_PATH)sentinel-visor-indexer.service
 	systemctl daemon-reload
 
 .PHONY: install-visor-processor-service
 install-visor-processor-service: check-sudo visor
-	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
-	mkdir -p /usr/local/lib/systemd/system
-	install -C -m 0644 ./scripts/visor-processor.service /usr/local/lib/systemd/system/visor-processor.service
+	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
+	mkdir -p $(SYSTEMD_INSTALL_PATH)
+	install -C -m 0644 ./scripts/visor-processor.service $(SYSTEMD_INSTALL_PATH)sentinel-visor-processor.service
 	systemctl daemon-reload
-	mkdir -p /etc/sentinel
+	mkdir -p $(CONFIG_INSTALL_PATH)
 	@echo
-	@echo "Visor processor service installed. Don't forget to 'systemctl enable visor-processor' for it to be enabled on startup."
+	@echo "Visor processor service installed. Don't forget to 'systemctl enable sentinel-visor-processor' for it to be enabled on startup."
 	@echo
 
 .PHONY: replace-visor-processor-service
 replace-visor-processor-service: check-sudo visor
 	-systemctl stop visor-processor
-	install -C ./build/sentinel-visor /usr/local/bin/sentinel-visor
+	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
 	systemctl daemon-reload
 	systemctl start visor-processor
 
 .PHONY: clean-visor-processor-service
 clean-visor-processor-service: check-sudo
-	rm -f /usr/local/lib/systemd/system/visor-processor.service
+	rm -f $(SYSTEMD_INSTALL_PATH)visor-processor.service
 	systemctl daemon-reload
 
 .PHONY: clean-state
@@ -293,6 +310,7 @@ check-state:
 clean: check-uncommitted
 	-$(MAKE) -C $(DRONE_PATH) clean
 	-$(MAKE) -C $(LOTUS_PATH) clean
+	-$(MAKE) -C $(VISOR_PATH) clean
 	rm -rf $(CLEAN) $(BINS)
 	git clean -xdff
 	git submodule deinit --all -f
@@ -311,12 +329,12 @@ check-sudo:
 
 .PHONY: deploy-painnet
 deploy-painnet:
-	rsync -rv --include=.* --exclude=build/drone --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-painnet:~/sentinel/
+	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-painnet:~/sentinel/
 
 .PHONY: deploy-interopnet
 deploy-interopnet:
-	rsync -rv --include=.* --exclude=build/drone --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-interopnet:~/sentinel/
+	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-interopnet:~/sentinel/
 
 .PHONY: deploy-testnet
 deploy-testnet:
-	rsync -rv --include=.* --exclude=build/drone --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-testnet:~/sentinel/
+	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-testnet:~/sentinel/

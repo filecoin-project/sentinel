@@ -1,8 +1,8 @@
 [submodule "lotus"]
 	path = lotus
 	url = https://github.com/filecoin-project/lotus
-[submodule "sentinel-visor"]
-	path = sentinel-visor
+[submodule "visor"]
+	path = visor
 	url = https://github.com/filecoin-project/sentinel-visor
 [submodule "drone"]
 	path = drone
