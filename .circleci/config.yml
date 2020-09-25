@@ -5,8 +5,9 @@ jobs:
       - image: circleci/golang:1.14
     working_directory: /go/src/github.com/filecoin-project/sentinel
     steps:
-      - checkout
       - run: sudo apt update -q && sudo apt install -yq mesa-opencl-icd ocl-icd-opencl-dev
+      - run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      - checkout
       - run: make
 
 workflows:
