@@ -59,7 +59,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "select \nraw.time, raw.\"10\" as \"0\",\nraw.\"20\" - raw.\"10\" as \"10\",\nraw.\"30\" - raw.\"20\" as \"20\",\nraw.\"45\" - raw.\"30\" as \"30\",\nraw.\"60\" - raw.\"45\" as \"45\",\nraw.\"90\" - raw.\"60\" as \"60\",\nraw.\"120\" - raw.\"90\" as \"90\",\nraw.\"240\" - raw.\"120\" as \"120\",\nraw.\"600\" - raw.\"240\" as \"240\",\nraw.\"1800\" - raw.\"600\" as \"600\",\nraw.\"3600\" - raw.\"1800\" as \"1800\",\nraw.\"count\" - raw.\"3600\" as \"3600\"\nFROM (SELECT\n  \"time\" AS \"time\",\n  (CASE WHEN \"10\" >= lag(\"10\") OVER (ORDER BY \"time\") THEN \"10\" - lag(\"10\") OVER (ORDER BY \"time\") WHEN lag(\"10\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"10\" END) AS \"10\",\n  (CASE WHEN \"20\" >= lag(\"20\") OVER (ORDER BY \"time\") THEN \"20\" - lag(\"20\") OVER (ORDER BY \"time\") WHEN lag(\"20\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"20\" END) AS \"20\",\n  (CASE WHEN \"30\" >= lag(\"30\") OVER (ORDER BY \"time\") THEN \"30\" - lag(\"30\") OVER (ORDER BY \"time\") WHEN lag(\"30\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"30\" END) AS \"30\",\n  (CASE WHEN \"45\" >= lag(\"45\") OVER (ORDER BY \"time\") THEN \"45\" - lag(\"45\") OVER (ORDER BY \"time\") WHEN lag(\"45\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"45\" END) AS \"45\",\n  (CASE WHEN \"60\" >= lag(\"60\") OVER (ORDER BY \"time\") THEN \"60\" - lag(\"60\") OVER (ORDER BY \"time\") WHEN lag(\"60\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"60\" END) AS \"60\",\n  (CASE WHEN \"90\" >= lag(\"90\") OVER (ORDER BY \"time\") THEN \"90\" - lag(\"90\") OVER (ORDER BY \"time\") WHEN lag(\"90\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"90\" END) AS \"90\",\n  (CASE WHEN \"120\" >= lag(\"120\") OVER (ORDER BY \"time\") THEN \"120\" - lag(\"120\") OVER (ORDER BY \"time\") WHEN lag(\"120\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"120\" END) AS \"120\",\n  (CASE WHEN \"240\" >= lag(\"240\") OVER (ORDER BY \"time\") THEN \"240\" - lag(\"240\") OVER (ORDER BY \"time\") WHEN lag(\"240\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"240\" END) AS \"240\",\n  (CASE WHEN \"600\" >= lag(\"600\") OVER (ORDER BY \"time\") THEN \"600\" - lag(\"600\") OVER (ORDER BY \"time\") WHEN lag(\"600\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"600\" END) AS \"600\",\n  (CASE WHEN \"1800\" >= lag(\"1800\") OVER (ORDER BY \"time\") THEN \"1800\" - lag(\"1800\") OVER (ORDER BY \"time\") WHEN lag(\"1800\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"1800\" END) AS \"1800\",\n  (CASE WHEN \"3600\" >= lag(\"3600\") OVER (ORDER BY \"time\") THEN \"3600\" - lag(\"3600\") OVER (ORDER BY \"time\") WHEN lag(\"3600\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"3600\" END) AS \"3600\",\n  (CASE WHEN \"count\" >= lag(\"count\") OVER (ORDER BY \"time\") THEN \"count\" - lag(\"count\") OVER (ORDER BY \"time\") WHEN lag(\"count\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"count\" END) AS \"count\"\nFROM lotusmpool_msg_wait\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1\n) as raw",
+          "rawSql": "select \nraw.time, raw.\"10\" as \"0\",\nraw.\"30\" - raw.\"10\" as \"10\",\nraw.\"60\" - raw.\"30\" as \"30\",\nraw.\"120\" - raw.\"60\" as \"60\",\nraw.\"240\" - raw.\"120\" as \"120\",\nraw.\"600\" - raw.\"240\" as \"240\",\nraw.\"1800\" - raw.\"600\" as \"600\",\nraw.\"3600\" - raw.\"1800\" as \"1800\",\nraw.\"count\" - raw.\"3600\" as \"3600\"\nFROM (SELECT\n  \"time\" AS \"time\",\n  (CASE WHEN \"10\" >= lag(\"10\") OVER (ORDER BY \"time\") THEN \"10\" - lag(\"10\") OVER (ORDER BY \"time\") WHEN lag(\"10\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"10\" END) AS \"10\",\n  (CASE WHEN \"30\" >= lag(\"30\") OVER (ORDER BY \"time\") THEN \"30\" - lag(\"30\") OVER (ORDER BY \"time\") WHEN lag(\"30\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"30\" END) AS \"30\",\n  (CASE WHEN \"60\" >= lag(\"60\") OVER (ORDER BY \"time\") THEN \"60\" - lag(\"60\") OVER (ORDER BY \"time\") WHEN lag(\"60\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"60\" END) AS \"60\",\n  (CASE WHEN \"120\" >= lag(\"120\") OVER (ORDER BY \"time\") THEN \"120\" - lag(\"120\") OVER (ORDER BY \"time\") WHEN lag(\"120\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"120\" END) AS \"120\",\n  (CASE WHEN \"240\" >= lag(\"240\") OVER (ORDER BY \"time\") THEN \"240\" - lag(\"240\") OVER (ORDER BY \"time\") WHEN lag(\"240\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"240\" END) AS \"240\",\n  (CASE WHEN \"600\" >= lag(\"600\") OVER (ORDER BY \"time\") THEN \"600\" - lag(\"600\") OVER (ORDER BY \"time\") WHEN lag(\"600\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"600\" END) AS \"600\",\n  (CASE WHEN \"1800\" >= lag(\"1800\") OVER (ORDER BY \"time\") THEN \"1800\" - lag(\"1800\") OVER (ORDER BY \"time\") WHEN lag(\"1800\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"1800\" END) AS \"1800\",\n  (CASE WHEN \"3600\" >= lag(\"3600\") OVER (ORDER BY \"time\") THEN \"3600\" - lag(\"3600\") OVER (ORDER BY \"time\") WHEN lag(\"3600\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"3600\" END) AS \"3600\",\n  (CASE WHEN \"count\" >= lag(\"count\") OVER (ORDER BY \"time\") THEN \"count\" - lag(\"count\") OVER (ORDER BY \"time\") WHEN lag(\"count\") OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE \"count\" END) AS \"count\"\nFROM lotusmpool_msg_wait\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1\n) as raw",
           "refId": "A",
           "select": [
             [
@@ -301,7 +301,12 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [],
+      "seriesOverrides": [
+        {
+          "alias": "Other",
+          "yaxis": 2
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": true,
@@ -309,10 +314,51 @@
         {
           "format": "time_series",
           "group": [],
+          "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (CASE WHEN counter >= lag(counter) OVER (ORDER BY \"time\") THEN counter - lag(counter) OVER (ORDER BY \"time\") WHEN lag(counter) OVER (ORDER BY \"time\") IS NULL THEN NULL ELSE counter END)/extract(epoch from \"time\" - lag(\"time\") OVER (ORDER BY \"time\")) AS \"counter\"\nFROM lotusmpool_msg_inbound\nWHERE\n  $__timeFilter(\"time\")\nORDER BY 1",
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (CASE\n   WHEN counter >= lag(counter) OVER (ORDER BY \"time\") THEN counter - lag(counter) OVER (ORDER BY \"time\")\n   WHEN lag(counter) OVER (ORDER BY \"time\") IS NULL THEN NULL\n   ELSE counter \n  END) / extract(epoch from \"time\" - lag(\"time\") OVER (ORDER BY \"time\")) AS \"Other\"\nFROM lotusmpool_msg_inbound\nWHERE\n  $__timeFilter(\"time\") AND\n  msg_type != 'wpost'\nORDER BY 1",
           "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              },
+              {
+                "params": [
+                  "rate"
+                ],
+                "type": "window"
+              },
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "lotusmpool_msg_inbound",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamptz",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  \"time\" AS \"time\",\n  (CASE\n   WHEN counter >= lag(counter) OVER (ORDER BY \"time\") THEN counter - lag(counter) OVER (ORDER BY \"time\")\n   WHEN lag(counter) OVER (ORDER BY \"time\") IS NULL THEN NULL\n   ELSE counter \n  END) / extract(epoch from \"time\" - lag(\"time\") OVER (ORDER BY \"time\")) AS \"Window PoSt\"\nFROM lotusmpool_msg_inbound\nWHERE\n  $__timeFilter(\"time\") AND\n  msg_type = 'wpost'\nORDER BY 1",
+          "refId": "B",
           "select": [
             [
               {
@@ -368,7 +414,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
+          "label": "Window PoSt Msgs",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -376,7 +422,7 @@
         },
         {
           "format": "short",
-          "label": null,
+          "label": "Other Msgs",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -792,6 +838,6 @@
   },
   "timezone": "",
   "title": "Mpool Stats",
-  "uid": "0CA9VFvGz",
-  "version": 14
+  "uid": "sentinel_v0_3_mpool",
+  "version": 19
 }
