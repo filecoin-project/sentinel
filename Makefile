@@ -98,11 +98,15 @@ run-chainwatch: $(CHAINWATCH_BUILD_PATH)
 
 .PHONY: run-visor-indexer
 run-visor-indexer: $(VISOR_BUILD_PATH)
-	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run indexer & echo $$! > ./build/.visor-indexer.pid
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run --scw 0 --asw 0 --mw 0 --gow 0 --indexhead-confidence 2 & echo $$! > ./build/.visor-indexer.pid
 
 .PHONY: run-visor-processor
 run-visor-processor: $(VISOR_BUILD_PATH)
-	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run processor & echo $$! > ./build/.visor-processor.pid
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run --indexhistory=false --indexhead=false & echo $$! > ./build/.visor-processor.pid
+
+.PHONY: run-visor
+run-visor-processor: $(VISOR_BUILD_PATH)
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.visor.pid
 
 .PHONY: stop-docker
 stop-docker:
