@@ -78,6 +78,10 @@ deps:
 run-docker:
 	docker-compose up -d
 
+.PHONY: run-docker-jaeger
+run-docker-jaeger:
+	docker-compose -f ./scripts/docker-compose-jaeger.yml up -d
+
 .PHONY: run-lotus
 run-lotus: $(LOTUS_BUILD_PATH)
 	$(LOTUS_BUILD_PATH) daemon & echo $$! > ./build/.lotus.pid
@@ -103,6 +107,10 @@ run-visor-processor: $(VISOR_BUILD_PATH)
 .PHONY: stop-docker
 stop-docker:
 	docker-compose stop
+
+.PHONY: stop-docker-jaeger
+stop-docker-jaeger:
+	docker-compose -f ./scripts/docker-compose-jaeger.yml stop
 
 .PHONY: stop-lotus
 stop-lotus:
