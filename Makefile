@@ -78,6 +78,10 @@ deps:
 run-docker:
 	docker-compose up -d
 
+.PHONY: run-docker-jaeger
+run-docker-jaeger:
+	docker-compose -f ./scripts/docker-compose-jaeger.yml up -d
+
 .PHONY: run-lotus
 run-lotus: $(LOTUS_BUILD_PATH)
 	$(LOTUS_BUILD_PATH) daemon & echo $$! > ./build/.lotus.pid
@@ -94,15 +98,23 @@ run-chainwatch: $(CHAINWATCH_BUILD_PATH)
 
 .PHONY: run-visor-indexer
 run-visor-indexer: $(VISOR_BUILD_PATH)
-	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run indexer & echo $$! > ./build/.visor-indexer.pid
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run --scw 0 --asw 0 --mw 0 --gow 0 --indexhead-confidence 2 & echo $$! > ./build/.visor-indexer.pid
 
 .PHONY: run-visor-processor
 run-visor-processor: $(VISOR_BUILD_PATH)
-	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run processor & echo $$! > ./build/.visor-processor.pid
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run --indexhistory=false --indexhead=false & echo $$! > ./build/.visor-processor.pid
+
+.PHONY: run-visor
+run-visor-processor: $(VISOR_BUILD_PATH)
+	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.visor.pid
 
 .PHONY: stop-docker
 stop-docker:
 	docker-compose stop
+
+.PHONY: stop-docker-jaeger
+stop-docker-jaeger:
+	docker-compose -f ./scripts/docker-compose-jaeger.yml stop
 
 .PHONY: stop-lotus
 stop-lotus:
