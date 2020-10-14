@@ -41,6 +41,6 @@ datasources:
       password: password
 
     # <bool> allow users to edit datasources from the UI.
-    editable: false
+    editable: true
     readOnly: true
     version: 1
