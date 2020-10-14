@@ -1769,7 +1769,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "-- total network power over time\nwith epoch as (\n    select distinct on (height)\n        time_bucket('30s', to_timestamp(block_headers.timestamp)) as \"time\",\n        --$__timeGroup(blocks.timestamp, '1h'),\n        spi.state_root\n    from block_headers\n    join sector_precommit_info spi on height = spi.precommit_epoch\n    where to_timestamp(block_headers.timestamp) > $__timeFrom()\n    AND to_timestamp(block_headers.timestamp) < $__timeTo()\n    group by block_headers.timestamp, spi.state_root, height\n    order by height, time desc\n)\nselect\n    epoch.time,\n    miner_count,\n    total_raw_bytes_power::numeric,\n    total_qa_bytes_power::numeric\nfrom chain_powers\njoin epoch on epoch.state_root = chain_powers.state_root\norder by time desc;",
+          "rawSql": "-- total network power over time\nwith epoch as (\n    select distinct on (height)\n        time_bucket('30s', to_timestamp(block_headers.timestamp)) as \"time\",\n        --$__timeGroup(blocks.timestamp, '1h'),\n        mpi.state_root\n    from block_headers\n    join miner_pre_commit_infos mpi on height = mpi.pre_commit_epoch\n    where to_timestamp(block_headers.timestamp) > $__timeFrom()\n    AND to_timestamp(block_headers.timestamp) < $__timeTo()\n    group by block_headers.timestamp, mpi.state_root, height\n    order by height, time desc\n)\nselect\n    epoch.time,\n    miner_count,\n    total_raw_bytes_power::numeric,\n    total_qa_bytes_power::numeric\nfrom chain_powers\njoin epoch on epoch.state_root = chain_powers.state_root\norder by time desc;",
           "refId": "A",
           "select": [
             [
