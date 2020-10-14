@@ -264,50 +264,27 @@ clean-chainwatch-service: check-sudo
 	rm -f $(SYSTEMD_INSTALL_PATH)chainwatch.service
 	systemctl daemon-reload
 
-.PHONY: install-visor-indexer-service
-install-visor-indexer-service: check-sudo visor
+.PHONY: install-visor-service
+install-visor-service: check-sudo visor
 	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
 	mkdir -p $(SYSTEMD_INSTALL_PATH)
-	install -C -m 0644 ./scripts/visor-indexer.service $(SYSTEMD_INSTALL_PATH)sentinel-visor-indexer.service
+	install -C -m 0644 ./scripts/sentinel-visor.service $(SYSTEMD_INSTALL_PATH)sentinel-visor.service
 	systemctl daemon-reload
 	mkdir -p $(CONFIG_INSTALL_PATH)
 	@echo
-	@echo "Visor indexer service installed. Don't forget to 'systemctl enable sentinel-visor-indexer' for it to be enabled on startup."
+	@echo "Visor indexer service installed. Don't forget to 'systemctl enable sentinel-visor' for it to be enabled on startup."
 	@echo
 
-.PHONY: replace-visor-indexer-service
-replace-visor-indexer-service: check-sudo visor
-	-systemctl stop sentinel-visor-indexer
+.PHONY: replace-visor-service
+replace-visor-service: check-sudo visor
+	-systemctl stop sentinel-visor
 	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
 	systemctl daemon-reload
-	systemctl start sentinel-visor-indexer
+	systemctl start sentinel-visor
 
-.PHONY: clean-visor-indexer-service
-clean-visor-indexer-service: check-sudo
-	rm -f $(SYSTEMD_INSTALL_PATH)sentinel-visor-indexer.service
-	systemctl daemon-reload
-
-.PHONY: install-visor-processor-service
-install-visor-processor-service: check-sudo visor
-	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
-	mkdir -p $(SYSTEMD_INSTALL_PATH)
-	install -C -m 0644 ./scripts/visor-processor.service $(SYSTEMD_INSTALL_PATH)sentinel-visor-processor.service
-	systemctl daemon-reload
-	mkdir -p $(CONFIG_INSTALL_PATH)
-	@echo
-	@echo "Visor processor service installed. Don't forget to 'systemctl enable sentinel-visor-processor' for it to be enabled on startup."
-	@echo
-
-.PHONY: replace-visor-processor-service
-replace-visor-processor-service: check-sudo visor
-	-systemctl stop visor-processor
-	install -C $(VISOR_BUILD_PATH) $(VISOR_INSTALL_PATH)
-	systemctl daemon-reload
-	systemctl start visor-processor
-
-.PHONY: clean-visor-processor-service
-clean-visor-processor-service: check-sudo
-	rm -f $(SYSTEMD_INSTALL_PATH)visor-processor.service
+.PHONY: clean-visor-service
+clean-visor-service: check-sudo
+	rm -f $(SYSTEMD_INSTALL_PATH)sentinel-visor.service
 	systemctl daemon-reload
 
 .PHONY: clean-state
