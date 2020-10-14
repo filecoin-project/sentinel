@@ -1,11 +1,12 @@
 [Unit]
-Description=Sentinel Visor Indexer
+Description=Sentinel Visor
 After=lotus-daemon.service
 Requires=lotus-daemon.service
 
 [Service]
-Environment=GOLOG_FILE="/var/log/sentinel/visor-indexer.log"
+Environment=GOLOG_FILE="/var/log/sentinel/visor.log"
 Environment=GOLOG_LOG_FMT="json"
+Environment=GOLOG_OUTPUT="file+stderr"
 Environment=LOTUS_DB="postgres://postgres:password@localhost:5432/postgres?sslmode=disable"
 Environment=LOTUS_PATH="%h/.lotus"
 EnvironmentFile=-/etc/sentinel/visor.env
