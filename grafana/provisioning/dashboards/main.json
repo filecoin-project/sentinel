@@ -14,8 +14,8 @@
   },
   "editable": true,
   "gnetId": null,
-  "graphTooltip": 0,
-  "id": 4,
+  "graphTooltip": 1,
+  "id": 437,
   "links": [],
   "panels": [
     {
@@ -23,7 +23,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -57,8 +57,11 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "pointradius": 0.5,
       "points": false,
       "renderer": "flot",
@@ -204,7 +207,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "description": "Number of peers connected to the lotus node.",
       "fieldConfig": {
         "defaults": {
@@ -235,8 +238,11 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -316,8 +322,8 @@
       }
     },
     {
-      "datasource": null,
-      "description": "Total Tipsets/Blocks on Chain",
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "description": "Total Tipsets/Blocks on Chain during the selected time filter.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -356,14 +362,14 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "targets": [
         {
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(*) AS \"Blocks\"\nFROM \"block_headers\"",
+          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(*) AS \"Blocks\"\nFROM \"block_headers\"\nWHERE $__unixEpochFilter(timestamp)",
           "refId": "A",
           "select": [
             [
@@ -391,7 +397,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  NOW() AS \"time\",\n  max(height) AS \"Tipsets\"\nFROM \"block_headers\"",
+          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(distinct height) AS \"Tipsets\"\nFROM \"block_headers\"\nWHERE $__unixEpochFilter(timestamp)",
           "refId": "B",
           "select": [
             [
@@ -419,7 +425,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(cid)::float/max(height)::float AS \"Block/Tipset Ratio\"\nFROM \"block_headers\"",
+          "rawSql": "SELECT\n  NOW() AS \"time\",\n  count(cid)::float/count(distinct height)::float AS \"Block/Tipset Ratio\"\nFROM \"block_headers\"\nWHERE $__unixEpochFilter(timestamp)",
           "refId": "C",
           "select": [
             [
@@ -445,7 +451,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "",
+      "title": "Ratio over Previous Period",
       "type": "stat"
     },
     {
@@ -463,27 +469,27 @@
             "query": {
               "params": [
                 "A",
-                "1m",
+                "5m",
                 "now"
               ]
             },
             "reducer": {
               "params": [],
-              "type": "last"
+              "type": "count"
             },
             "type": "query"
           }
         ],
-        "executionErrorState": "keep_state",
-        "for": "2m",
-        "frequency": "1m",
+        "executionErrorState": "alerting",
+        "for": "10m",
+        "frequency": "30s",
         "handler": 1,
-        "message": "Blocks production has halted on network for 2 minutes. Please investigate immediately.",
-        "name": "Sustained Null Blocks",
+        "message": "New blocks are not being reported to Sentinel.\n\nRunbook:\n1. check that visor and lotus (fullnode-2-lotus-daemon) are running\nkubectl -n ntwk-mainnet-fullnode get pods\n\n2.  check visor and lotus logs\nkubectl -n ntwk-mainnet-fullnode logs <pod-name>\n\n3. restart a pod if necessary\nkubectl -n ntwk-mainnet-fullnode delete pod <pod-name>\n\n4. check on health of lotus node by visiting this dashboard https://protocollabs.grafana.net/d/QjaTQUKMk/lotus-namespaces?orgId=1&refresh=30s&var-datasource=prometheus-mainnet-us-east-1&var-namespace=ntwk-mainnet-fullnode&var-cluster=&var-service=All&var-calibration_start=1601608380&var-testnet_start=1598306400&var-butterfly_start=1601424120\n\n5. if lotus is behind syncing, scale down visor to allow lotus to catch up\nkubectl -n ntwk-mainnet-fullnode scale deployment sentinel-monitoring-prod-visor --replicas 0\n\n6. scale visor back up once lotus node has fully synced again\nkubectl -n ntwk-mainnet-fullnode scale deployment sentinel-monitoring-prod-visor --replicas 1\n\n7. if there is database lock contention, please ping Sentinel team.",
+        "name": "Reported Blocks",
         "noDataState": "alerting",
         "notifications": [
           {
-            "uid": "F7zrp_GGk"
+            "uid": "XOSM-2FGk"
           }
         ]
       },
@@ -491,7 +497,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "TimescaleDB",
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "decimals": 0,
       "description": "Number of blocks reported by network by Miner ID.",
       "fieldConfig": {
@@ -529,8 +535,11 @@
       "lines": false,
       "linewidth": 1,
       "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -658,7 +667,7 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "description": "Time elapsed since last block found.",
       "fieldConfig": {
         "defaults": {
@@ -702,7 +711,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "targets": [
         {
           "format": "time_series",
@@ -739,13 +748,46 @@
       "type": "stat"
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.5
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "B",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "10m",
+        "frequency": "2m",
+        "handler": 1,
+        "name": "WinCounts per Height alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
-      "decimals": 3,
-      "description": "Parent Base Fee of the chain over time.",
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -755,20 +797,18 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 10,
+        "h": 6,
         "w": 17,
         "x": 0,
         "y": 9
       },
       "hiddenSeries": false,
-      "id": 31,
+      "id": 40,
       "legend": {
-        "alignAsTable": true,
-        "avg": true,
+        "avg": false,
         "current": true,
-        "max": true,
-        "min": true,
-        "rightSide": false,
+        "max": false,
+        "min": false,
         "show": true,
         "total": false,
         "values": true
@@ -776,41 +816,25 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "gas/sec",
-          "color": "#96D98D",
-          "yaxis": 2
-        },
-        {
-          "alias": "gas 5 min avg/sec",
-          "color": "#C8F2C2",
-          "yaxis": 2
-        },
-        {
-          "alias": "Base Fee (gas)",
-          "color": "#FA6400"
-        },
-        {
-          "alias": "Base Fee (gas, 5 min avg)",
-          "color": "#FFB357"
-        }
-      ],
+      "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
-      "steppedLine": false,
+      "steppedLine": true,
       "targets": [
         {
           "format": "time_series",
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "WITH fee_plus_avg AS (\n\tSELECT\n\t\tb.timestamp as \"time\",\n\t\tb.parent_base_fee::numeric,\n\t\tavg(b.parent_base_fee::numeric) over (order by timestamp desc rows between 10 preceding and current row) as \"5_min_avg\"\n\tFROM block_headers b\n\tJOIN (\n\t\tSELECT\n\t\t\theight,\n\t\t\tmax(block_headers.parent_weight) parent_weight\n\t\tFROM block_headers\n\t\tGROUP BY 1\n\t) max_weight_by_height ON max_weight_by_height.height = b.height AND max_weight_by_height.parent_weight = b.parent_weight\n\tWHERE\n\t  $__unixEpochFilter(b.timestamp)\n\tGROUP BY 1, 2\n\tORDER BY 1 desc\n) SELECT\n\ttime,\n\tparent_base_fee as \"Base Fee (gas)\",\n\t\"5_min_avg\" as \"Base Fee (gas, 5 min avg)\",\n\t(parent_base_fee - lag(parent_base_fee) over (order by time asc)) /\n\t\t(time - lag(time) over (order by time asc)) as \"gas/sec\",\n\t(\"5_min_avg\" - lag(\"5_min_avg\") over (order by time asc)) /\n\t\t(time - lag(time) over (order by time asc)) as \"gas 5 min avg/sec\"\n\t\nfrom fee_plus_avg\norder by 1;",
+          "rawSql": "SELECT\n  timestamp as \"time\",\n  sum(win_count)\nFROM block_headers\nWHERE\n  $__unixEpochFilter(\"timestamp\")\nGROUP BY 1\nORDER BY 1 ",
           "refId": "A",
           "select": [
             [
@@ -822,7 +846,36 @@
               }
             ]
           ],
-          "table": "lotus_pubsub_recv_rpc",
+          "table": "lotus_block_received",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH sum_win_counts AS (\n  SELECT\n    timestamp,\n    sum(win_count) AS \"sum_win_count\"\n  FROM block_headers\n  WHERE\n    $__unixEpochFilter(\"timestamp\")\n  GROUP BY 1\n  ORDER BY 1 desc\n) SELECT\n  $__unixEpochGroup(timestamp, '10m') as \"time\",\n  avg(sum_win_count)\nFROM sum_win_counts\nGROUP BY 1\nORDER BY 1",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_block_received",
           "timeColumn": "\"time\"",
           "timeColumnType": "timestamp",
           "where": [
@@ -836,22 +889,19 @@
       ],
       "thresholds": [
         {
-          "colorMode": "custom",
-          "fill": false,
-          "fillColor": "rgba(51, 162, 229, 0.2)",
+          "colorMode": "critical",
+          "fill": true,
           "line": true,
-          "lineColor": "rgba(255, 255, 255, 0.6)",
-          "op": "gt",
-          "value": 0,
-          "yaxis": "right"
+          "op": "lt",
+          "value": 0.5
         }
       ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Parent Base Fee",
+      "title": "WinCounts per Height",
       "tooltip": {
-        "shared": true,
+        "shared": false,
         "sort": 0,
         "value_type": "individual"
       },
@@ -865,16 +915,16 @@
       },
       "yaxes": [
         {
-          "format": "sci",
-          "label": "",
-          "logBase": 10,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
           "max": null,
           "min": null,
           "show": true
         },
         {
-          "format": "sci",
-          "label": "",
+          "format": "short",
+          "label": null,
           "logBase": 1,
           "max": null,
           "min": null,
@@ -891,7 +941,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "description": "Total message size found.",
       "fieldConfig": {
         "defaults": {
@@ -925,8 +975,11 @@
       "lines": false,
       "linewidth": 1,
       "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1031,7 +1084,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "description": "Shows message sizes as each message is included on-chain.",
       "fieldConfig": {
         "defaults": {
@@ -1063,8 +1116,11 @@
       "lines": true,
       "linewidth": 2,
       "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1179,6 +1235,632 @@
       }
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                3000000000
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "B",
+                "10m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "10m",
+        "frequency": "1m",
+        "handler": 1,
+        "message": "Average Parent Base Fee is above 3e9 (3 nanoFIL) gas for the prior 10min. Further investigation into network capacity may be warranted.",
+        "name": "High Parent Base Fee",
+        "noDataState": "keep_state",
+        "notifications": [
+          {
+            "uid": "Y9Knd9hGz"
+          }
+        ]
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "decimals": 3,
+      "description": "Parent Base Fee of the chain over time.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 17,
+        "x": 0,
+        "y": 15
+      },
+      "hiddenSeries": false,
+      "id": 31,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "gas/sec",
+          "color": "#96D98D",
+          "yaxis": 2
+        },
+        {
+          "alias": "gas 5 min avg/sec",
+          "color": "#C8F2C2",
+          "yaxis": 2
+        },
+        {
+          "alias": "Base Fee (gas)",
+          "color": "#FA6400"
+        },
+        {
+          "alias": "Base Fee (gas, 5 min avg)",
+          "color": "#FFB357"
+        },
+        {
+          "alias": "alert for Base Fee 5m Avg",
+          "hideTooltip": true,
+          "legend": false,
+          "lines": false
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH fee_plus_avg AS (\n\tSELECT\n\t\tb.timestamp as \"time\",\n\t\tb.parent_base_fee::numeric,\n\t\tavg(b.parent_base_fee::numeric) over (order by timestamp desc rows between 10 preceding and current row) as \"5_min_avg\"\n\tFROM block_headers b\n\tJOIN (\n\t\tSELECT\n\t\t\theight,\n\t\t\tmax(block_headers.parent_weight) parent_weight\n\t\tFROM block_headers\n\t\tGROUP BY 1\n\t) max_weight_by_height ON max_weight_by_height.height = b.height AND max_weight_by_height.parent_weight = b.parent_weight\n\tWHERE\n\t  $__unixEpochFilter(b.timestamp)\n\tGROUP BY 1, 2\n\tORDER BY 1 desc\n) SELECT\n\ttime,\n\tparent_base_fee as \"Base Fee (gas)\",\n\t\"5_min_avg\" as \"Base Fee (gas, 5 min avg)\",\n\t(parent_base_fee - lag(parent_base_fee) over (order by time asc)) /\n\t\t(time - lag(time) over (order by time asc)) as \"gas/sec\",\n\t(\"5_min_avg\" - lag(\"5_min_avg\") over (order by time asc)) /\n\t\t(time - lag(time) over (order by time asc)) as \"gas 5 min avg/sec\"\n\t\nfrom fee_plus_avg\norder by 1;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_pubsub_recv_rpc",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH fee_plus_avg AS (\n\tSELECT\n\t\tb.timestamp as \"time\",\n\t\tb.parent_base_fee::numeric,\n\t\tavg(b.parent_base_fee::numeric) over (order by timestamp desc rows between 10 preceding and current row) as \"5_min_avg\"\n\tFROM block_headers b\n\tJOIN (\n\t\tSELECT\n\t\t\theight,\n\t\t\tmax(block_headers.parent_weight) parent_weight\n\t\tFROM block_headers\n\t\tGROUP BY 1\n\t) max_weight_by_height ON max_weight_by_height.height = b.height AND max_weight_by_height.parent_weight = b.parent_weight\n\tWHERE\n\t  $__unixEpochFilter(b.timestamp)\n\tGROUP BY 1, 2\n\tORDER BY 1 desc\n) SELECT\n\ttime,\n\t\"5_min_avg\" as \"alert for Base Fee 5m Avg\"\nfrom fee_plus_avg\norder by 1;",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "sum"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_api_request_duration_ms",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 3000000000
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Parent Base Fee",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "sci",
+          "label": "",
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "sci",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                5
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "3m",
+        "frequency": "1m",
+        "handler": 1,
+        "message": "Null Tipsets are being detected on-chain. This could be related to network health or failing infrastructure.\n\nCheck Network Health:\n- Drand outage?\n- Network is well-connected?\n\nValidate Infrastructure Health and Data Accuracy:\n- Lotus node supporting Sentinel is running normally.\n- Chainwatch/Visor is running normally.\n- Check `lotus chain list` to see if it matches Sentinel views.",
+        "name": "Consecutive Null Rounds",
+        "noDataState": "ok",
+        "notifications": [
+          {
+            "uid": "XOSM-2FGk"
+          }
+        ]
+      },
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "description": "All heights where a series of null rounds were concluded and the height at which they concluded.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 17,
+        "y": 19
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 34,
+      "interval": "",
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.3",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH distinct_heights AS (\n  /* add row for end height to terminate null rounds comparisons which end\n  ahead of the query window, or are occurring in real-time */\n\t(\n  \tSELECT $__unixEpochTo() as \"timestamp\",\n  \t(($__unixEpochTo() - block_headers.timestamp) / 30)::INTEGER as \"height\"\n    FROM block_headers\n    WHERE block_headers.height = 0 LIMIT 1\n\t)\n\t  UNION\n\t  /* always add the latest row from which to start counting\n\t     consecutive null rounds in case the query window does\n\t     not naturally include them */\n\t(\n  \tSELECT timestamp, height::int\n  \tFROM block_headers\n  \tORDER BY timestamp DESC\n  \tLIMIT 1\n\t)\n\t\tUNION\n\t/* select all distinct heights and their timestamps */\n\t(\n  \tSELECT\n  \t\ttimestamp,\n  \t\theight::int AS height\n  \tFROM\n  \t\tblock_headers\n  \tWHERE $__unixEpochFilter(\"timestamp\")\n  \tGROUP BY 1, 2\n\t)\n\tORDER BY\n\t\theight DESC\n\n),\nheight_diffs AS (\n  /* assuming at least two rows in this result, the difference in heights\n     are calculated for each row minus the height of the row prior, which\n     will count the number of heights skipped in the blocks table\n  */\n\tSELECT\n\t\tto_timestamp(timestamp) AS \"time\",\n\t\theight,\n\t\theight - lag(height) OVER (ORDER BY height) - 1 AS \"consecutive_null_rounds\"\n\tFROM\n\t\tdistinct_heights ORDER BY\n\t\t\theight DESC\n)\nSELECT\n  /* quantize data to 30 second intervals selecting the maximum consecutive\n     null rounds which terminate within that interval */\n  time_bucket_gapfill('30s',\"time\") as \"time\",\n\tmax(hd.consecutive_null_rounds) as \"Consecutive Null Rounds\"\nFROM\n\theight_diffs hd\nWHERE\n\tconsecutive_null_rounds > 0\n\tAND $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1 DESC;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_pubsub_recv_rpc",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 5
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Consecutive Null Rounds",
+      "tooltip": {
+        "shared": true,
+        "sort": 1,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "none",
+          "label": "Number of Null Rounds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 17,
+        "x": 0,
+        "y": 25
+      },
+      "hiddenSeries": false,
+      "id": 42,
+      "legend": {
+        "avg": true,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "with epoch as (\n    select distinct on (m.cid) b.timestamp,\n        sum(m.value::numeric)/1000000000000000000 as \"total_value_sent_in_epoch\"\n    from block_headers b\n        join block_messages bm on b.cid = bm.block\n        join messages m on bm.message = m.cid\n     where to_timestamp(timestamp) > $__timeFrom()\n      and to_timestamp(timestamp) < $__timeTo()\n      and m.value::numeric > 1000000000000000000\n    group by m.cid, m.from, timestamp, m.height, parent_state_root, parent_weight\n    order by m.cid, m.height desc, parent_weight desc\n)\nselect time_bucket('30s', to_timestamp(timestamp)) as \"time\",\n       sum(sum(total_value_sent_in_epoch)) over (order by timestamp) as \"value\"\nfrom epoch\ngroup by timestamp\norder by timestamp;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_block_received",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Value Transferred Per Tipset",
+      "tooltip": {
+        "shared": false,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "si:FIL",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "description": "All heights where a series of null rounds were concluded and the height at which they concluded.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 7,
+        "x": 17,
+        "y": 25
+      },
+      "id": 33,
+      "interval": "",
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Consecutive Null Rounds"
+          }
+        ]
+      },
+      "pluginVersion": "7.3.3",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH distinct_heights AS (\n\tSELECT DISTINCT\n\t\theight::int AS height\n\tFROM\n\t\tblock_headers\n\tORDER BY\n\t\theight::int DESC\n),\nheight_diffs AS (\n\tSELECT\n\t\theight,\n\t\theight - lag(height) OVER (ORDER BY height) - 1 AS \"consecutive_null_rounds\"\n\tFROM\n\t\tdistinct_heights ORDER BY\n\t\t\theight DESC\n)\nSELECT\n\theight as \"Height\",\n\tconsecutive_null_rounds as \"Consecutive Null Rounds\"\nFROM\n\theight_diffs\nWHERE\n\tconsecutive_null_rounds > 0\nORDER BY 2 DESC\nLIMIT 100;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_pubsub_recv_rpc",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Top 100 Trends of Consecutive Null Rounds",
+      "transformations": [],
+      "type": "table"
+    },
+    {
       "cards": {
         "cardPadding": 0,
         "cardRound": null
@@ -1192,7 +1874,7 @@
         "mode": "opacity"
       },
       "dataFormat": "tsbuckets",
-      "datasource": null,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "description": "Duration reported by lotus between receipt and validation of a block.",
       "fieldConfig": {
         "defaults": {
@@ -1204,7 +1886,7 @@
         "h": 10,
         "w": 17,
         "x": 0,
-        "y": 19
+        "y": 33
       },
       "heatmap": {},
       "hideZeroBuckets": true,
@@ -1305,1004 +1987,12 @@
       "yBucketSize": null
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                0.25
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "48h",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "10m",
-        "frequency": "2m",
-        "handler": 1,
-        "name": "Deal Terminations alert",
-        "noDataState": "no_data",
-        "notifications": []
-      },
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "Misc"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "percent"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percentunit"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "total"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "short"
-              }
-            ]
-          }
-        ]
-      },
-      "fill": 1,
-      "fillGradient": 3,
-      "gridPos": {
-        "h": 7,
-        "w": 7,
-        "x": 17,
-        "y": 19
-      },
-      "hiddenSeries": false,
-      "id": 29,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null as zero",
-      "percentage": false,
-      "pluginVersion": "7.1.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "total",
-          "yaxis": 2
-        },
-        {
-          "alias": "percent",
-          "color": "#F2495C"
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "with epoch as (\n    select height,\n           time_bucket('30s', to_timestamp(block_headers.timestamp)) as \"time\",\n           parent_state_root\n    from block_headers\n    where to_timestamp(timestamp) > date $__timeFrom() - interval '3 hour'\n     and to_timestamp(timestamp) < $__timeTo()\n    group by timestamp, height, parent_state_root, parent_weight\n    order by height desc, parent_weight desc\n),\n     deal_terminations_per_height as (\n         select epoch.time,\n                sum(count(mdp.deal_id) filter (where slash_epoch > 0 and slash_epoch is not null)) over (order by epoch.time rows between 360 preceding and current row) as \"terminated\",\n                sum(count(mdp.deal_id)) over (order by epoch.time rows between 360 preceding and current row) as \"total\"\n         from epoch\n                  left join market_deal_states mds on epoch.parent_state_root = mds.state_root\n                  left join market_deal_proposals mdp on mds.deal_id = mdp.deal_id\n         group by epoch.time\n         order by epoch.time desc\n     )\nselect distinct on (time) time,\n                          total,\n                          (case when total = '0' then 0 else terminated/total end) as \"percent\"\nfrom deal_terminations_per_height\nwhere time > $__timeFrom()\n  and time < $__timeTo()\norder by time desc",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_pubsub_recv_rpc",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 0.25,
-          "yaxis": "left"
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Deal Terminations",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "percentunit",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                5
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "max"
-            },
-            "type": "query"
-          },
-          {
-            "evaluator": {
-              "params": [
-                100
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "or"
-            },
-            "query": {
-              "params": [
-                "A",
-                "24h",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "sum"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "3m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Null Tipsets are being detected on-chain. This could be related to network health or failing infrastructure.\n\nCheck Network Health:\n- Drand outage?\n- Network is well-connected?\n\nValidate Infrastructure Health and Data Accuracy:\n- Lotus node supporting Sentinel is running normally.\n- Chainwatch/Visor is running normally.\n- Check `lotus chain list` to see if it matches Sentinel views.",
-        "name": "Consecutive Null Rounds",
-        "noDataState": "keep_state",
-        "notifications": []
-      },
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "description": "All heights where a series of null rounds were concluded and the height at which they concluded.",
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "align": "center",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 7,
-        "x": 17,
-        "y": 26
-      },
-      "hiddenSeries": false,
-      "hideTimeOverride": false,
-      "id": 34,
-      "interval": "",
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": true,
-        "min": false,
-        "show": true,
-        "total": true,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.5",
-      "pointradius": 2,
-      "points": true,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "WITH distinct_heights AS (\n  /* add row for end height to terminate null rounds comparisons which end\n  ahead of the query window, or are occurring in real-time */\n\t(\n  \tSELECT $__unixEpochTo() as \"timestamp\",\n  \t(($__unixEpochTo() - block_headers.timestamp) / 30)::INTEGER as \"height\"\n    FROM block_headers\n    WHERE block_headers.height = 0 LIMIT 1\n\t)\n\t  UNION\n\t  /* always add the latest row from which to start counting\n\t     consecutive null rounds in case the query window does\n\t     not naturally include them */\n\t(\n  \tSELECT timestamp, height::int\n  \tFROM block_headers\n  \tORDER BY timestamp DESC\n  \tLIMIT 1\n\t)\n\t\tUNION\n\t/* select all distinct heights and their timestamps */\n\t(\n  \tSELECT\n  \t\ttimestamp,\n  \t\theight::int AS height\n  \tFROM\n  \t\tblock_headers\n  \tWHERE $__unixEpochFilter(\"timestamp\")\n  \tGROUP BY 1, 2\n\t)\n\tORDER BY\n\t\theight DESC\n\n),\nheight_diffs AS (\n  /* assuming at least two rows in this result, the difference in heights\n     are calculated for each row minus the height of the row prior, which\n     will count the number of heights skipped in the blocks table\n  */\n\tSELECT\n\t\tto_timestamp(timestamp) AS \"time\",\n\t\theight,\n\t\theight - lag(height) OVER (ORDER BY height) - 1 AS \"consecutive_null_rounds\"\n\tFROM\n\t\tdistinct_heights ORDER BY\n\t\t\theight DESC\n)\nSELECT\n  /* quantize data to 30 second intervals selecting the maximum consecutive\n     null rounds which terminate within that interval */\n  time_bucket_gapfill('30s',\"time\") as \"time\",\n\tmax(hd.consecutive_null_rounds) as \"Consecutive Null Rounds\"\nFROM\n\theight_diffs hd\nWHERE\n\tconsecutive_null_rounds > 0\n\tAND $__timeFilter(\"time\")\nGROUP BY 1\nORDER BY 1 DESC;",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_pubsub_recv_rpc",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 5,
-          "yaxis": "left"
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Consecutive Null Rounds",
-      "tooltip": {
-        "shared": true,
-        "sort": 1,
-        "value_type": "individual"
-      },
-      "transformations": [],
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": 0,
-          "format": "none",
-          "label": "Number of Null Rounds",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 17,
-        "x": 0,
-        "y": 29
-      },
-      "hiddenSeries": false,
-      "id": 27,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "miner_count",
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "-- total network power over time\nwith epoch as (\n    select distinct on (height)\n        time_bucket('30s', to_timestamp(block_headers.timestamp)) as \"time\",\n        --$__timeGroup(blocks.timestamp, '1h'),\n        spi.state_root\n    from block_headers\n    join sector_precommit_info spi on height = spi.precommit_epoch\n    where to_timestamp(block_headers.timestamp) > $__timeFrom()\n    AND to_timestamp(block_headers.timestamp) < $__timeTo()\n    group by block_headers.timestamp, spi.state_root, height\n    order by height, time desc\n)\nselect\n    epoch.time,\n    miner_count,\n    total_raw_bytes_power::numeric,\n    total_qa_bytes_power::numeric\nfrom chain_powers\njoin epoch on epoch.state_root = chain_powers.state_root\norder by time desc;",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_block_failure",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Total Network Power over Time",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "decbytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "datasource": null,
-      "description": "All heights where a series of null rounds were concluded and the height at which they concluded.",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center",
-            "displayMode": "auto"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 7,
-        "x": 17,
-        "y": 32
-      },
-      "id": 33,
-      "interval": "",
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Consecutive Null Rounds"
-          }
-        ]
-      },
-      "pluginVersion": "7.1.5",
-      "targets": [
-        {
-          "format": "table",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "WITH distinct_heights AS (\n\tSELECT DISTINCT\n\t\theight::int AS height\n\tFROM\n\t\tblock_headers\n\tORDER BY\n\t\theight::int DESC\n),\nheight_diffs AS (\n\tSELECT\n\t\theight,\n\t\theight - lag(height) OVER (ORDER BY height) - 1 AS \"consecutive_null_rounds\"\n\tFROM\n\t\tdistinct_heights ORDER BY\n\t\t\theight DESC\n)\nSELECT\n\theight as \"Height\",\n\tconsecutive_null_rounds as \"Consecutive Null Rounds\"\nFROM\n\theight_diffs\nWHERE\n\tconsecutive_null_rounds > 0\nORDER BY 2 DESC\nLIMIT 100;",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_pubsub_recv_rpc",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Top 100 Trends of Consecutive Null Rounds",
-      "transformations": [],
-      "type": "table"
-    },
-    {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                80
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "240h",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "diff"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "0m",
-        "frequency": "1h",
-        "handler": 1,
-        "name": "Raw Byte Power Acceleration alert",
-        "noDataState": "no_data",
-        "notifications": []
-      },
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "description": "This panel displays the [percentage change](https://en.wikipedia.org/wiki/Relative_change_and_difference#Percentage_change) of each hour over the last hour of the acceleration (rate of the rate of change) of raw byte power on the Filecoin network. \n\nThe two lines are in fact the same data set but separate over the two y-axis. This allows for the detail between -250% and 250% to be shown clearly, whilst showing the magnitude of the peaks and valleys. This is required due to Grafana not supporting negative log scales [issue](https://github.com/grafana/grafana/issues/7627).",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 1,
-      "gridPos": {
-        "h": 8,
-        "w": 17,
-        "x": 0,
-        "y": 35
-      },
-      "hiddenSeries": false,
-      "id": 38,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "/zoom-out-.*/",
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "hide": true,
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "with epoch as (\n    select distinct on (height) height,\n           to_timestamp(timestamp) as \"time\",\n           parent_state_root\n    from block_headers\n    where to_timestamp(timestamp) > date $__timeFrom() - interval '1 day'\n       and to_timestamp(timestamp) < $__timeTo()\n    group by height, timestamp, parent_state_root, parent_weight\n    order by height desc, parent_weight desc\n),\ndata as (\nselect epoch.time,\n        ((total_raw_bytes_power::numeric - lag(total_raw_bytes_power::numeric)\n                                          over (order by epoch.time rows between 1919 preceding and current row)) /\n        extract(epoch from time - (time - interval '8hr')) -\n        (lag(total_raw_bytes_power::numeric, 1920) over w - lag(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 3839 preceding and 1920 preceding)) /\n        extract(epoch from time - (time - interval '8hr'))) /\n               greatest(((lag(total_raw_bytes_power::numeric, 1920) over w - lag(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 3839 preceding and 1920 preceding)) /\n        extract(epoch from time - (time - interval '8hr'))), 1) * 100                                                       as \"zoom-in-8hr\",\n        ((total_raw_bytes_power::numeric - lag(total_raw_bytes_power::numeric)\n                                          over (order by epoch.time rows between 959 preceding and current row)) /\n        extract(epoch from time - (time - interval '8hr')) -\n        (lag(total_raw_bytes_power::numeric, 1920) over w - lag(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 3839 preceding and 1920 preceding)) /\n        extract(epoch from time - (time - interval '8hr'))) /\n               greatest(((lag(total_raw_bytes_power::numeric, 1920) over w - lag(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 3839 preceding and 1920 preceding)) /\n        extract(epoch from time - (time - interval '8hr'))), 1) * 100                                                       as \"zoom-out-8hr\"\nfrom epoch\n         join chain_powers on epoch.parentstateroot = chain_powers.state_root\n    window w as (order by epoch.time)\norder by time desc\n)\nselect * from data\n    where time > $__timeFrom()\n       and time < $__timeTo()\n       order by time desc",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_pubsub_recv_rpc",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [],
-          "hide": false,
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "with epoch as (\n    select distinct on (height) height,\n           to_timestamp(timestamp) as \"time\",\n           parent_state_root\n    from block_headers\n    where to_timestamp(timestamp) > date $__timeFrom() - interval '1 day'\n       and to_timestamp(timestamp) < $__timeTo()\n    group by height, timestamp, parent_state_root, parent_weight\n    order by height desc, parent_weight desc\n),\ndata as (\nselect epoch.time,\n       ((total_raw_bytes_power::numeric - lag(total_raw_bytes_power::numeric)\n                                          over (order by epoch.time rows between 239 preceding and current row)) /\n        extract(epoch from time - (time - interval '2hr')) -\n        (lag(total_raw_bytes_power::numeric, 240) over w - lag(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 479 preceding and 240 preceding)) /\n        extract(epoch from time - (time - interval '2hr')))                                                        as \"zoom-in-2hr\",\n              ((total_raw_bytes_power::numeric - lag(total_raw_bytes_power::numeric)\n                                          over (order by epoch.time rows between 239 preceding and current row)) /\n        extract(epoch from time - (time - interval '2hr')) -\n        (lag(total_raw_bytes_power::numeric, 240) over w - lag(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 479 preceding and 240 preceding)) /\n        extract(epoch from time - (time - interval '2hr')))                                                       as \"zoom-out-2hr\"\nfrom epoch\n         join chain_powers on epoch.parent_state_root = chain_powers.state_root\n    window w as (order by epoch.time)\norder by time desc\n)\nselect * from data\n    where time > $__timeFrom()\n       and time < $__timeTo()\n       order by time desc",
-          "refId": "C",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_pubsub_recv_rpc",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        },
-        {
-          "format": "time_series",
-          "group": [],
-          "hide": true,
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "with epoch as (\n    select distinct on (height) height,\n           to_timestamp(timestamp) as \"time\",\n           parent_state_root\n    from block_headers\n    where to_timestamp(timestamp) > date $__timeFrom() - interval '1 day'\n       and to_timestamp(timestamp) < $__timeTo()\n    group by height, timestamp, parent_state_root, parent_weight\n    order by height desc, parent_weight desc\n),\ndata as (\nselect epoch.time,\n       ((total_raw_bytes_power::numeric - avg(total_raw_bytes_power::numeric)\n                                          over (order by epoch.time rows between 479 preceding and current row)) /\n        extract(epoch from time - (time - interval '4hr')) -\n        (lag(total_raw_bytes_power::numeric, 480) over w - avg(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 959 preceding and 480 preceding)) /\n        extract(epoch from time - (time - interval '4hr'))) /\n               greatest(((lag(total_raw_bytes_power::numeric, 480) over w - avg(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 959 preceding and 480 preceding)) /\n        extract(epoch from time - (time - interval '4hr'))), 1) * 100                                                       as \"zoom-in-4hr\",\n       ((total_raw_bytes_power::numeric - avg(total_raw_bytes_power::numeric)\n                                          over (order by epoch.time rows between 479 preceding and current row)) /\n        extract(epoch from time - (time - interval '4hr')) -\n        (lag(total_raw_bytes_power::numeric, 480) over w - avg(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 959 preceding and 480 preceding)) /\n        extract(epoch from time - (time - interval '4hr'))) /\n               greatest(((lag(total_raw_bytes_power::numeric, 480) over w - avg(total_raw_bytes_power::numeric)\n                                                            over (order by epoch.time rows between 959 preceding and 480 preceding)) /\n        extract(epoch from time - (time - interval '4hr'))), 1) * 100                                                       as \"zoom-out-4hr\"\nfrom epoch\n         join chain_powers on epoch.parent_state_root = chain_powers.state_root\n    window w as (order by epoch.time)\norder by time desc\n)\nselect * from data\n    where time > $__timeFrom()\n       and time < $__timeTo()\n       order by time desc",
-          "refId": "D",
-          "select": [
-            [
-              {
-                "params": [
-                  "counter"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "lotus_pubsub_recv_rpc",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "lt",
-          "value": 80,
-          "yaxis": "left"
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Percentage Change Raw Byte Power Velocity",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": null,
-          "format": "percent",
-          "label": null,
-          "logBase": 1,
-          "max": "1000",
-          "min": "-1000",
-          "show": true
-        },
-        {
-          "format": "percent",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": true,
-        "alignLevel": 0
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "decimals": 0,
-      "description": "Number of actor messages executed grouped by exit code.",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 17,
-        "x": 0,
-        "y": 43
-      },
-      "hiddenSeries": false,
-      "id": 11,
-      "interval": "3s",
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "sort": "total",
-        "sortDesc": true,
-        "total": true,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null as zero",
-      "percentage": false,
-      "pluginVersion": "7.1.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [
-            {
-              "params": [
-                "$__interval",
-                "none"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": false,
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "WITH actor_results as (\n\tSELECT\n\t\ttime_bucket('30s', to_timestamp(\"b\".\"timestamp\")) AS \"time\",\n\t\tconcat(a.code,'/',m.method,' -> ',r.exit_code) AS \"message\"\n\tFROM \"receipts\" r\n\tJOIN \"messages\" m ON r.message = m.cid\n\tJOIN \"block_messages\" bm ON m.cid = bm.message\n\tJOIN \"block_headers\" b ON bm.block = b.cid\n\tJOIN \"actors\" a ON r.state_root = a.state_root AND m.to = a.id\n  WHERE\n    $__unixEpochFilter(\"b\".\"timestamp\")\n\tORDER BY b.height DESC\n) SELECT\n\t$__timeGroupAlias(\"time\",$__interval, 0),\n\tmessage,\n\tcount(message)\nFROM actor_results\nGROUP BY 1, 2\nORDER BY 1, 2",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "pledged_collateral"
-                ],
-                "type": "column"
-              },
-              {
-                "params": [
-                  "avg"
-                ],
-                "type": "aggregate"
-              },
-              {
-                "params": [
-                  "pledged_collateral"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "table": "\"chain.economics\"",
-          "timeColumn": "\"time\"",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Actor Messages with Exitcode",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": null,
-          "format": "short",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center"
+            "filterable": false
           },
           "mappings": [],
           "thresholds": {
@@ -2338,13 +2028,13 @@
         "h": 6,
         "w": 17,
         "x": 0,
-        "y": 50
+        "y": 43
       },
       "id": 36,
       "options": {
         "showHeader": true
       },
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "7.3.3",
       "targets": [
         {
           "format": "table",
@@ -2381,7 +2071,7 @@
       "type": "table"
     }
   ],
-  "refresh": false,
+  "refresh": "1m",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
@@ -2394,6 +2084,7 @@
   },
   "timepicker": {
     "refresh_intervals": [
+      "30s",
       "1m",
       "5m",
       "15m",
@@ -2403,8 +2094,8 @@
       "1d"
     ]
   },
-  "timezone": "browser",
-  "title": "Sentinel (Ignition)",
-  "uid": "sentinel_v0_3",
-  "version": 44
+  "timezone": "utc",
+  "title": "Sentinel Monitoring EKS",
+  "uid": "yHSVex5Mz",
+  "version": 38
 }
