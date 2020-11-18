@@ -316,14 +316,3 @@ check-sudo:
 		exit 1; \
 	fi
 
-.PHONY: deploy-painnet
-deploy-painnet:
-	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-painnet:~/sentinel/
-
-.PHONY: deploy-interopnet
-deploy-interopnet:
-	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-interopnet:~/sentinel/
-
-.PHONY: deploy-testnet
-deploy-testnet:
-	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-testnet:~/sentinel/
