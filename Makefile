@@ -316,3 +316,6 @@ check-sudo:
 		exit 1; \
 	fi
 
+.PHONY: changelog
+changelog:
+	go run github.com/git-chglog/git-chglog/cmd/git-chglog -o CHANGELOG.md
