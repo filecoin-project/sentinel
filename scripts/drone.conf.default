@@ -106,9 +106,7 @@
   ## connection with the server and doesn't restrict the databases we are trying
   ## to grab metrics for.
   ##
-  # note: Removed ?sslmode=disabled here because it triggers the error
-  # `couldn't parse connection string: postgres://postgres:password@localhost:5432/postgres?sslmode=disabled sslmode is invalid`
-  connection = "postgres://postgres:password@localhost:5432/postgres"
+  connection = "postgres://postgres:password@localhost:5432/postgres?sslmode=disable"
 
   ## Update existing tables to match the incoming metrics automatically. Default is true
   # do_schema_updates = true
