@@ -175,6 +175,7 @@
 # lotus exposes prometheus metrics at /debug/metrics
 # see: https://github.com/filecoin-project/lotus/blob/cd2e794d3fe00a42b85620cdba331b37ebfeaeff/cmd/lotus/rpc.go#L56
 [[inputs.prometheus]]
+  metric_version = 2
   urls = [
     "http://127.0.0.1:1234/debug/metrics",
    ]

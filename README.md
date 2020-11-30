@@ -14,18 +14,17 @@ The metrics are displayed in [**Grafana**](https://github.com/grafana/grafana). 
 
 ![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92904320-ae5ed900-f41a-11ea-8c92-fd28c0223b74.png)
 
-## Quick start
+## Getting started
 
-In their own shells, run Lotus and wait:
+This will setup Lotus to run against mainnet. Syncing the network will take a long time and will not be quick. Access to a fully synced node may be achieved this way if there is sufficient time to wait for sync to complete.
 
-- `lotus damon`
-- `lotus sync wait` 
-
-Then from this repo, with the submodules updated, run all the Sentinel components:
-
-- `make run-docker`
-- `make run-telegraf`
-- `make run-chainwatch`
+1. `git clone git@github.com:filecoin-project/sentinel.git`
+2. `cd sentinel`
+3. `make deps`
+4. `make run-lotus`
+5. (In another window) `build/lotus sync wait` which blocks until lotus finishes syncing the chain.
+6. `make run-docker` to start Docker services
+7. (In separate windows) `make run-drone` and `make run-visor`.
 
 ## Getting Started
 
@@ -43,9 +42,9 @@ Now we need to get Lotus built and syncing the chain.
 
 ### Lotus
 
-Sentinel requires a running lotus daemon that has completed synching the chain locally. A full sync of the [Testnet](https://network.filecoin.io/#testnet) takes days. You can test against the [Nerpa network](https://network.filecoin.io/#nerpa) to try sentinel out.
+Sentinel requires a running lotus daemon that has completed synching the chain locally. A full sync of the [Mainnet](https://network.filecoin.io/#mainnet) takes days. You can test against the [Nerpa network](https://network.filecoin.io/#nerpa) to try Sentinel out.
 
-Follow the [Lotus install and setup instructions](https://docs.filecoin.io/get-started/lotus/installation), to install the dependencies, check out the branch for the network you want to join, (e.g. `ntwrk-nerpa`), and build a local copy of lotus. If you need to test against testnet, see [Testing against Testnet](#testing-against-testnet).
+Follow the [Lotus install and setup instructions](https://docs.filecoin.io/get-started/lotus/installation), to install the dependencies, check out the branch for the network you want to join, (e.g. `ntwrk-nerpa`), and build a local copy of lotus. If you need to test against mainnet, see [Testing against Mainnet](#testing-against-mainnet).
 
 Run Lotus to start syncing.
 ```console
@@ -76,16 +75,10 @@ Now we need to generate some data with Visor and Drone
 
 ### Visor
 
-In a new shell run Visor. [By default](https://github.com/filecoin-project/sentinel/blob/fc8e8556e2f336c2a46db066571d46400d978d85/Makefile#L65-L69) it will read Lotus data from `$(HOME)/.lotus` and writes to the local TimescaleDB container we just started at `localhost:5432`.
+In a new shell run Visor. [By default](https://github.com/filecoin-project/sentinel/blob/d1623b47649113c12aa53c943b4ddb60401f4632/Makefile#L93-L94) it will read Lotus data from `$(HOME)/.lotus` and writes to the local TimescaleDB container we just started at `localhost:5432`.
 
 ```console
-$ make run-chainwatch
-...
-2020-09-18T15:22:12.283+0100	INFO	chainwatch	lotus-chainwatch/main.go:17	Starting chainwatch v0.5.7+git.b8bbbf3e
-2020-09-18T15:22:12.286+0100	INFO	chainwatch	lotus-chainwatch/run.go:74	Remote version: 0.7.0+git.992073d2
-2020-09-18T15:22:12.305+0100	INFO	syncer	syncer/blockssub.go:18	Capturing incoming blocks
-2020-09-18T15:22:12.343+0100	INFO	syncer	syncer/sync.go:173	Found starting point for syncing	{"blockCID": "bafy2bzaceaqnt4n37od7aqwbvp2qa2bqrb533wbztdwmxzgqtcl5xtbay5gqg", "height": 3715}
-...
+$ make run-visor
 ```
 
 If there are no `ERROR`s then it is now writing filecoin chain metrics to the database.
@@ -95,7 +88,7 @@ If there are no `ERROR`s then it is now writing filecoin chain metrics to the da
 In another shell, run Drone. [By default](./scripts/telegraf.conf.default) it reads the Lotus data dir at `$(HOME)/.lotus` and Lotus Prometheus metrics from http://127.0.0.1:1234/debug/metrics and writes to the TimescaleDB container at `localhost:5432`. Edit `build/telegraf.conf` if you need to customise those values.
 
 ```console
-$ make run-telegraf
+$ make run-drone
 ...
 2020-09-18T11:24:22Z D! [agent] Successfully connected to outputs.postgresql
 2020-09-18T11:24:31Z D! [outputs.postgresql] Wrote batch of 38 metrics in 588.361501ms
@@ -119,27 +112,27 @@ Visit http://localhost:3000 to open Grafana and login with username and password
 
 Note: Build artifacts are put into `./build` path. If you want to force building without `make clean`ing first, you can also `make -B <target>`.
 
-`make` - produces all build targets (lotus, chainwatch, and telegraf)
+`make` - produces all build targets (lotus, visor, and drone binaries)
 
 `make lotus` - only builds the lotus daemon binary
 
-`make chainwatch` - only builds the chainwatch binary
+`make visor` - only builds the visor binary
 
-`make telegraf` - only builds the telegraf agent binary
+`make drone` - only builds the Sentinel Drone agent binary
 
 ### Run/Stop
 
-`make run-telegraf` - start development Telegraf process with debug output (uses configuration at `build/telegraf.conf`)
+`make run-drone` - start development Sentinel Drone process with debug output (uses configuration at `build/drone.conf`)
 
 `make run-lotus` - start lotus daemon with default settings (lotus repo at `$(HOME)/.lotus`)
 
-`make run-chainwatch` - start chainwatch binary. The database and repo path can be changed from default via `LOTUS_DB` and `LOTUS_REPO` environment variables. (Defaults to `LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disabled` and `LOTUS_REPO ?= $(HOME)/.lotus`.
+`make run-visor` - start visor binary. The database and repo path can be changed from default via `LOTUS_DB` and `LOTUS_REPO` environment variables. (Defaults to `LOTUS_DB ?= postgres://postgres:password@localhost:5432/postgres?sslmode=disabled` and `LOTUS_REPO ?= $(HOME)/.lotus`.
 
 `make run-docker` - start docker services (currently TimescaleDB, Grafana)
 
-`make stop-telegraf` - stop development Telegraf process
+`make stop-drone` - stop development Sentinel Drone process
 
-`make stop-chainwatch` - stop chainwatch process
+`make stop-visor` - stop visor process
 
 `make stop-lotus` - stop lotus daemon process
 
@@ -147,27 +140,27 @@ Note: Build artifacts are put into `./build` path. If you want to force building
 
 ### Management/Installation
 
-`make install-services` - Install lotus, telegraf, chainwatch as systemd services
+`make install-services` - Install lotus-daemon, sentinel-drone, sentinel-visor as systemd services
 
-`make upgrade-services` - Build lotus, telegraf, chainwatch and replace existing binaries without deploying configuration files
+`make replace-services` - Build lotus-daemon, sentinel-drone, sentinel-visor and replace existing binaries without deploying configuration files
 
-`make clean-services` - Uninstall lotus, telegraf, chainwatch as systemd services (not logs or configuration)
+`make clean-services` - Uninstall lotus-daemon, sentinel-drone, sentinel-visor as systemd services (not logs or configuration)
 
 Install individual services:
 
-`make install-telegraf-service`
+`make install-drone-service`
 
 `make install-lotus-service`
 
-`make install-chainwatch-service`
+`make install-visor-service`
 
-Upgrade individual services:
+Replace individual services:
 
-`make upgrade-telegraf-service`
+`make replace-drone-service`
 
-`make upgrade-lotus-service`
+`make replace-lotus-service`
 
-`make upgrade-chainwatch-service`
+`make replace-visor-service`
 
 Also works with their `make clean-*-service` counterparts.
 
@@ -175,9 +168,9 @@ Also works with their `make clean-*-service` counterparts.
 
 `make clean-state` - stops and destroys docker service volumes (which resets TimescaleDB and Grafana settings and configuration)
 
-## Testing against Testnet
+## Testing against Mainnet
 
-A complete local sync of the `testnet` takes days. To complete it in a reasonable time you need a copy of an already sync'd lotus data dir from a friendly filecoin operator.At present, regular chain snapshots, as described in https://docs.filecoin.io/get-started/lotus/chain-snapshots don't work for chainwatch because they are incomplete exports.
+A complete local sync of `Mainnet` takes a long time. To complete it in a reasonable time you need a copy of an already sync'd lotus data dir from a friendly filecoin operator. (NOTE: At present, regular chain snapshots, as described in https://docs.filecoin.io/get-started/lotus/chain-snapshots don't work for chainwatch because they are incomplete exports.)
 
 To take a full copy of a Lotus data dir
 
@@ -187,10 +180,6 @@ To take a full copy of a Lotus data dir
 - start old and new daemons
 - 🎉
 
-## Maintainers
-
-- [@placer14](https://github.com/placer14)
-- [@frrist](https://github.com/frrist)
 
 ## Code of Conduct
 
