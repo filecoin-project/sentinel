@@ -14,7 +14,7 @@ The metrics are displayed in [**Grafana**](https://github.com/grafana/grafana). 
 
 ![sentinel architecture diagram](https://user-images.githubusercontent.com/58871/92904320-ae5ed900-f41a-11ea-8c92-fd28c0223b74.png)
 
-## Getting started
+## Getting Started (tl;dr)
 
 This will setup Lotus to run against mainnet. Syncing the network will take a long time and will not be quick. Access to a fully synced node may be achieved this way if there is sufficient time to wait for sync to complete.
 
@@ -26,7 +26,7 @@ This will setup Lotus to run against mainnet. Syncing the network will take a lo
 6. `make run-docker` to start Docker services
 7. (In separate windows) `make run-drone` and `make run-visor`.
 
-## Getting Started
+## Getting Started Step-by-Step
 
 Clone the repo and fetch the submodules. `make` will help you out:
 
