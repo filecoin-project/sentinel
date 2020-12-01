@@ -105,7 +105,7 @@ run-visor-processor: $(VISOR_BUILD_PATH)
 	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run --indexhistory=false --indexhead=false & echo $$! > ./build/.visor-processor.pid
 
 .PHONY: run-visor
-run-visor-processor: $(VISOR_BUILD_PATH)
+run-visor: $(VISOR_BUILD_PATH)
 	$(VISOR_BUILD_PATH) --db=$(LOTUS_DB) --repo=$(LOTUS_REPO) run & echo $$! > ./build/.visor.pid
 
 .PHONY: stop-docker
