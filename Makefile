@@ -5,6 +5,18 @@ all: build
 
 BINS:=
 CLEAN:=
+#
+# GITVERSION is the nearest tag plus number of commits and short form of most recent commit since the tag, if any
+GITVERSION=$(shell git describe --always --tag --dirty)
+
+unexport GOFLAGS
+GOFLAGS:=
+
+ldflags=-X=github.com/filecoin-project/sentinel/util/version.GitVersion=$(GITVERSION)
+ifneq ($(strip $(LDFLAGS)),)
+	ldflags+=-extldflags=$(LDFLAGS)
+endif
+GOFLAGS+=-ldflags="$(ldflags)"
 
 DRONE_PATH:=drone/
 LOTUS_PATH:=lotus/
@@ -15,6 +27,7 @@ CHAINWATCH_BUILD_PATH:=$(BUILD_PATH)chainwatch
 DRONE_BUILD_PATH:=$(BUILD_PATH)drone
 LOTUS_BUILD_PATH:=$(BUILD_PATH)lotus
 VISOR_BUILD_PATH:=$(BUILD_PATH)visor
+CHAINVIZ_BUILD_PATH:=$(BUILD_PATH)chainviz
 
 INSTALL_PATH:=/usr/local/bin/
 CHAINWATCH_INSTALL_PATH:=$(INSTALL_PATH)lotus-chainwatch
@@ -31,7 +44,7 @@ SYSTEMD_INSTALL_PATH:=/usr/local/lib/systemd/system/
 #############
 
 .PHONY: build
-build: drone lotus chainwatch visor
+build: drone lotus chainwatch visor chainviz
 
 .PHONY: drone
 drone: deps $(DRONE_BUILD_PATH)
@@ -65,6 +78,11 @@ $(VISOR_BUILD_PATH):
 	$(MAKE) -C $(VISOR_PATH) deps visor
 	cp $(VISOR_PATH)visor $(VISOR_BUILD_PATH)
 BINS+=$(VISOR_BUILD_PATH)
+
+.PHONY: chainviz
+chainviz:
+	go build $(GOFLAGS) -mod=readonly -o $(CHAINVIZ_BUILD_PATH) ./cmd/chainviz/main.go
+BINS+=$(CHAINVIZ_BUILD_PATH)
 
 .PHONY: deps
 deps:
