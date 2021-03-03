@@ -35,7 +35,7 @@ func (b *Block) WriteTo(out io.Writer) (int, error) {
 		name := b.blockShort() + "NB" + fmt.Sprint(i)
 		label := "NULL:" + fmt.Sprint(height)
 		n, err := fmt.Fprintf(out,
-			"%s [label = \"%s\", fillcolor = \"#ffddff\"]\n"+
+			"%s [label=\"%s\", fillcolor=\"#ffddff\", style=filled, forcelabels=true]\n"+
 				"%s -> %s\n",
 			name,
 			label,
@@ -51,7 +51,7 @@ func (b *Block) WriteTo(out io.Writer) (int, error) {
 
 	// Print the block itself
 	n, err := fmt.Fprintf(out,
-		"%s [label = \"%s:%d\\n%s\", fillcolor = \"#%06x\"]\n"+
+		"%s [label=\"%s:%d\\n%s\", fillcolor=\"#%06x\", style=filled, forcelabels=true]\n"+
 			"%s -> %s\n",
 		b.blockShort(),
 		b.Miner,

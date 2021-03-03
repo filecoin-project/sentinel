@@ -356,4 +356,4 @@ graph: START?=
 graph: COUNT?=
 graph:
 	go run ./cmd/chainviz/main.go --db $(DATABASE) $(START) $(COUNT) > _block.dot
-	dot _block.dot -Tsvg -Grankdir=TB -Nstyle=filled -Nforcelabels > block.svg
+	dot _block.dot -Tsvg -Grankdir=TB > block.svg
