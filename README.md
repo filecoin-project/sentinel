@@ -6,7 +6,7 @@
 
 Sentinel is a collection of services which monitor the health and function of the Filecoin network. 
 
-A **Visor** process collects _permenant_ Filecoin chain meterics from a [**Lotus**](https://github.com/filecoin-project/lotus/) daemon, and writes them to a [**TimescaleDB**](https://github.com/timescale/timescaledb), a time-series and relational datastore.
+A **Visor** process collects _permanent_ Filecoin chain meterics from a [**Lotus**](https://github.com/filecoin-project/lotus/) daemon, and writes them to a [**TimescaleDB**](https://github.com/timescale/timescaledb), a time-series and relational datastore.
 
 Many [**Drone**](https://github.com/filecoin-shipyard/sentinel-drone) instances collect _ephemeral_, node-specific Lotus metrics and write them to the same TimescaleDB.
 
