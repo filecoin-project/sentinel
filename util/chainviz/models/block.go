@@ -9,22 +9,27 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// CIDSuffixLength sets the length to truncate the CID in dot syntax production
 const CIDSuffixLength = 16
 
+// Block represents a single node to be visualized
 type Block struct {
-	Block        string
-	Height       uint64
-	Parent       string
-	ParentHeight uint64
-	Miner        string
+	CID          string `pg:"cid"`
+	Height       uint64 `pg:"height"`
+	ParentCID    string `pg:"parent_cid"`
+	ParentHeight uint64 `pg:"parent_height"`
+	Miner        string `pg:"miner"`
 }
 
+// WriteTo outputs DOT syntax to be drawn by graphviz dot. Implements the
+// WriterTo interface.
 func (b *Block) WriteTo(out io.Writer) (int, error) {
 	var bytesWritten int
-	var nulls = b.Height - b.ParentHeight - 1
 	var blockParent = b.parentShort()
 
-	// write null blocks if present
+	// Check for null blocks between this block and its parent. If any, create
+	// placeholders for them in the DOT output.
+	var nulls = b.Height - b.ParentHeight - 1
 	for i := uint64(0); i < nulls; i++ {
 		height := b.Height - nulls + i
 		name := b.blockShort() + "NB" + fmt.Sprint(i)
@@ -44,6 +49,7 @@ func (b *Block) WriteTo(out io.Writer) (int, error) {
 		blockParent = name
 	}
 
+	// Print the block itself
 	n, err := fmt.Fprintf(out,
 		"%s [label = \"%s:%d\\n%s\", fillcolor = \"#%06x\"]\n"+
 			"%s -> %s\n",
@@ -65,23 +71,29 @@ func (b *Block) dotColor() uint32 {
 	return crc32.Checksum([]byte(b.Miner), defaultTbl)&0xc0c0c0c0 + 0x30303000 | 0x000000ff
 }
 
+// blockShort is a truncated representation of Block.CID
 func (b *Block) blockShort() string {
-	return fmt.Sprintf("%s_%s", b.Block[0:4], b.Block[len(b.Block)-CIDSuffixLength:])
+	return fmt.Sprintf("%s_%s", b.CID[0:4], b.CID[len(b.CID)-CIDSuffixLength:])
 }
 
+// parentShort is a truncated representation of Block.ParentCID
 func (b *Block) parentShort() string {
-	return fmt.Sprintf("%s_%s", b.Parent[0:4], b.Parent[len(b.Parent)-CIDSuffixLength:])
+	return fmt.Sprintf("%s_%s", b.ParentCID[0:4], b.ParentCID[len(b.ParentCID)-CIDSuffixLength:])
 }
 
+// BlockSet represents a collection of Blocks to be visualized
 type BlockSet struct {
 	blocks []*Block
 	labels sync.Map
 }
 
+// NewBlockSet returns a BlockSet when given a slice of *Blocks
 func NewBlockSet(blks []*Block) *BlockSet {
 	return &BlockSet{blocks: blks}
 }
 
+// WriteTo outputs DOT syntax of the BlockSet to be drawn by graphviz dot.
+// Implements the WriterTo interface.
 func (bs *BlockSet) WriteTo(out io.Writer) (int, error) {
 	bytesWritten, err := fmt.Fprintf(out, "digraph D {\n")
 	if err != nil {
@@ -90,7 +102,7 @@ func (bs *BlockSet) WriteTo(out io.Writer) (int, error) {
 	for _, blk := range bs.blocks {
 		n, err := blk.WriteTo(out)
 		if err != nil {
-			return bytesWritten + n, xerrors.Errorf("writing block %s: %w", blk.Block, err)
+			return bytesWritten + n, xerrors.Errorf("writing block %s: %w", blk.CID, err)
 		}
 		bytesWritten += n
 	}

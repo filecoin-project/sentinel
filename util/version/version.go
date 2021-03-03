@@ -5,6 +5,8 @@ import (
 	"regexp"
 )
 
+// GitVersion is set during build time and included with the binary.
+// See `make chainviz` for usage.
 var GitVersion string = "unknown"
 
 var reVersion = regexp.MustCompile(`^(v\d+\.\d+.\d+)(?:-)?(.+)?$`)

@@ -345,3 +345,15 @@ deploy-interopnet:
 .PHONY: deploy-testnet
 deploy-testnet:
 	rsync -rv --include=.* --exclude=build --exclude=drone/plugins/inputs/lotus/extern/* $(PWD)/. sentinel-testnet:~/sentinel/
+
+###########
+# UTILITIES
+###########
+
+.PHONY: graph
+graph: DATABASE?=
+graph: START?=
+graph: COUNT?=
+graph:
+	go run ./cmd/chainviz/main.go --db $(DATABASE) $(START) $(COUNT) > _block.dot
+	dot _block.dot -Tsvg -Grankdir=TB -Nstyle=filled -Nforcelabels > block.svg
