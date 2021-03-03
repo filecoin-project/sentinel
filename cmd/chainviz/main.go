@@ -86,8 +86,10 @@ func main() {
 				log.Debugf("Write dot ouput (duration: %s)\n", time.Since(start))
 			}()
 
-			_, err = blks.WriteTo(os.Stdout)
-			return xerrors.Errorf("write: %w", err)
+			if _, err = blks.WriteTo(os.Stdout); err != nil {
+				return xerrors.Errorf("write: %w", err)
+			}
+			return nil
 		},
 	}
 

@@ -4,32 +4,12 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"strings"
+	"sync"
+
+	"golang.org/x/xerrors"
 )
 
-type BlockSet struct {
-	blocks []*Block
-}
-
-func NewBlockSet(blks []*Block) *BlockSet {
-	return &BlockSet{blocks: blks}
-}
-
-func (bs *BlockSet) WriteTo(out io.Writer) (int, error) {
-	n, err := fmt.Fprintf(out, "digraph D {")
-	if err != nil {
-		return n, err
-	}
-	for _, b := range bs.blocks {
-		i, err := fmt.Fprintf(out, b.DotString())
-		if err != nil {
-			return n + i, err
-		}
-		n += i
-	}
-	m, err := fmt.Fprintf(out, "digraph D {")
-	return n + m, err
-}
+const CIDSuffixLength = 16
 
 type Block struct {
 	Block        string
@@ -39,20 +19,43 @@ type Block struct {
 	Miner        string
 }
 
-func (b *Block) DotString() string {
-	var result strings.Builder
+func (b *Block) WriteTo(out io.Writer) (int, error) {
+	var bytesWritten int
+	var nulls = b.Height - b.ParentHeight - 1
+	var blockParent = b.parentShort()
 
-	// write any null rounds before this block
-	nulls := b.Height - b.ParentHeight - 1
+	// write null blocks if present
 	for i := uint64(0); i < nulls; i++ {
-		name := b.Block + "NP" + fmt.Sprint(i)
-		result.WriteString(fmt.Sprintf("%s [label = \"NULL:%d\", fillcolor = \"#ffddff\", style=filled, forcelabels=true]\n%s -> %s\n", name, b.Height-nulls+i, name, b.Parent))
-		b.Parent = name
+		height := b.Height - nulls + i
+		name := b.blockShort() + "NB" + fmt.Sprint(i)
+		label := "NULL:" + fmt.Sprint(height)
+		n, err := fmt.Fprintf(out,
+			"%s [label = \"%s\", fillcolor = \"#ffddff\"]\n"+
+				"%s -> %s\n",
+			name,
+			label,
+			name,
+			blockParent,
+		)
+		if err != nil {
+			return bytesWritten + n, xerrors.Errorf("writing null %d: %w", name, err)
+		}
+		bytesWritten += n
+		blockParent = name
 	}
 
-	result.WriteString(fmt.Sprintf("%s [label = \"%s:%d\", fillcolor = \"#%06x\", style=filled, forcelabels=true]\n%s -> %s\n", b.Block, b.Miner, b.Height, b.dotColor(), b.Block, b.Parent))
-
-	return result.String()
+	n, err := fmt.Fprintf(out,
+		"%s [label = \"%s:%d\\n%s\", fillcolor = \"#%06x\"]\n"+
+			"%s -> %s\n",
+		b.blockShort(),
+		b.Miner,
+		b.Height,
+		b.blockShort(),
+		b.dotColor(),
+		b.blockShort(),
+		blockParent,
+	)
+	return bytesWritten + n, err
 }
 
 var defaultTbl = crc32.MakeTable(crc32.Castagnoli)
@@ -60,4 +63,40 @@ var defaultTbl = crc32.MakeTable(crc32.Castagnoli)
 // dotColor intends to convert the Miner id into the RGBa color space
 func (b *Block) dotColor() uint32 {
 	return crc32.Checksum([]byte(b.Miner), defaultTbl)&0xc0c0c0c0 + 0x30303000 | 0x000000ff
+}
+
+func (b *Block) blockShort() string {
+	return fmt.Sprintf("%s_%s", b.Block[0:4], b.Block[len(b.Block)-CIDSuffixLength:])
+}
+
+func (b *Block) parentShort() string {
+	return fmt.Sprintf("%s_%s", b.Parent[0:4], b.Parent[len(b.Parent)-CIDSuffixLength:])
+}
+
+type BlockSet struct {
+	blocks []*Block
+	labels sync.Map
+}
+
+func NewBlockSet(blks []*Block) *BlockSet {
+	return &BlockSet{blocks: blks}
+}
+
+func (bs *BlockSet) WriteTo(out io.Writer) (int, error) {
+	bytesWritten, err := fmt.Fprintf(out, "digraph D {\n")
+	if err != nil {
+		return bytesWritten, xerrors.Errorf("writing intro: %w", err)
+	}
+	for _, blk := range bs.blocks {
+		n, err := blk.WriteTo(out)
+		if err != nil {
+			return bytesWritten + n, xerrors.Errorf("writing block %s: %w", blk.Block, err)
+		}
+		bytesWritten += n
+	}
+	n, err := fmt.Fprintf(out, "}\n")
+	if err != nil {
+		return bytesWritten + n, xerrors.Errorf("writing outro: %w", err)
+	}
+	return bytesWritten + n, nil
 }
