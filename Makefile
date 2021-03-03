@@ -353,7 +353,9 @@ deploy-testnet:
 .PHONY: graph
 graph: DATABASE?=
 graph: START?=
-graph: COUNT?=
+graph: COUNT?=100
+graph: OUTPUT?=block.svg
 graph:
 	go run ./cmd/chainviz/main.go --db $(DATABASE) $(START) $(COUNT) > _block.dot
-	dot _block.dot -Tsvg -Grankdir=TB > block.svg
+	dot _block.dot -Tsvg -Grankdir=TB > $(OUTPUT)
+	rm _block.dot
