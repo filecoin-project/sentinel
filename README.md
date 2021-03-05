@@ -168,6 +168,16 @@ Also works with their `make clean-*-service` counterparts.
 
 `make clean-state` - stops and destroys docker service volumes (which resets TimescaleDB and Grafana settings and configuration)
 
+## Utilities
+
+### chainviz
+
+The utility `chainviz` queries schema provided by `sentinel-drone` and visualizes the Filecoin chain using graphviz dot syntax. (Note: Requires `graphviz` to be in your PATH.)
+
+Usage: `chainviz [options] <minHeight> <chainDistance>`
+
+Example usage may be found in the `Makefile` under target `graph`.
+
 ## Testing against Mainnet
 
 A complete local sync of `Mainnet` takes a long time. To complete it in a reasonable time you need a copy of an already sync'd lotus data dir from a friendly filecoin operator. (NOTE: At present, regular chain snapshots, as described in https://docs.filecoin.io/get-started/lotus/chain-snapshots don't work for chainwatch because they are incomplete exports.)

@@ -43,7 +43,7 @@ func (b *Block) WriteTo(out io.Writer) (int, error) {
 			blockParent,
 		)
 		if err != nil {
-			return bytesWritten + n, xerrors.Errorf("writing null %d: %w", name, err)
+			return bytesWritten + n, xerrors.Errorf("writing null %s: %w", name, err)
 		}
 		bytesWritten += n
 		blockParent = name
