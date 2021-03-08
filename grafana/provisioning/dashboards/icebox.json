@@ -1,0 +1,424 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 459,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PeerID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 475
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hostname"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 234
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 17,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "7.4.3",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "with expected_heights as (\n\tselect\n\t\thost,\n\t\tpeer_ID,\n\t\tmax(gauge) as \"height\"\n\tfrom lotus_chain_node_height_expected\n\tgroup by 1, 2\n), actual_heights as (\n\tselect\n\t\thost,\n\t\tpeer_ID,\n\t\tmax(gauge) as \"height\"\n\tfrom lotus_chain_node_height\n\tgroup by 1, 2\n)\nselect\n\ta.host as \"Hostname\",\n\ta.peer_ID as \"PeerID\",\n\ta.height as \"Node Sync Height\",\n\te.height - a.height as \"Sync Lag\"\nfrom actual_heights a JOIN expected_heights e USING (host, peer_ID)\n;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_pubsub_recv_rpc",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Network Sync Lag per Host",
+      "type": "table"
+    },
+    {
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "description": "All heights where a series of null rounds were concluded and the height at which they concluded.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "center",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 7,
+        "x": 17,
+        "y": 0
+      },
+      "id": 6,
+      "interval": "",
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Consecutive Null Rounds"
+          }
+        ]
+      },
+      "pluginVersion": "7.4.3",
+      "targets": [
+        {
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH distinct_heights AS (\n\tSELECT DISTINCT\n\t\theight::int AS height\n\tFROM\n\t\tblock_headers\n\tORDER BY\n\t\theight::int DESC\n),\nheight_diffs AS (\n\tSELECT\n\t\theight,\n\t\theight - lag(height) OVER (ORDER BY height) - 1 AS \"consecutive_null_rounds\"\n\tFROM\n\t\tdistinct_heights ORDER BY\n\t\t\theight DESC\n)\nSELECT\n\theight as \"Height\",\n\tconsecutive_null_rounds as \"Consecutive Null Rounds\"\nFROM\n\theight_diffs\nWHERE\n\tconsecutive_null_rounds > 0\nORDER BY 2 DESC\nLIMIT 100;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_pubsub_recv_rpc",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Top 100 Trends of Consecutive Null Rounds",
+      "transformations": [],
+      "type": "table"
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.25
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "48h",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "10m",
+        "frequency": "2m",
+        "handler": 1,
+        "name": "Deal Terminations alert",
+        "noDataState": "no_data",
+        "notifications": [
+          {
+            "uid": "Y9Knd9hGz"
+          }
+        ]
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Sentinel Monitoring Production (TimescaleCloud)",
+      "description": "Duration reported by lotus between receipt and validation of a block.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "Misc"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "percent"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          }
+        ]
+      },
+      "fill": 1,
+      "fillGradient": 3,
+      "gridPos": {
+        "h": 7,
+        "w": 7,
+        "x": 0,
+        "y": 6
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.4.3",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:390",
+          "alias": "total",
+          "yaxis": 2
+        },
+        {
+          "$$hashKey": "object:391",
+          "alias": "percent",
+          "color": "#F2495C"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "with epoch as (\n    select height,\n           time_bucket('30s', to_timestamp(block_headers.timestamp)) as \"time\",\n           parent_state_root\n    from block_headers\n    where to_timestamp(timestamp) > date $__timeFrom() - interval '3 hour'\n     and to_timestamp(timestamp) < $__timeTo()\n    group by timestamp, height, parent_state_root, parent_weight\n    order by height desc, parent_weight desc\n),\n     deal_terminations_per_height as (\n         select epoch.time,\n                sum(count(mdp.deal_id) filter (where slash_epoch > 0 and slash_epoch is not null)) over (order by epoch.time rows between 360 preceding and current row) as \"terminated\",\n                sum(count(mdp.deal_id)) over (order by epoch.time rows between 360 preceding and current row) as \"total\"\n         from epoch\n                  left join market_deal_states mds on epoch.parent_state_root = mds.state_root\n                  left join market_deal_proposals mdp on mds.deal_id = mdp.deal_id\n         group by epoch.time\n         order by epoch.time desc\n     )\nselect distinct on (time) time,\n                          total,\n                          (case when total = '0' then 0 else terminated/total end) as \"percent\"\nfrom deal_terminations_per_height\nwhere time > $__timeFrom()\n  and time < $__timeTo()\norder by time desc",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "counter"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "lotus_pubsub_recv_rpc",
+          "timeColumn": "\"time\"",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 0.25,
+          "visible": true
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Deal Terminations",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:404",
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:405",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Monitoring Icebox",
+  "uid": "X9CrXq2Gz",
+  "version": 3
+}
