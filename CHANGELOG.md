@@ -1,3 +1,11 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is a variant of [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) combined with categories from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Breaking changes should trigger an increment to the major version. Features increment the minor version and fixes or other changes increment the patch number.
+
+
 <a name="v0.4.0"></a>
 ## [v0.4.0] - 2021-03-08
 
