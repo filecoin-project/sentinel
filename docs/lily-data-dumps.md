@@ -1,8 +1,10 @@
 # Sentinel Lily data dumps
 
-```yaml
-Last epoch: 1085999 (2021-09-05 EOD)
-Tables:
+* Last epoch: 1085999 (2021-09-05 EOD)
+* Locations:
+  - [S3](#S3-bucket)
+  - IPFS (TBD)
+* Tables:
   - actor_states
   - actors
   - block_headers
@@ -37,7 +39,6 @@ Tables:
   - receipts
   - verified_registry_verified_clients
   - verified_registry_verifiers
-```
 
 ## S3 bucket
 
