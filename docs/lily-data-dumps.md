@@ -1,10 +1,21 @@
 # Sentinel Lily data dumps
 
-* Last epoch: 1085999 (2021-09-05 EOD)
-* Locations:
-  - [S3](#S3-bucket)
-  - IPFS (TBD)
-* Tables:
+The Sentinel team provides data dumps as produced by Lily so that users do not
+need to re-process the Filecoin chain (a slow process).
+
+The dumps can be imported into your database or tooling of choice.
+
+* [Information and tables included in the latest data dump](#latest-data-dump)
+* Download:
+  * [S3 Bucket (CSV)](#s3-bucket)
+  * IPFS (TBD)
+
+
+## Latest data dump
+
+```yaml
+Last epoch: 1085999 (2021-09-05 EOD)
+Tables:
   - actor_states
   - actors
   - block_headers
@@ -39,6 +50,7 @@
   - receipts
   - verified_registry_verified_clients
   - verified_registry_verifiers
+```
 
 ## S3 bucket
 
@@ -61,4 +73,3 @@ aws s3 ls "s3://lily-data/" # See items root folder
 aws s3 ls "s3://lily-data/data/1051440__1054319/" # List CSV files for available tables.
 ```
 
-If you rely regularly
