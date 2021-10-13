@@ -15,6 +15,7 @@ The dumps can be imported into your database or tooling of choice.
 
 ```yaml
 Last epoch: 1085999 (2021-09-05 EOD)
+Total Size: 6336508189865 (5.8TB)
 Tables:
   - actor_states
   - actors
@@ -72,4 +73,3 @@ Data layout can be previewed with the AWS CLI:
 aws s3 ls "s3://lily-data/" # See items root folder
 aws s3 ls "s3://lily-data/data/1051440__1054319/" # List CSV files for available tables.
 ```
-

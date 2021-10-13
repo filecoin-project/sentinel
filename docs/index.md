@@ -10,5 +10,5 @@ structured data for messages, blocks, market and sector events, actor states
 etc.
 
   * [Repository](https://github.com/filecoin-project/lily)
-  * [Documentation](lily.md)
-  * [Historical data dumps](lily-data-dumps.md)
+  * [Documentation](lily/)
+  * [Historical data dumps](lily/data-dumps.md)

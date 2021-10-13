@@ -1,3 +1,0 @@
-# Sentinel Lily documentation
-
-WIP
