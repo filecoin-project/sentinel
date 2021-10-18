@@ -332,6 +332,16 @@ startup. There are other configuration values which have "reasonable" default
 values, but should be reviewed for your use case before enabling
 tracing. `lily help monitoring` provides more information about these aspects.
 
+For example: by default, Lily uses probabilistic sampling with a rate of 0.0001. During testing it can be easier to override to remove sampling by setting
+the following environment variables:
+
+```
+export JAEGER_SAMPLER_TYPE=const
+export JAEGER_SAMPLER_PARAM=1
+```
+
+or by specifying `--jaeger-sampler-type=const jaeger-sampler-param=1`.
+
 Default tracing values are preconfigured to work with OpenTelemetry's default
 agent ports and assumes the agent is bound to `localhost`. Configuration of
 `JAEGER_*` envvars or `--jaeger-*` args may be required if your setup is
