@@ -14,7 +14,7 @@ The dumps can be imported into your database or tooling of choice.
 ## Latest data dump
 
 ```yaml
-Last epoch: 1235759 (2021-10-27 EOD)
+Last epoch: 1428719 (2022-01-02 EOD)
 Total Size: 14.5TiB
 Tables:
   - actor_states
