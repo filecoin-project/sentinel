@@ -95,6 +95,11 @@ Header files providing column names for each table are in each table's folder. F
 
 `https://fil-archive.s3.us-east-2.amazonaws.com/mainnet/csv/1/messages/messages.header`
 
+A basic postgresql compatible schema definition is also published in each table’s folder. 
+For example:
+
+`https://fil-archive.s3.us-east-2.amazonaws.com/mainnet/csv/1/messages/messages.schema`
+
 For help converting between epochs and date, see the import script linked above.
 
 The data layout can be previewed with the AWS CLI:
