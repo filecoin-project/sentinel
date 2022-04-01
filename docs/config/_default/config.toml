@@ -1,4 +1,4 @@
-baseurl = "https://lilium.sh"
+baseurl = "/"
 canonifyURLs = false
 disableAliases = true
 disableHugoGeneratorInject = true
