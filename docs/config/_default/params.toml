@@ -1,0 +1,85 @@
+# Meta Data for SEO
+
+## Homepage
+title = "Sentinel"
+titleSeparator = "-"
+titleAddition = "Monitor, analyze, and extract data from the Filecoin network."
+description = "Sentinel provides tooling for monitoring, extracting and analyzing data from the Filecoin network. This data includes on-chain metrics and events and off-chain information like price points or Filecoin’s peer-to-peer network health."
+
+## Documentation
+# docsVersion = "0.3"
+
+## Open Graph
+images = ["logo.png"]
+ogLocale = "en_US"
+domainTLD = ""
+titleHome = "Sentinel"
+
+## Twitter Cards
+twitterSite = ""
+twitterCreator = ""
+
+## JSON-LD
+# schemaType = "Person"
+schemaType = "Organization"
+schemaName = "Sentinel"
+schemaAuthor = "Protocol Labs"
+schemaAuthorTwitter = "https://twitter.com/protocollabs"
+schemaAuthorLinkedIn = "https://www.linkedin.com/in/protocollabs/"
+schemaAuthorGitHub = "https://github.com/filecoin-project/lily"
+schemaLocale = "en-US"
+schemaLogo = "logo.png"
+schemaLogoWidth = 512
+schemaLogoHeight = 512
+schemaImage = "logo.png"
+schemaImageWidth = 1280
+schemaImageHeight = 640
+schemaTwitter = "https://twitter.com/protocollabs"
+schemaLinkedIn = ""
+schemaGitHub = "https://github.com/filecoin-project/lily"
+#schemaSection = "blog"
+
+## Sitelinks Search Box
+siteLinksSearchBox = false
+
+## Chrome Browser
+themeColor = "#fff"
+
+# Images
+quality = 85
+bgColor = "#fff"
+landscapePhotoWidths = [900, 800, 700, 600, 500]
+portraitPhotoWidths = [800, 700, 600, 500]
+lqipWidth = "20x"
+smallLimit = "300"
+
+# Footer
+footer = "Built by the Sentinel Team at Protocol Labs."
+
+# Feed
+copyRight = ""
+
+# Alert
+alert = false
+alertDismissable = true
+# alertText = "Introducing the Doks child theme, several DX + UX updates, and more! <a class=\"alert-link stretched-link\" href=\"https://getdoks.org/blog/doks-v0.2/\" target=\"_blank\" rel=\"noopener\">Check out Doks v0.2</a>"
+alertText = ""
+
+# Edit Page
+docsRepo = "https://github.com/johnnymatthews/sentinel"
+docsRepoBranch = "main"
+editPage = false
+
+[options]
+  lazySizes = true
+  clipBoard = true
+  instantPage = true
+  flexSearch = true
+  darkMode = true
+  bootStrapJs = true
+  breadCrumb = false
+  highLight = true
+  kaTex = false
+  collapsibleSidebar = true
+  multilingualMode = false
+  docsVersioning = false

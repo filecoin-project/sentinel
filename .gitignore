@@ -1,2 +1,3 @@
-build/*
-.idea/
+docs/node_modules
+docs/public
+docs/resources
