@@ -1,5 +1,5 @@
 var docs = [
-{{ range $index, $page := (where .Site.Pages "Section" "docs") -}}
+{{ range $index, $page := (where .Site.Pages "Section" "data") -}}
   {
     id: {{ $index }},
     title: "{{ .Title }}",
