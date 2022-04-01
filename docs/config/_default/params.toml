@@ -24,9 +24,9 @@ twitterCreator = ""
 schemaType = "Organization"
 schemaName = "Sentinel"
 schemaAuthor = "Protocol Labs"
-schemaAuthorTwitter = "https://twitter.com/protocollabs"
-schemaAuthorLinkedIn = "https://www.linkedin.com/in/protocollabs/"
-schemaAuthorGitHub = "https://github.com/filecoin-project/lily"
+#schemaAuthorTwitter = "https://twitter.com/protocollabs"
+#schemaAuthorLinkedIn = "https://www.linkedin.com/in/protocollabs/"
+schemaAuthorGitHub = "https://github.com/filecoin-project/sentinel"
 schemaLocale = "en-US"
 schemaLogo = "logo.png"
 schemaLogoWidth = 512
@@ -34,9 +34,9 @@ schemaLogoHeight = 512
 schemaImage = "logo.png"
 schemaImageWidth = 1280
 schemaImageHeight = 640
-schemaTwitter = "https://twitter.com/protocollabs"
+#schemaTwitter = "https://twitter.com/protocollabs"
 schemaLinkedIn = ""
-schemaGitHub = "https://github.com/filecoin-project/lily"
+schemaGitHub = "https://github.com/filecoin-project/sentinel"
 #schemaSection = "blog"
 
 ## Sitelinks Search Box
@@ -54,7 +54,7 @@ lqipWidth = "20x"
 smallLimit = "300"
 
 # Footer
-footer = "Built by the Sentinel Team at Protocol Labs."
+footer = "Built by the Sentinel Team at Protocol Labs - Starfleet."
 
 # Feed
 copyRight = ""
@@ -66,9 +66,11 @@ alertDismissable = true
 alertText = ""
 
 # Edit Page
-docsRepo = "https://github.com/johnnymatthews/sentinel"
-docsRepoBranch = "main"
-editPage = false
+repoHost = "GitHub"
+docsRepo = "https://github.com/filecoin-project/sentinel"
+docsRepoBranch = "master"
+docsRepoSubPath = "docs"
+editPage = true
 
 [options]
   lazySizes = true
