@@ -8,7 +8,7 @@ The Sentinel Team provides Filecoin chain monitoring and analysis tools.
 
 Performs chain data extraction and indexing, exporting to TimescaleDB or CSV.
 
-URL: https://lilium.sh/lily
+URL: https://lilium.sh/software/lily
 
 ### Sentinel-drone
 
