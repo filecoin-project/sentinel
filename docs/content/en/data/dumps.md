@@ -14,10 +14,10 @@ weight: 20
 
 ## Latest data dump
 
-Dumps are added daily. The following is a snapshot of what is available as of 2022-03-01:
+Dumps are added daily. The following is a snapshot of what is available as of 2022-03-31:
 
 ```yaml
-Last epoch: 1592879 (2022-02-28 EOD)
+Last epoch: 1680348 (2022-03-31 EOD)
 Total Size: 1.6TiB
 Tables:
   - actor_states
