@@ -18,6 +18,10 @@ toc: true
 
 - It is recommended that you truncate your `visor_gap_reports` table before using this function as it doesn't do anything special to resolve conflicts. If you are using this over heights/tasks which aren't already in your gap reports table, then you should have no issues.
 
+### CONTEXT
+
+Details around the task name change can be found in the change log at https://github.com/filecoin-project/lily/blob/master/CHANGELOG.md#v090---2022-04-21.
+
 ### DETAIL
 
 ```sql
