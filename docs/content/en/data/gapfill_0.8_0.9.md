@@ -1,6 +1,6 @@
 ---
-title: "Gap Fill over data from v0.8.x and v0.9.x"
-description: "Manual steps for gapfilling data from both Lily v0.8 and v0.9"
+title: "Gap Fill over data through upgrade from v0.8 and v0.9"
+description: "Manual steps for gapfilling data through upgrade from v0.8 to v0.9"
 lead: "Task names have changed from v0.8 to v0.9. This workaround will help manage running gap find/fill tasks on databases which contain data from both versions of Lily."
 menu:
   data:
@@ -14,9 +14,9 @@ toc: true
 
 ### IMPORTANT
 
-- This example uses a hardcoded schema name of `visor` which must be updated if you use another schema name for your Lily data.
+- This example uses a hardcoded schema name of `lily` which must be updated if you use another schema name for your Lily data.
 
-- It is recommended that you truncate your `visor_gap_reports` table before using this function as it doesn't do anything special to resolve conflicts. If you are using this over heights/tasks which aren't already in your gap reports table, then you should have no issues.
+- It is recommended that you truncate your `visor_gap_reports` table before using this function as it doesn't do anything special to resolve conflicts. If you are using this over heights/tasks which do not have records in your gap reports table, then you should have no issues.
 
 ### CONTEXT
 
@@ -29,10 +29,10 @@ Details around the task name change can be found in the change log at https://gi
 -- visor_processing_reports for where gaps exist in the model tables. this function will properly
 -- map legacy tasks which already exist in your processing reports and treat them as gaps with
 -- the current task names. this function is indifferent to when your database started receiving
--- data coming from v0.8.X to v0.9.X
+-- data coming from any version of v0.8.8 and earlier to v0.9.0
 -- It should be sufficient to execute `lily job run gap fill` as usual.
 
-create or replace function visor.populate_gap_find_reports_supporting_legacy_tasknames (min_height bigint, max_height bigint, reporter_name text)
+create or replace function lily.populate_gap_find_reports_supporting_legacy_tasknames (min_height bigint, max_height bigint, reporter_name text)
   returns table (
     height bigint, task text, status text, reporter text, reported_at timestamp with time zone
 )
@@ -250,7 +250,7 @@ gaps_found as (
   order by
     gaps.height desc,
     gaps.task
-) insert into visor.visor_gap_reports (height, task, status, reporter, reported_at) (
+) insert into lily.visor_gap_reports (height, task, status, reporter, reported_at) (
     select
       g.height,
       g.task,
@@ -269,11 +269,11 @@ select
   min(height),
   max(height)
 from
-  visor.visor_processing_reports;
+  lily.visor_processing_reports;
 
 --> 806639, 1805178
 select
-  visor.populate_gap_find_reports_supporting_legacy_tasknames (806639,
+  lily.populate_gap_find_reports_supporting_legacy_tasknames (806639,
     1805178,
     '20220513_manual_gapfill_alltasks');
 ```
