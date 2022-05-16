@@ -1,6 +1,6 @@
 ---
-title: "Gap Fill over data through upgrade from v0.8 and v0.9"
-description: "Manual steps for gapfilling data through upgrade from v0.8 to v0.9"
+title: "Gap Fill over data through any version before v0.9.0"
+description: "Manual steps for gap filling data through any version before v0.9.0"
 lead: "Task names have changed from v0.8 to v0.9. This workaround will help manage running gap find/fill tasks on databases which contain data from both versions of Lily."
 menu:
   data:
