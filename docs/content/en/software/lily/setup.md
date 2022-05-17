@@ -29,7 +29,7 @@ Flags usually have an environment variable equivalent.
 
 ## Dependencies
 
-You will need the same dependencies as for Lotus. See the [Lotus installation instructions](https://docs.filecoin.io/get-started/lotus/installation/#software-dependencies) for the installation commands for each distribution.
+You will need the same dependencies as for Lotus. See the [Lotus installation instructions](https://lotus.filecoin.io/lotus/install/prerequisites/) for the installation commands for each distribution.
 
 ---
 
