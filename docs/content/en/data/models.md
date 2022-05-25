@@ -409,7 +409,7 @@ Latest state of sectors by Miner.
 | activation_epoch        | Epoch during which the sector proof was accepted.            |
 | expiration_epoch        | Epoch during which the sector expires.                       |
 | deal_weight             | Integral of active deals over sector lifetime.               |
-| verified_deal_weight    | Integral of active verified deals over sector lifetime.      |
+| verified_deal_weight    | Integral of active verified deals over sector lifetime. This is specifically for sectors in [Filecoin Plus](https://plus.fil.org/). |
 | initial_pledge          | Pledge collected to commit this sector (in attoFIL).         |
 | expected_day_reward     | Expected one day projection of reward for sector computed at activation time (in attoFIL). |
 | expected_storage_pledge | Expected twenty day projection of reward for sector computed at activation time (in attoFIL). |
