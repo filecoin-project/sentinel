@@ -17,4 +17,4 @@ weight: 10
   * Deriving a view of on-chain Consensus.
   * Extracting miner sectors life-cycle events: Pre-Commit Add, Sector Add, Extend, Fault, Recovering, Recovered, Expiration, and Termination.
   * Collecting Internal message sends not appearing on chain. For example, Multisig actor sends, Cron Event Ticks, Block and Reward Messages.
-  * etc. For a full list of data extracted by Lily see the [models](models.md).
+  * etc. For a full list of data extracted by Lily see the [models]({{< ref "/data/models" >}}).
