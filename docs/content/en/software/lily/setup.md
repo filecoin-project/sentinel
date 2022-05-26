@@ -69,7 +69,7 @@ make clean calibnet
 
 (Check the Makefile for eventual support for additional networks).
 
-4. Install Lily (optional) 
+4. Install Lily (optional)
 
 ```bash
 cp ./lily /usr/local/bin/lily
