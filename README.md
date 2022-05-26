@@ -33,7 +33,19 @@ URL: https://github.com/filecoin-project/sentinel-locations
 
 Visit https://lilium.sh for the latest documentation on the software.
 
-For questions and support, we are available in the `#fil-sentinel` on Filecoin's slack (https://filecoin.io/slack/).
+- For questions and support, we are available in the `#fil-sentinel` on Filecoin's slack (https://filecoin.io/slack/).
+
+To build the documentation site locally, you need:
+- [Hugo](https://gohugo.io/getting-started/installing/), `>=v0.9.0`.
+- [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm), `>=v8.5.0`
+
+To run the Hugo server locally:
+
+```
+$ cd docs
+$ npm install
+$ hugo server
+```
 
 ## Code of Conduct
 
