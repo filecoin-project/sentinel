@@ -35,27 +35,57 @@ manage its Jobs through the CLI. (Note: behaviour is undefined if Lily is not
 fully synced, so one may gate the Job creation to wait for sync to complete
 with `lily sync wait && lily ...`.).
 
-Currently, Lily accepts the following Jobs:
+Jobs may be executed on a lily node via the `job run` command. The `job run` command accepts the following flags:
+- `--window` duration after which job execution will be canceled while processing a tipset.
+- `--tasks` specifies the list of [tasks](#tasks) to run by this job. Some
+  tasks [will be heavier than others](hardware.md). A tipset is only
+  processed when all tasks in the job have finished. Only then will Lily
+  move to the next epoch.
+- `--storage` specifies which of the configured storage outputs the job will write to.
+- `--name` specifies the name of the job for easy identification later. The provided value
+  will appear as `reporter` in the `visor_processing_reports` table.
+- `--restart-delay` duration to wait before restarting job after it ends execution.
+- `--restart-on-failure` specifies if a job should be restarted in the event it fails.
+- `--restart-on-completion` specifies if a job should be restarted once it completes.
 
-- `lily job run watch`: A Watch job follows the chain as is grows. Watch jobs
-  subscribe to incoming tipsets and process them as they arrive. a confidence
-  level may be specified which determines how many epochs lily should wait
-  before processing a tipset.
-- `lily job run walk`: A Walk job accepts a range of heights (`--from` and `--to`) and
-  traverses the chain from the heaviest tipset set at the upper height to the
-  lower height using the parent state root present in each tipset.
-- `lily job run find`: A Gap-Find job walks over tables in the Postgres storage
-  provided to the task and prepares the work needed to execute `lily gap
-  fill`.
-- `lily job run fill`: A Gap-Fill job uses the prepared work from `lily job run find`
-  to execute the named `--tasks` over any detected gaps in our data.
+Currently, Lily is capable of executing the following types of jobs:
 
-Among the arguments that jobs take are two important ones shared by all types:
-  - `--tasks` specifies the list of [tasks](#tasks) to run by this job. Some
-    tasks [will be heavier than others](hardware.md). A tipset is only
-    processed when all tasks in the job have finished. Only then will Lily
-    move to the next epoch.
-  - `--storage` specifies which of the configured storage outputs the job will write to.
+### Watch
+The Watch command subscribes to incoming tipsets from the filecoin blockchain and indexes them as the arrive.
+
+Since it may be the case that tipsets arrive at a rate greater than their rate of indexing the watch job maintains a
+buffer of tipsets to index. Consumption of this queue can be configured via the `--workers` flag. Increasing the value
+provided to the `--workers` flag will allow the watch job to index tipsets simultaneously.
+(Note: this will use a significant amount of system resources).
+
+Since it may be the case that lily experiences a reorg while the watch job is observing the head of the chain
+the `--confidence` flag may be used to buffer the amount of tipsets observed before it begins indexing.
+
+### Walk
+The Walk command will index state based on the list of tasks (`--tasks`) provided over the specified range
+(`--from`, `--to`). Each epoch will be indexed serially starting from the heaviest tipset at the upper height
+(`--to`) to the lower height (`--from`).
+
+### Find
+The Find job searches for gaps in a database storage system by executing the SQL `gap_find()` function over the
+`visor_processing_reports` table. Find will query the database for gaps based on the list of tasks (`--tasks`) provided
+over the specified range (`--from`,`--to`). An epoch is considered to have gaps if and only if:
+1. task specified by the `--task` flag is not present at each epoch within the specified range.
+2. a task specified by the `--task` flag does not have status `'OK'` at each epoch within the specified range.
+  The results of the find job are written to the `visor_gap_reports` table with status `'GAP'`.
+
+**Constraint**: the Find job must be executed **BEFORE** a Fill job. These jobs must **NOT** be executed simultaneously.
+    
+### Fill
+The Fill job queries the `visor_gap_reports` table for gaps to fill and indexes the data reported to have gaps.
+A gap in the `visor_gap_reports` table is any row with status `'GAP'`. Fill will index gaps based on the list
+of tasks (`--tasks`) provided over the specified range (`--from`, `--to`). Each epoch and its corresponding list of
+tasks found in the `visor_gap_reports` table will be indexed independently. When the gap is successfully
+filled its corresponding entry in the `visor_gap_reports` table will be updated with status `'FILLED'`.
+
+**Constraint**: the Fill job must be executed **AFTER** a Find job. These jobs must **NOT** be executed simultaneously.
+
+>>>>>>> b749921 (firest pass wip)
 
 When Jobs are launched on a running daemon, a new Job (with ID) is
 created. These jobs may be managed using the `lily job` CLI:
