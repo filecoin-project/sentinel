@@ -36,15 +36,15 @@ following four Jobs:
   * **Instance #1**
 
 ```
-lily watch --storage=db --confidence=100 --window=30s --tasks="blocks,messages,chaineconomics,actorstatesraw,actorstatespower,actorstatesreward,actorstatesmultisig,msapprovals"
-lily watch --storage=db --confidence=100 --window=30s --tasks=actorstatesinit
-lily watch --storage=db --confidence=100 --window=60s --tasks=actorstatesmarket
+lily job run --storage=db --window=30s --tasks="blocks,messages,chaineconomics,actorstatesraw,actorstatespower,actorstatesreward,actorstatesmultisig,msapprovals" watch --confidence=100
+lily job run --storage=db --window=30s --tasks=actorstatesinit watch --confidence=100
+lily job run --storage=db --window=60s --tasks=actorstatesmarket watch --confidence=100
 ```
 
   * **Instance #2**
 
 ```
-lily watch --storage=db --confidence=100 --window=60s --task=actorstatesminer
+lily job run --storage=db --window=60s --task=actorstatesminer watch --confidence=100
 ```
 
 The reason is that this allows watch tasks to run in parallel in a way that is
