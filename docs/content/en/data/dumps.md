@@ -14,7 +14,7 @@ weight: 20
 
 ## Latest data dump
 
-Dumps are added daily. The following is a snapshot of what is available as of 2022-03-31:
+Dumps are added daily. The following is a snapshot of what is available as of 2022-05-14:
 
 ```yaml
 Last epoch: 1680348 (2022-03-31 EOD)
