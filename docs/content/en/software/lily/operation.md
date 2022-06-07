@@ -139,7 +139,8 @@ over the specified range (`--from`,`--to`). An epoch is considered to have gaps 
 #### Constraints
 
 - The Find job must be executed **BEFORE** a Fill job. These jobs must **NOT** be performed simultaneously.
-- Do not execute the Find job over epoch ranges imported from the lily data archive as there are no processing reports for imported data.   
+- Executing the Find job over epoch ranges which have no processing reports will create GAP results for all epoch/tasks combinations.
+- Do not execute the Find job over epoch ranges imported from the lily data archive as there are no processing reports for imported data.
 
 ### Fill
 The Fill job queries the `visor_gap_reports` table for gaps to fill and indexes the data reported to have gaps.
@@ -151,7 +152,7 @@ filled, its corresponding entry in the `visor_gap_reports` table will be updated
 #### Constraints
 
 - The Fill job must be executed **AFTER** a Find job. These jobs must **NOT** be performed simultaneously.
-- Walk jobs may only be executed over epoch ranges lily has state. Walking ranges lily does not have a state for will result in the error: `blockstore: block not found` being written to the `errors_detected` column of the `visor_processing_reports` table.
+- Walk jobs may only be executed over epoch ranges lily has state. Walking epoch ranges which lily does not have state for will result in the error: `blockstore: block not found` being written to the `errors_detected` column of the `visor_processing_reports` table.
 - Do not execute the Fill job over epoch ranges imported from the lily data archive as there are no processing reports for imported data.
 
 ### Survey
