@@ -15,7 +15,14 @@ toc: true
 
 ## API endpoint
 
-When the daemon is started, the repo path is where this communication coordination is handled. The repo path contains information about where the JSON RPC API is (`api` file located in repo path) located, along with an authentication token used (`token` file) for writeable interactions. For more details, see the [Lotus API documentation](https://lotus.filecoin.io/reference/basics/api-access/).
+The daemon coordinates access to its API using the files within repo path. The repo path contains information about where the JSON RPC API is (`api` file located in repo path) located, along with an authentication token used (`token` file) for writeable interactions.
+
+    .lily/           <-- repo path root
+    ├── api          <-- for information about the JSON RPC API location
+    ├── token        <-- for write interactions
+    └── config.toml
+
+For more details, see the [Lotus API documentation](https://lotus.filecoin.io/reference/basics/api-access/).
 
 The IP/port to which the daemon binds can be managed via the `--api` flag. By default, the daemon binds to `localhost` and will be unavailable externally unless bound to a publicly-accessible IP.
 
@@ -26,16 +33,22 @@ The IP/port to which the daemon binds can be managed via the `--api` flag. By de
 Once the Lily daemon process is [running and fully synced](setup.md), you may manage its Jobs through the CLI. (Note: behavior is undefined if Lily is not fully synced, so one may gate the Job creation to wait for the sync to complete with `lily sync wait && lily ...`.).
 
 Jobs may be executed on a lily node via the `job run` command. The `job run` command accepts the following flags:
-- `--window` duration after which job execution will be canceled while processing a tipset.
+- `--window` duration after which job execution will be canceled while processing a tipset. (A duration string is a possibly signed sequence of decimal numbers, each with an optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".)
 - `--tasks` specify the list of [tasks](#tasks) to run by this job. Some tasks [will be heavier than others](hardware.md). A tipset is only processed when all tasks in the job have finished. Only then will Lily move to the next epoch. The default value of this flag if omitted is all tasks lily is capable of performing.
 - `--storage` specifies which of the configured storage outputs the job will write to.
 - `--name` specifies the name of the job for easy identification later. The provided value
   will appear as `reporter` in the `visor_processing_reports` table.
-- `--restart-delay` duration to wait before restarting job after it ends execution.
+- `--restart-delay` duration to wait before restarting job after it ends execution. (A duration string is a possibly signed sequence of decimal numbers, each with an optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".)
 - `--restart-on-failure` specifies if a job should be restarted if it fails.
 - `--restart-on-completion` specifies if a job should be restarted once it completes.
 
 Currently, Lily is capable of executing the following types of jobs:
+
+- [Watch](#watch)
+- [Walk](#walk)
+- [Find](#find)
+- [Fill](#fill)
+- [Survey](#survey)
 
 ### Watch
 The Watch command subscribes to incoming tipsets from the filecoin blockchain and indexes them as they arrive.
