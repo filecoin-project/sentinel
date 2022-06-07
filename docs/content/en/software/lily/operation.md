@@ -34,7 +34,7 @@ Once the Lily daemon process is [running and fully synced](setup.md), you may ma
 
 Jobs may be executed on a lily node via the `job run` command. The `job run` command accepts the following flags:
 - `--window` duration after which job execution will be canceled while processing a tipset. (A duration string is a possibly signed sequence of decimal numbers, each with an optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".)
-- `--tasks` specify the list of [tasks](#tasks) to run by this job. Some tasks [will be heavier than others](hardware.md). A tipset is only processed when all tasks in the job have finished. Only then will Lily move to the next epoch. The default value of this flag if omitted is all tasks lily is capable of performing.
+- `--tasks` specify the list of [tasks](#tasks) to run. Some tasks [will be heavier than others](hardware.md). A tipset is only processed when all the specified tasks have finished. Only then will Lily move on to the next epoch. The default value of this flag is all tasks lily is capable of performing.
 - `--storage` specifies which of the configured storage outputs the job will write to.
 - `--name` specifies the name of the job for easy identification later. The provided value
   will appear as `reporter` in the `visor_processing_reports` table.
