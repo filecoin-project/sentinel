@@ -114,14 +114,56 @@ which should be downloaded in advance (same as in Lotus).
 
 ## Configure
 
+The configuration file is the same configuration file as Lotus, but it also contains additional `Storage` and `Queue` sections that are specific to Lily.
+
+### Notifier & Worker Queue Definitions
+
+Lily may be configured to use Redis as a distributed task queue to distribute work across multiple lily instances. When configured this way the system of lily nodes can consist of multiple `Workers` and a single `Notifier` :
+
+* The `Notifier` puts tasks into a queue for execution by a `Worker`.
+* The `Workers` remove tasks from the queue and execute them.
+* Tasks are processed concurrently by multiple workers.
+
+The `Notifier` and `Workers` should be enumerated with a unique `[Name]` which will be used as an argument (via `--queue`) when starting a `[watch|walk|fill] notify` or `tipset-worker` job.
+
+An example of the `Queue` section:
+
+```toml
+[Queue]
+  [Queue.Notifiers]
+    [Queue.Notifiers.Notifier1]
+      Network = "tcp"
+      Addr = "localhost:6379"
+      Username = "default"
+      PasswordEnv = "LILY_REDIS_PASSWORD"
+      DB = 0
+      PoolSize = 0
+  [Queue.Workers]
+    [Queue.Workers.Worker1]
+      [Queue.Workers.Worker1.RedisConfig]
+        Network = "tcp"
+        Addr = "localhost:6379"
+        Username = "default"
+        PasswordEnv = "LILY_REDIS_PASSWORD"
+        DB = 0
+        PoolSize = 0
+      [Queue.Workers.Worker1.WorkerConfig]
+        Concurrency = 1
+        LoggerLevel = "debug"
+        WatchQueuePriority = 5
+        FillQueuePriority = 3
+        IndexQueuePriority = 1
+        WalkQueuePriority = 1
+        StrictPriority = false
+        ShutdownTimeout = 30000000000
+
+```
+
+This should be modified to meet your needs.
+
 ### Storage definitions
 
-The configuration file the [same configuration file as Lotus], but it contains
-an additional `Storage` section that is specific to Lily.
-
-Lily can deliver scraped data to multiple PostgreSQL and File destinations on
-a per-Task basis. Each destination should be enumerated with a unique `[Name]`
-which will be used as an argument (via `--storage`) when starting a Task.
+Lily can deliver scraped data to multiple PostgreSQL and File destinations on a per-Task basis. Each destination should be enumerated with a unique `[Name]` which will be used as an argument (via `--storage`) when starting a Task.
 
 An example of the `Storage` section:
 
