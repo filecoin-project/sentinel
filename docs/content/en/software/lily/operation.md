@@ -15,7 +15,7 @@ toc: true
 
 ## API endpoint
 
-When the daemon is started, the repo path is where this communication coordination is handled. The repo path contains information about where the JSON RPC API is (`api` file located in repo path) located, along with an authentication token used (`token` file) for writeable interactions. For more details, see the [Lotus API documentation](https://docs.filecoin.io/build/lotus/).
+When the daemon is started, the repo path is where this communication coordination is handled. The repo path contains information about where the JSON RPC API is (`api` file located in repo path) located, along with an authentication token used (`token` file) for writeable interactions. For more details, see the [Lotus API documentation](https://lotus.filecoin.io/reference/basics/api-access/).
 
 The IP/port to which the daemon binds can be managed via the `--api` flag. By default, the daemon binds to `localhost` and will be unavailable externally unless bound to a publicly-accessible IP.
 
