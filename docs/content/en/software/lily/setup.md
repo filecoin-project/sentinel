@@ -114,7 +114,9 @@ which should be downloaded in advance (same as in Lotus).
 
 ## Configure
 
-The configuration file is the same configuration file as Lotus, but it also contains additional `Storage` and `Queue` sections that are specific to Lily.
+The configuration file, canonically the `config.toml`, is the same configuration file as in Lotus. It also contains additional `Storage` and `Queue` sections that are specific to Lily.
+
+If you make changes to `config.toml`, you need to restart your Lily daemon.
 
 ### Notifier & Worker Queue Definitions
 
