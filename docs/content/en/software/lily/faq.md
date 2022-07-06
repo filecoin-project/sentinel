@@ -17,7 +17,7 @@ weight: 60
 
 ### Do I need Lotus to run Lily?
 
-No. Lily does not need a separate Lotus node running since Lily itself is an abstraction over a Lotus node.
+No. Lily does not need a separate Lotus node running since Lily itself is an abstraction over Lotus.
 
 ### Do I need to use TimescaleDB with Lily?
 
