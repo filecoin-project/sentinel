@@ -67,7 +67,9 @@ run the [gap find function](https://github.com/filecoin-project/lily/blob/master
 
 ### Why are my tasks failing?
 
-Task failures are persisted to the `visor_processing_reports` table produced by the `find` job.
+You can run [gap find]({{<ref "/software/lily/operation.md#find" >}}) over the `visor_processing_reports` table. 
+
+All jobs that run tasks, `[walk, watch, fill]`, will write the results of the tasks to `visor_processing_reports`.
 
 ### Why is my job failing?
 
