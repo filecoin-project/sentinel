@@ -57,7 +57,7 @@ Tasks should be grouped based on the actors they process for optimal cache utili
 
 ### How can I backfill incomplete data?
 
-You can run the [find job]({{< ref "/software/lily/operation.md#find >}}) and then an adhoc [fill job]({{< ref "/software/lily/operation.md#fill" >}}) to backfill missing tasks at
+You can run the [find job]({{< ref "/software/lily/operation.md#find" >}}) and then an adhoc [fill job]({{< ref "/software/lily/operation.md#fill" >}}) to backfill missing tasks at
 some specified range of epochs. This can also be run as a cron job.
 
 ### How can I tell if Lily correctly exported to the database?
