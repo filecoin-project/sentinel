@@ -393,7 +393,7 @@ Sector events on-chain per Miner/Sector. One of
 | miner_id   | Address of the miner who owns the sector.                    |
 | sector_id  | Numeric identifier of the sector.                            |
 | state_root | CID of the parent state root at this epoch.                  |
-| event      | Name of the event that occurred: PRECOMMIT_ADDED, PRECOMMIT_EXPIRED, COMMIT_CAPACITY_ADDED, SECTOR_ADDED, SECTOR_EXTENDED, SECTOR_FAULTED, SECTOR_FAULTED, SECTOR_RECOVERING, SECTOR_RECOVERED, SECTOR_EXPIRED, or SECTOR_TERMINATED. |
+| event      | Name of the event that occurred: PRECOMMIT_ADDED, PRECOMMIT_EXPIRED, COMMIT_CAPACITY_ADDED, SECTOR_ADDED, SECTOR_EXTENDED, SECTOR_FAULTED, SECTOR_FAULTED, SECTOR_SNAPPED, SECTOR_RECOVERING, SECTOR_RECOVERED, SECTOR_EXPIRED, or SECTOR_TERMINATED. |
 
 ## miner_sector_infos
 
