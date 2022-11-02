@@ -379,7 +379,7 @@ Examples:
 
 ```
 # set level for all modules via envvar
-$ explore GOLOG_LOG_LEVEL="debug"
+$ export GOLOG_LOG_LEVEL="debug"
 # set levels for multiple modules via envvar (can be different levels per module)
 $ export GOLOG_LOG_LEVEL_NAMED="chain:debug,chainxchg:info"
 # set levels for multiple modules via arg on startup
