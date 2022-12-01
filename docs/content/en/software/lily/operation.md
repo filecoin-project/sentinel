@@ -278,6 +278,7 @@ Lily provides several tasks to capture different aspects of the blockchain state
 | receipt                           |      [receipts]({{< ref "/data/models.md#receipts" >}})      | 15s      |
 | verified_registry_verified_client | [verified_registry_verified_clients]({{< ref "/data/models.md#verified_registry_verified_clients" >}}) | 10s      |
 | verified_registry_verifier        | [verified_registry_verifiers]({{< ref "/data/models.md#verified_registry_verifiers" >}}) | 10s      |
+| vm_messages                       |   [vm_messages]({{< ref "/data/models.md#vm_messages" >}})   | 20s      |
 
 ## Job Managment
 
