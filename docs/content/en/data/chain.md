@@ -1,11 +1,11 @@
 ---
 title: "Chain Models"
 description: "Lily relational data is formatted per the Lily data models."
-lead: "Lily relational data format is defined according to the following models, each corresponding to a table."
+lead: "Lily relational data format is defined according to the following models, each corresponding to a table. These tables contain chain state and derived chain state."
 menu:
-data:
-parent: "data"
-identifier: "chain models"
+  data:
+    parent: "data"
+    identifier: "chain_models"
 weight: 10
 toc: true
 
@@ -14,7 +14,6 @@ toc: true
 ---
 
 ## Blocks
-
 ### block_headers
 
 Blocks included in tipsets at an epoch.
@@ -77,7 +76,6 @@ Drand randomness round numbers used in each block.
 | `block` | `text`   | NO       | CID of the block.                        |
 
 ## Messages
-
 ### messages
 
 Validated on-chain messages by their CID and their metadata.
@@ -200,7 +198,6 @@ Messages sent internally through the VM not appearing on chain.
 | `returns`    | `jsonb`   | YES      | Result returned from executing a message parsed and serialized as a JSON object.                                                                                                |
 
 ## Derived
-
 ### chain_consensus
 
 Height and TipSet to Parent TipSet or Null Round.

@@ -30,11 +30,11 @@ The IP/port to which the daemon binds can be managed via the `--api` flag. By de
 
 ## Jobs
 
-Once the Lily daemon process is [running and fully synced](setup.md), you may manage its Jobs through the CLI. (Note: behavior is undefined if Lily is not fully synced, so one may gate the Job creation to wait for the sync to complete with `lily sync wait && lily ...`.).
+Once the Lily daemon process is [running and fully synced](/software/lily/setup), you may manage its Jobs through the CLI. (Note: behavior is undefined if Lily is not fully synced, so one may gate the Job creation to wait for the sync to complete with `lily sync wait && lily ...`.).
 
 Jobs may be executed on a lily node via the `job run` command. The `job run` command accepts the following flags:
 - `--window` duration after which job execution will be canceled while processing a tipset. (A duration string is a possibly signed sequence of decimal numbers, each with an optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".)
-- `--tasks` specify the list of [tasks](#tasks) to run. Some tasks [will be heavier than others](hardware.md). A tipset is only processed when all the specified tasks have finished. Only then will Lily move on to the next epoch. The default value of this flag is all tasks lily is capable of performing.
+- `--tasks` specify the list of [tasks](#tasks) to run. Some tasks [will be heavier than others](/software/lily/hardware). A tipset is only processed when all the specified tasks have finished. Only then will Lily move on to the next epoch. The default value of this flag is all tasks lily is capable of performing.
 - `--storage` specifies which of the configured storage outputs the job will write to.
 - `--name` specifies the name of the job for easy identification later. The provided value
   will appear as `reporter` in the `visor_processing_reports` table.
@@ -239,54 +239,22 @@ In this mode of operation, lily will pull tasks from a Redis instance for proces
 
 ## Tasks
 
-Lily provides several tasks to capture different aspects of the blockchain state. The type of data extracted by Lily is controlled by the below tasks. Jobs accepts tasks to run as a comma-separated list. The data extracted by a task is stored in its related Models.
-
-| Name                              |                            Model                             | Duration |
-| --------------------------------- | :----------------------------------------------------------: | -------- |
-| actor                             |        [actors]({{< ref "/data/models.md#actors" >}})        | 10s      |
-| actor_state                       |  [actor_states]({{< ref "/data/models.md#actor_states" >}})  | 10s      |
-| block_header                      | [block_headers]({{< ref "/data/models.md#block_headers" >}}) | 1s       |
-| block_message                     | [block_messages]({{< ref "/data/models.md#block_messages" >}}) | 15s      |
-| block_parent                      | [block_parents]({{< ref "/data/models.md#block_parents" >}}) | 1s       |
-| chain_consensus                   | [chain_consensus]({{< ref "/data/models.md#chain_consensus" >}}) | 1s       |
-| chain_economics                   | [chain_economics]({{< ref "/data/models.md#chain_economics" >}}) | 1s       |
-| chain_power                       |  [chain_powers]({{< ref "/data/models.md#chain_powers" >}})  | 10s      |
-| chain_reward                      | [chain_rewards]({{< ref "/data/models.md#chain_rewards" >}}) | 10s      |
-| derived_gas_outputs               | [derived_gas_outputs]({{< ref "/data/models.md#derived_gas_outputs" >}}) | 15s      |
-| drand_block_entrie                | [drand_block_entries]({{< ref "/data/models.md#drand_block_entries" >}}) | 1s       |
-| id_address                        |  [id_addresses]({{< ref "/data/models.md#id_addresses" >}})  | 30s      |
-| internal_messages                 | [internal_messages]({{< ref "/data/models.md#internal_messages" >}}) | 10s      |
-| internal_parsed_messages          | [internal_parsed_messages]({{< ref "/data/models.md#internal_parsed_messages" >}}) | 10s      |
-| market_deal_proposal              | [market_deal_proposals]({{< ref "/data/models.md#market_deal_proposals" >}}) | 30s      |
-| market_deal_state                 | [market_deal_states]({{< ref "/data/models.md#market_deal_states" >}}) | 30s      |
-| message                           |      [messages]({{< ref "/data/models.md#messages" >}})      | 15s      |
-| message_gas_economy               | [message_gas_economy]({{< ref "/data/models.md#message_gas_economy" >}}) | 15s      |
-| miner_current_deadline_info       | [miner_current_deadline_infos]({{< ref "/data/models.md#miner_current_deadline_infos" >}}) | 10s      |
-| miner_fee_debt                    | [miner_fee_debts]({{< ref "/data/models.md#miner_fee_debts" >}}) | 15s      |
-| miner_info                        |   [miner_infos]({{< ref "/data/models.md#miner_infos" >}})   | 30s      |
-| miner_locked_fund                 | [miner_locked_funds]({{< ref "/data/models.md#miner_locked_funds" >}}) | 30s      |
-| miner_pre_commit_info             | [miner_pre_commit_infos]({{< ref "/data/models.md#miner_pre_commit_infos" >}}) | 60s      |
-| miner_sector_deal                 | [miner_sector_deals]({{< ref "/data/models.md#miner_sector_deals" >}}) | 60s      |
-| miner_sector_event                | [miner_sector_events]({{< ref "/data/models.md#miner_sector_events" >}}) | 60s      |
-| miner_sector_infos                | [miner_sector_infos]({{< ref "/data/models.md#miner_sector_infos" >}}) | 60s      |
-| miner_sector_infos_v7             | [miner_sector_infos_v7]({{< ref "/data/models.md#miner_sector_infos_v7" >}}) | 60s      |
-| miner_sector_post                 | [miner_sector_posts]({{< ref "/data/models.md#miner_sector_posts" >}}) | 15s      |
-| multisig_approvals                | [multisig_approvals]({{< ref "/data/models.md#multisig_approvals" >}}) | 15s      |
-| multisig_transaction              | [multisig_transactions]({{< ref "/data/models.md#multisig_transactions" >}}) | 15s      |
-| parsed_message                    | [parsed_messages]({{< ref "/data/models.md#parsed_messages" >}}) | 15s      |
-| power_actor_claim                 | [power_actor_claims]({{< ref "/data/models.md#power_actor_claims" >}}) | 15s      |
-| receipt                           |      [receipts]({{< ref "/data/models.md#receipts" >}})      | 15s      |
-| verified_registry_verified_client | [verified_registry_verified_clients]({{< ref "/data/models.md#verified_registry_verified_clients" >}}) | 10s      |
-| verified_registry_verifier        | [verified_registry_verifiers]({{< ref "/data/models.md#verified_registry_verifiers" >}}) | 10s      |
-| vm_messages                       |   [vm_messages]({{< ref "/data/models.md#vm_messages" >}})   | 20s      |
+Lily provides several tasks to capture different aspects of the blockchain state, tasks are used as input to execute Jobs.
+Jobs accepts tasks to run as a comma-separated list. The data extracted by a task is stored in its related Model.
+Links to Tasks and their corresponding Models can be fond below:
+* [Actor](/data/actors)
+* [Chain](/data/chain)
 
 ## Job Managment
 
 When Jobs are launched on a running daemon, a new Job (with ID) is created. These jobs may be managed using the `lily job` CLI:
 
 ```
-# launch a job
+# launch a job, if no tasks are provided all tasks will run by default.
 $ lily job run [watch|walk|find|fill|survey|tipset-worker]
+
+# to launch specific tasks with a watch job
+$ lily job run --tasks=actor_state,actor,message,receipt watch
 
 # shows all Jobs and their status
 $ lily job list
@@ -309,17 +277,10 @@ $ lily job list
 		"Type": "watch",
 		"Error": "",
 		"Tasks": [
-			"id_address",
-			"receipt",
-			"message_gas_economy",
-			"message",
-			"drand_block_entrie",
-			"derived_gas_outputs",
-			"chain_economics",
-			"chain_consensus",
-			"block_parent",
-			"block_message",
-			"block_header"
+            "actor_state",
+            "actor",
+            "message",
+            "receipt",
 		],
 		"Running": true,
 		"RestartOnFailure": false,

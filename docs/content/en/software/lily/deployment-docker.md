@@ -17,8 +17,8 @@ Lily also includes a `docker-compose` that can be used to get familiar with
 
 Running in production might require a more sophisticated deployment than
 docker-compose. For that, we recommend reading the
-[hardware requirements](../hardware.md) and
-[Kubernetes deployment guide](../deployment-k8s.md).
+[hardware requirements](/software/lily/hardware) and
+[Kubernetes deployment guide](/software/lily/deployment-k8s).
 
 ---
 

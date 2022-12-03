@@ -107,7 +107,7 @@ operational data. This folder is portable and can be relocated as needed. Note
 that it can grow significantly as it contains the Lotus state and the chain.
 
 When using Lily against Filecoin Mainnet, we highly recommend
-[initializing Lily from a chain snapshot](https://docs.filecoin.io/get-started/lotus/chain/#syncing),
+[initializing Lily from a chain snapshot](https://lotus.filecoin.io/lotus/manage/chain-management/#syncing),
 which should be downloaded in advance (same as in Lotus).
 
 ---
@@ -242,4 +242,4 @@ You can interactively wait for the sync to complete with:
 lily sync wait
 ```
 
-Once Lily is running and fully synced, you can [start launching jobs](operation.md).
+Once Lily is running and fully synced, you can [start launching jobs](/software/lily/operation).

@@ -1,11 +1,11 @@
 ---
 title: "Actor Models"
 description: "Lily relational data is formatted per the Lily data models."
-lead: "Lily relational data format is defined according to the following models, each corresponding to a table."
+lead: "Lily relational data format is defined according to the following models, each corresponding to a table. These tables are for builtin actors."
 menu:
-data:
-parent: "data"
-identifier: "actor models"
+  data:
+    parent: "data"
+    identifier: "actors_models"
 weight: 10
 toc: true
 
@@ -14,7 +14,6 @@ toc: true
 ---
 
 ## Raw Actor States
-
 ### actor_states
 
 Actor states that were changed at an epoch. Associates actors states as single-level trees with CIDs pointing to complete state tree with the root CID (head) for that actor's state.
@@ -49,7 +48,6 @@ Actors on chain that were added or updated at an epoch. Associates the actor's s
 | `height`     | `bigint` | NO       | Epoch when this actor was created or updated.             |
 
 ## DataCap Actor
-
 ### data_cap_balance
 
 - Task: `data_cap_balance`
@@ -65,7 +63,6 @@ Actors on chain that were added or updated at an epoch. Associates the actor's s
 | `event`      | `ADDED`, `MODIFIED`, or `REMOVED` | NO       | Event identifying how an actors balance was modified. (One of: `ADDED`, `REMOVED`,`MODIFIED`) |
 
 ## Init Actor
-
 ### id_addresses
 
 Mapping of IDs to robust addresses from the init actor's state.
@@ -82,7 +79,6 @@ Mapping of IDs to robust addresses from the init actor's state.
 | `state_root` | `text`   | NO       | CID of the parent state root at which this address mapping was added. |
 
 ## Storage Market Actor
-
 ### market_deal_proposals
 
 All storage deal states with latest values applied to end_epoch when updates are detected on-chain.
@@ -128,20 +124,6 @@ All storage deal state transitions detected on-chain.
 | `height`             | `bigint` | NO       | Epoch at which this deal was added or changed.                                            |
 
 ## Storage Miner Actor
-
-height bigint not null,
-state_root text not null,
-miner_id text not null,
-beneficiary text not null,
-quota numeric not null,
-used_quota numeric not null,
-expiration bigint not null,
-new_beneficiary text,
-new_quota numeric,
-new_expiration bigint,
-approved_by_beneficiary boolean,
-approved_by_nominee boolean,
-
 ### miner_beneficiary
 
 - Task: `miner_beneficiary`
@@ -265,7 +247,7 @@ Information on sector PreCommits.
 
 ### miner_pre_commit_infos_v9
 
-Information on sector PreCommits for v9+ of the Storage Miner Actor.
+Information on sector PreCommits for actors v9+ and above.
 
 - Task: `miner_pre_commit_info`
 - Network Range: [`v17` - `v∞`)
@@ -383,7 +365,6 @@ Proof of Spacetime for sectors.
 | `post_message_cid` | `text`   | YES      | CID of the PoSt message.                       |
 
 ## MultiSig Actor
-
 ### multisig_approvals
 
 Message Transactions approved by Multsig Actors.
@@ -423,7 +404,6 @@ Details of pending transactions involving multisig actors.
 | `approved`       | `jsonb`  | NO       | Addresses of signers who have approved the transaction. 0th entry is the proposer.                                                                                                                       |
 
 ## Power Actor
-
 ### chain_powers
 
 Power summaries from the Power actor.
@@ -463,7 +443,6 @@ Miner power claims recorded by the power actor.
 | `quality_adj_power` | `numeric` | NO       | Sum of quality adjusted storage power for a miner's sectors. Quality adjusted power is a weighted average of the quality of its space and it is based on the size, duration and quality of its deals. |
 
 ## Reward Actor
-
 ### chain_rewards
 
 Reward summaries from the Reward actor.
@@ -487,7 +466,6 @@ Reward summaries from the Reward actor.
 | `height`                                | `bigint`  | NO       | Epoch this rewards summary applies to.                                                                                                                                                                                       |
 
 ## Verified Registry Actor
-
 ### verified_registry_verifiers
 
 Verifier on-chain per each verifier state change.
