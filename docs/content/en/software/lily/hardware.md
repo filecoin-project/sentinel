@@ -1,5 +1,5 @@
 ---
-title: "Lily Hardware requirements"
+title: "Lily Hardware requirements (OUT DATED)"
 linkTitle: "Hardware requirements"
 description: "An overview of Lily's requirements for different tasks."
 lead: "Lily's requirements depend on which tasks the Lily daemon is asked to run."
@@ -11,12 +11,13 @@ weight: 40
 toc: true
 ---
 
+# [Out dated work in progress](https://github.com/filecoin-project/sentinel/issues/224)
 
 Lily's base hardware requirements are
-[those of a Lotus node](https://docs.filecoin.io/get-started/lotus/installation/#minimal-requirements).
+[those of a Lotus node](https://docs.filecoin.io/storage-provider/hardware-requirements/).
 
 From that point, the requirements depend on
-[how you intend to operate Lily and what tasks you will run](operation.md).
+[how you intend to operate Lily and what tasks you will run](/software/lily/operation).
 
 We attempt to characterize the heaviest load scenario to illustrate some of
 the performance concerns and limitations.
