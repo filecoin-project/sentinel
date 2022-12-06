@@ -129,7 +129,7 @@ Messages parsed to extract useful information.
 | `from`   | `text`    | NO       | Address of the actor that sent the message.                     |
 | `to`     | `text`    | NO       | Address of the actor that received the message.                 |
 | `value`  | `numeric` | NO       | Amount of FIL (in attoFIL) transferred by this message.         |
-| `method` | `text`    | NO       | The name of the method that was invoked on the recipient actor. the mapping from method number to method name can be found in each actor's source code (like [here](https://github.com/filecoin-project/go-state-types/blob/v0.9.9/builtin/v9/account/methods.go) for Account actor). |
+| `method` | `text`    | NO       | The name of the method that was invoked on the recipient actor. |
 | `params` | `jsonb`   | YES      | Method parameters parsed and serialized as a JSON object.       |
 
 ### internal_messages
