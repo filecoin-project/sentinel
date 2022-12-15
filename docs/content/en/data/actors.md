@@ -50,16 +50,18 @@ Actors on chain that were added or updated at an epoch. Associates the actor's s
 ## DataCap Actor
 ### data_cap_balance
 
+DataCap on-chain per each DataCap balance state change.
+
 - Task: `data_cap_balance`
 - Network Range: [`v17` - `v∞`)
 - Epoch Range: [`2383680` - `∞`)
 
 | Column       | Type                              | Nullable | Description                                                                                   |
-| ------------ | --------------------------------- | -------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| ------------ | --------------------------------- | -------- | --------------------------------------------------------------------------------------------- |
 | `height`     | `bigint`                          | NO       | Epoch when this actors balances map was modified.                                             |
 | `state_root` | `text`                            | NO       | StateRoot when this actor balances map was modified.                                          |
 | `address`    | `text`                            | NO       | Address of the actor whose balance was created or modified.                                   |
-| `data_cap`   | `numeric`                         |          | NO                                                                                            | Datacap of the actor with `address` after it was created or modified. |
+| `data_cap`   | `numeric`                         | NO       | Datacap (Tokenized StoragePower) of the actor with `address` after it was created or modified.|
 | `event`      | `ADDED`, `MODIFIED`, or `REMOVED` | NO       | Event identifying how an actors balance was modified. (One of: `ADDED`, `REMOVED`,`MODIFIED`) |
 
 ## Init Actor
