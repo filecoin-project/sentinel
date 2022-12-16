@@ -175,7 +175,7 @@ Internal messages parsed to extract useful information.
 
 ### vm_messages
 
-Messages sent internally through the VM not appearing on chain.
+Messages sent internally through the VM not appearing on chain. Requires the environment variable `LOTUS_VM_ENABLE_TRACING=1` to be set before running the lily daemon command.
 
 - Task: `vm_messages`
 - Network Range: [`v0` - `v∞`)
