@@ -14,10 +14,12 @@ weight: 20
 
 ## Latest data dump
 
-Dumps are added daily. The following is a snapshot of what is available as of 2022-05-14:
+**We will be deprecating this bucket soon and introducing a new service with higher quality and more up-to-date data.**
+
+The following is a snapshot of what is available as of 2023-01-06:
 
 ```yaml
-Last epoch: 1680348 (2022-03-31 EOD)
+Last epoch: 2456879 (2022-12-25 EOD)
 Total Size: 1.6TiB
 Tables:
   - actor_states
