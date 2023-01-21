@@ -20,7 +20,7 @@ The following is a snapshot of what is available as of 2023-01-06:
 
 ```yaml
 Last epoch: 2456879 (2022-12-25 EOD)
-Total Size: 1.6TiB
+Total Size: 2.4TiB
 Tables:
   - actor_states
   - actors
@@ -58,8 +58,50 @@ Tables:
   - verified_registry_verifiers
 Networks:
   - mainnet
-  - calibnet
 ```
+
+```yaml
+Last epoch: 1160759 (2022-07-26 EOD)
+Total Size: 9.7GiB
+Tables:
+  - actor_states
+  - actors
+  - block_headers
+  - block_messages
+  - block_parents
+  - chain_consensus
+  - chain_economics
+  - chain_powers
+  - chain_rewards
+  - derived_gas_outputs
+  - drand_block_entries
+  - id_addresses
+  - internal_messages
+  - internal_parsed_messages
+  - market_deal_proposals
+  - market_deal_states
+  - message_gas_economy
+  - messages
+  - miner_current_deadline_infos
+  - miner_fee_debts
+  - miner_infos
+  - miner_locked_funds
+  - miner_pre_commit_infos
+  - miner_sector_deals
+  - miner_sector_events
+  - miner_sector_infos
+  - miner_sector_posts
+  - multisig_approvals
+  - multisig_transactions
+  - parsed_messages
+  - power_actor_claims
+  - receipts
+  - verified_registry_verified_clients
+  - verified_registry_verifiers
+Networks:
+  - mainnet
+```
+
 
 ## S3 bucket
 
