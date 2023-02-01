@@ -12,8 +12,6 @@ weight: 20
 
 ---
 
-## Latest data dump
-
 > **Warning**
 > 
 > We will be deprecating this bucket soon and introducing a new service with higher quality and more up-to-date data.
@@ -21,6 +19,8 @@ weight: 20
 >   - **Raw data** at `gs://fil-mainnet-archive/raw/`. This folder contains data as [it was exported by `lily-archiver`](https://github.com/filecoin-project/lily-archiver/). Might contain duplicated and missing days.
 >   - **Parquet** at `gs://fil-mainnet-archive/parquet/`. Daily partitioned parquet files. Eventually should be the source of truth as we are deduplicating and correcting any other potential errors.
 >   - **CSVs** at `gs://fil-mainnet-archive/csv/`. Daily partitioned gzip compressed CSV files. They contain the same data than the parquet files.
+
+## Latest data dump
 
 The following is a snapshot of what is available as of 2023-01-06:
 
