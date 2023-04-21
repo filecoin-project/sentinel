@@ -359,7 +359,7 @@ disabled by default because there is a performance impact for these traces to
 be captured. These traces are produced using Jaeger and are compatible with
 [OpenCensus](https://opencensus.io/tracing/).
 
-Jaeger tracing can be enabled by passing the `--tracing` flag on daemon
+Jaeger tracing can be enabled by passing the `--jaeger-tracing` flag on daemon
 startup. There are other configuration values which have "reasonable" default
 values, but should be reviewed for your use case before enabling
 tracing. `lily help monitoring` provides more information about these aspects.
