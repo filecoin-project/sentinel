@@ -9,7 +9,7 @@ The Sentinel Team provides Filecoin chain monitoring and analysis tools.
 - [Filcryo](https://github.com/filecoin-project/filcryo): Create archival-grade snapshots as used by the Sentinel/Data Engineering Team at Protocol Labs for further processing.
 
 ## Data
-- BigQuery dataset: [protocol-labs-data.lily](console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sprotocol-labs-data!2slily)
+- BigQuery dataset: [protocol-labs-data.lily](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sprotocol-labs-data!2slily)
 - Batch dump data: gs://fil-mainnet-archive
 - Daily archival snapshots: gs://fil-mainnet-archival-snapshots
 
