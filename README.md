@@ -3,31 +3,21 @@
 The Sentinel Team provides Filecoin chain monitoring and analysis tools.
 
 ## Projects
+- [Lily](https://lilium.sh/software/lily/introduction/): Performs chain data extraction and indexing, exporting to TimescaleDB or CSV.
+- [Sentinel-tick](https://github.com/filecoin-project/sentinel-tick): Collects Filecoin pricing and volume information from exchanges and inserts it into Postgres/Timescale DB.
+- [Sentinel-locations](https://github.com/filecoin-project/sentinel-locations): Uses Lily-extracted miner data to create a table mapping miner_ids to geographical locations.
+- [Filcryo](https://github.com/filecoin-project/filcryo): Create archival-grade snapshots as used by the Sentinel/Data Engineering Team at Protocol Labs for further processing.
 
-### Lily (former sentinel-visor)
+## Data
+- BigQuery dataset: [protocol-labs-data.lily](console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sprotocol-labs-data!2slily)
+- Batch dump data: gs://fil-mainnet-archive
+- Daily archival snapshots: gs://fil-mainnet-archival-snapshots
 
-Performs chain data extraction and indexing, exporting to TimescaleDB or CSV.
-
-URL: https://lilium.sh/software/lily/introduction/
-
-### Sentinel-drone
-
-Provides a bridge between prometheus metrics exported by Lotus and Postgres/Timescale DB.
-
-URL: https://github.com/filecoin-project/sentinel-drone
-
-
-### Sentinel-tick
-
-Collects Filecoin pricing and volume information from exchanges and inserts it into Postgres/Timescale DB.
-
-URL: https://github.com/filecoin-project/sentinel-tick
-
-### Sentinel-locations
-
-Uses Lily-extracted miner data to create a table mapping miner_ids to geographical locations.
-
-URL: https://github.com/filecoin-project/sentinel-locations
+## Communications
+- [Filecoin slack](https://filecoin.io/slack)
+    - team channel: [#fil-sentinel](https://filecoinproject.slack.com/archives/C0174P5M11T)
+    - group mention: `@sentinel-team`
+- [Request for collaboration](https://github.com/filecoin-project/sentinel/blob/master/REQUEST.md)
 
 ## Documentation and support
 
