@@ -1,3 +1,5 @@
+# **Collaboration Request Process**
+
 ## **Overview**
 
 This document outlines the process for other teams within our organization to request collaborations, including feature requests, new datasets, and new data pipelines. We will leverage GitHub issues and templates to streamline the collaboration request workflow. The process includes a discussion and approval phase to evaluate the priority of the request and determine whether it should be included in the current roadmap.
