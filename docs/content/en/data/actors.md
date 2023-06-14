@@ -517,7 +517,7 @@ The table is designed to maintain a comprehensive record of changes made to cont
 
 | Column          | Type     | Nullable | Description                                              |
 | ----------------| ---------| -------- | ---------------------------------------------------------|
-| `height`        | `bigint` | NO       | Epoch at contract had benn created or modified.          |
+| `height`        | `bigint` | NO       | Epoch at contract was added or changed.                  |
 | `actor_id`      | `text`   | NO       | Actor address.                                           |
 | `eth_address`   | `text`   | NO       | Actor ETH address.                                       |
 | `byte_code`     | `text`   | NO       | Contract Bytecode.                                       |
