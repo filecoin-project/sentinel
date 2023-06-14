@@ -314,6 +314,34 @@ Blocks included in tipsets at an epoch.
 | `base_fee_per_gas`  | `text`   | NO       | The base fee value.                                                                             |
 | `size`              | `bigint` | NO       | Block size.                                                                                     |
 
+### fevm_transactions
+
+Transactions, which change the state of the EVM, need to be broadcast to the whole network.
+
+
+- Task: `fevm_transaction`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column                    | Type     | Nullable | Description                                                                                     |
+| --------------------------| -------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `height`                  | `bigint` | NO       | Epoch when this transaction been created.                                                       |
+| `hash`                    | `text`   | NO       | Hash of transaction.                                                                            |
+| `transaction_index`       | `bigint` | NO       | Integer of the transactions index position in the block.                                        |
+| `block_hash`              | `text`   | NO       | Hash of the block where this transaction was in.                                                |
+| `block_number`            | `bigint` | NO       | Block number where this transaction was in.                                                     |
+| `from`                    | `text`   | NO       | Address of the sender.                                                                          |    
+| `to`                      | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
+| `chain_id`                | `bigint` | NO       | EVM network id.                                                                                 |
+| `value`                   | `text`   | NO       | Amount of ETH to transfer from sender to recipient                                              |
+| `gas`                     | `bigint` | NO       | The maximum amount of gas units that can be consumed by the transaction                         |
+| `max_fee_per_gas`         | `numeric`| NO       | The maximum fee per unit of gas willing to be paid for the transaction                          |
+| `max_priority_fee_per_gas`| `numeric`| NO       | The maximum price of the consumed gas to be included as a tip to the validator                  |
+| `v`                       | `bigint` | NO       | Transaction’s signature. Recovery Identifier                                                    |
+| `r`                       | `bigint` | NO       | Transaction’s signature. Outputs of an ECDSA signature.                                         |
+| `s`                       | `bigint` | NO       | Transaction’s signature. Putputs of an ECDSA signature.                                         |
+
+
 ### fevm_receipts
 
 Data returned by an Ethereum client to represent the result of a particular transaction
