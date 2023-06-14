@@ -14,24 +14,9 @@ toc: true
 ---
 
 ## Raw Actor States
-### actor_states
-
-Actor states that were changed at an epoch. Associates actors states as single-level trees with CIDs pointing to complete state tree with the root CID (head) for that actor's state.
-
-- Task: `actor_state`
-- Network Range: [`v0` - `v∞`)
-- Epoch Range: [`0` - `∞`)
-
-| Column   | Type     | Nullable | Description                                      |
-| -------- | -------- | -------- | ------------------------------------------------ |
-| `head`   | `text`   | NO       | CID of the root of the state tree for the actor. |
-| `code`   | `text`   | NO       | CID identifier for the type of the actor.        |
-| `state`  | `jsonb`  | NO       | Top level of state data.                         |
-| `height` | `bigint` | NO       | Epoch when this state change happened.           |
-
 ### actors
 
-Actors on chain that were added or updated at an epoch. Associates the actor's state root CID (head) with the chain state root CID from which it descends. Includes account ID nonce and balance at each state.
+Actors on chain that were added or updated at an epoch. Associates the actor's state root CID (head) with the chain state root CID from which it descends. Includes account ID nonce, balance and state data at each state.
 
 - Task: `actor`
 - Network Range: [`v0` - `v∞`)
@@ -46,6 +31,8 @@ Actors on chain that were added or updated at an epoch. Associates the actor's s
 | `balance`    | `text`   | NO       | Actor balance in attoFIL.                                 |
 | `state_root` | `text`   | NO       | CID of the state root.                                    |
 | `height`     | `bigint` | NO       | Epoch when this actor was created or updated.             |
+| `state`      | `jsonb`  | NO       | Top level of state data.                                  |
+
 
 ## DataCap Actor
 ### data_cap_balance
@@ -499,3 +486,20 @@ Verifier on-chain per each verified client state change.
 | `address`    | `text`         | NO       | Address of verified client this state change applies to. |
 | `data_cap`   | `numeric`      | NO       | DataCap of verified client at this state change.         |
 | `event`      | `USER-DEFINED` | NO       | Name of the event that occurred.                         |
+
+
+## Deprecate
+### actor_states
+
+Actor states that were changed at an epoch. Associates actors states as single-level trees with CIDs pointing to complete state tree with the root CID (head) for that actor's state.
+
+- Task: `actor_state`
+- Network Range: [`v0` - `v∞`)
+- Epoch Range: [`0` - `∞`)
+
+| Column   | Type     | Nullable | Description                                      |
+| -------- | -------- | -------- | ------------------------------------------------ |
+| `head`   | `text`   | NO       | CID of the root of the state tree for the actor. |
+| `code`   | `text`   | NO       | CID identifier for the type of the actor.        |
+| `state`  | `jsonb`  | NO       | Top level of state data.                         |
+| `height` | `bigint` | NO       | Epoch when this state change happened.           |
