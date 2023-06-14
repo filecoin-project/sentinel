@@ -363,11 +363,11 @@ Data returned by an Ethereum client to represent the result of a particular tran
 | `from`               | `text`   | NO       | Address of the sender.                                                                          |                                       
 | `to`                 | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
 | `contract_address`   | `text`   | YES      | The contract address created, if the transaction was a contract creation, otherwise null.       |
-| `status`             | `bigint` | NO       | '0x0' indicates transaction failure , '0x1' indicates transaction succeeded.                    |
+| `status`             | `bigint` | NO       | 0 indicates transaction failure , 1 indicates transaction succeeded.                            |
 | `cumulative_gas_used`| `bigint` | NO       | The total amount of gas used when this transaction was executed in the block.                   |
 | `gas_used`           | `bigint` | NO       | The actual amount of gas used in this block.                                                    |
-| `effective_gas_price`| `bigint` | NO       | The block time.                                                                                 |
-| `logs_bloom`         | `text`   | YES      | Includes the bloom filter representation of the logs                                            |
+| `effective_gas_price`| `bigint` | NO       | The actual value per gas deducted from the senders account.                                     |
+| `logs_bloom`         | `text`   | YES      | Includes the bloom filter representation of the logs.                                           |
 | `logs`               | `jsonb`  | NO       | Array of log objects, which this transaction generated.                                         |
 | `message`            | `text`   | NO       | The cid in filecoin                                                                             |
 
