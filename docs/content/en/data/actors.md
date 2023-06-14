@@ -517,12 +517,12 @@ The table is designed to maintain a comprehensive record of changes made to cont
 
 | Column          | Type     | Nullable | Description                                              |
 | ----------------| ---------| -------- | ---------------------------------------------------------|
-| `height`        | `bigint` | NO       | Epoch at contract had benn created or modified           |
+| `height`        | `bigint` | NO       | Epoch at contract had benn created or modified.          |
 | `actor_id`      | `text`   | NO       | Actor address.                                           |
 | `eth_address`   | `text`   | NO       | Actor ETH address.                                       |
-| `byte_code`     | `text`   | NO       | Contract Bytecode                                        |
-| `byte_code_hash`| `text`   | NO       | Contract Bytecode is encoded in hash by Keccak256        |
-| `balance`       | `numeric`| NO       | Balance of EVM actor in attoFIL                          |
+| `byte_code`     | `text`   | NO       | Contract Bytecode.                                       |
+| `byte_code_hash`| `text`   | NO       | Contract Bytecode is encoded in hash by Keccak256.       |
+| `balance`       | `numeric`| NO       | Balance of EVM actor in attoFIL.                         |
 | `nonce`         | `bigint` | NO       | The next actor nonce that is expected to appear on chain.|
 
 
