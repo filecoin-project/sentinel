@@ -293,8 +293,8 @@ Gas economics for all messages in all blocks at each epoch.
 Blocks included in tipsets at an epoch.
 
 - Task: `fevm_block_header`
-- Network Range: [`v0` - `v∞`)
-- Epoch Range: [`0` - `∞`)
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
 
 | Column              | Type     | Nullable | Description                                                                                     |
 | ------------------- | -------- | -------- | ----------------------------------------------------------------------------------------------- |
@@ -313,3 +313,29 @@ Blocks included in tipsets at an epoch.
 | `extra_data`        | `text`   | YES      | Arbitrary additional data as raw bytes.                                                         |
 | `base_fee_per_gas`  | `text`   | NO       | The base fee value.                                                                             |
 | `size`              | `bigint` | NO       | Block size.                                                                                     |
+
+### fevm_receipts
+
+Data returned by an Ethereum client to represent the result of a particular transaction
+
+- Task: `fevm_receipt`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column               | Type     | Nullable | Description                                                                                     |
+| ---------------------| -------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `height`             | `bigint` | NO       | Epoch when this receipt been created.                                                           |
+| `transaction_hash`   | `text`   | NO       | Hash of transaction.                                                                            |
+| `transaction_index`  | `bigint` | NO       | Integer of the transactions index position in the block.                                        |
+| `block_hash`         | `text`   | NO       | Hash of the block where this transaction was in.                                                |
+| `block_number`       | `bigint` | NO       | Block number where this transaction was in.                                                     |
+| `from`               | `text`   | NO       | Address of the sender.                                                                          |                                       
+| `to`                 | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
+| `contract_address`   | `text`   | YES      | The contract address created, if the transaction was a contract creation, otherwise null.       |
+| `status`             | `bigint` | NO       | '0x0' indicates transaction failure , '0x1' indicates transaction succeeded.                    |
+| `cumulative_gas_used`| `bigint` | NO       | The total amount of gas used when this transaction was executed in the block.                   |
+| `gas_used`           | `bigint` | NO       | The actual amount of gas used in this block.                                                    |
+| `effective_gas_price`| `bigint` | NO       | The block time.                                                                                 |
+| `logs_bloom`         | `text`   | YES      | Includes the bloom filter representation of the logs                                            |
+| `logs`               | `jsonb`  | NO       | Array of log objects, which this transaction generated.                                         |
+| `message`            | `text`   | NO       | The cid in filecoin                                                                             |
