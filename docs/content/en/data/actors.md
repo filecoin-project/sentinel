@@ -498,7 +498,7 @@ FEVM Actor related statistical data.
 
 | Column                 | Type     | Nullable | Description                                         |
 | -----------------------| ---------| -------- | --------------------------------------------------- |
-| `height`               | `bigint` | NO       | Epoch at which this verified client state changed.  |
+| `height`               | `bigint` | NO       | Epoch                                               |
 | `contract_balance`     | `text`   | NO       | Balance of EVM actor in attoFIL                     |
 | `eth_account_balance`  | `text`   | NO       | Balance of ETH account actor in attoFIL.            |
 | `placeholder_balance`  | `text`   | NO       | Balance of Placeholder Actor in attoFIL.            |
@@ -507,6 +507,23 @@ FEVM Actor related statistical data.
 | `eth_account_count`    | `bigint` | NO       | Number of ETH account actors                        |
 | `placeholder_count`    | `bigint` | NO       | Number of placeholder actors                        |
 
+### fevm_contracts
+
+The table is designed to maintain a comprehensive record of changes made to contracts in the FEVM system. This table captures both the creation of new contracts and any subsequent updates or modifications made to existing contracts.
+
+- Task: `fevm_contract`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column          | Type     | Nullable | Description                                              |
+| ----------------| ---------| -------- | ---------------------------------------------------------|
+| `height`        | `bigint` | NO       | Epoch at contract had benn created or modified           |
+| `actor_id`      | `text`   | NO       | Actor address.                                           |
+| `eth_address`   | `text`   | NO       | Actor ETH address.                                       |
+| `byte_code`     | `text`   | NO       | Contract Bytecode                                        |
+| `byte_code_hash`| `text`   | NO       | Contract Bytecode is encoded in hash by Keccak256        |
+| `balance`       | `numeric`| NO       | Balance of EVM actor in attoFIL                          |
+| `nonce`         | `bigint` | NO       | The next actor nonce that is expected to appear on chain.|
 
 
 
