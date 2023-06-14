@@ -330,14 +330,17 @@ Transactions, which change the state of the EVM, need to be broadcast to the who
 | `transaction_index`       | `bigint` | NO       | Integer of the transactions index position in the block.                                        |
 | `block_hash`              | `text`   | NO       | Hash of the block where this transaction was in.                                                |
 | `block_number`            | `bigint` | NO       | Block number where this transaction was in.                                                     |
+| `nonce`                   | `bigint` | NO       | A sequentially incrementing counter which indicates the transaction number from the account.    |
 | `from`                    | `text`   | NO       | Address of the sender.                                                                          |    
 | `to`                      | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
 | `chain_id`                | `bigint` | NO       | EVM network id.                                                                                 |
-| `value`                   | `text`   | NO       | Amount of ETH to transfer from sender to recipient                                              |
-| `gas`                     | `bigint` | NO       | The maximum amount of gas units that can be consumed by the transaction                         |
-| `max_fee_per_gas`         | `numeric`| NO       | The maximum fee per unit of gas willing to be paid for the transaction                          |
-| `max_priority_fee_per_gas`| `numeric`| NO       | The maximum price of the consumed gas to be included as a tip to the validator                  |
-| `v`                       | `bigint` | NO       | Transaction’s signature. Recovery Identifier                                                    |
+| `value`                   | `text`   | NO       | Amount of ETH to transfer from sender to recipient.                                             |
+| `input`                   | `text`   | NO       | The data sent along with the transaction.                                                       |
+| `type`                    | `text`   | NO       | Type of transactions.                                                                           |
+| `gas`                     | `bigint` | NO       | Gas provided by the sender.                                                                     |
+| `max_fee_per_gas`         | `numeric`| NO       | The maximum fee per unit of gas willing to be paid for the transaction.                         |
+| `max_priority_fee_per_gas`| `numeric`| NO       | The maximum price of the consumed gas to be included as a tip to the validator.                 |
+| `v`                       | `bigint` | NO       | Transaction’s signature. Recovery Identifier.                                                   |
 | `r`                       | `bigint` | NO       | Transaction’s signature. Outputs of an ECDSA signature.                                         |
 | `s`                       | `bigint` | NO       | Transaction’s signature. Putputs of an ECDSA signature.                                         |
 
