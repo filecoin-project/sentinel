@@ -487,6 +487,28 @@ Verifier on-chain per each verified client state change.
 | `data_cap`   | `numeric`      | NO       | DataCap of verified client at this state change.         |
 | `event`      | `USER-DEFINED` | NO       | Name of the event that occurred.                         |
 
+## FEVM Actor
+### fevm_actor_stats
+
+FEVM Actor related statistical data.
+
+- Task: `fevm_actor_stats`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column                 | Type     | Nullable | Description                                         |
+| -----------------------| ---------| -------- | --------------------------------------------------- |
+| `height`               | `bigint` | NO       | Epoch at which this verified client state changed.  |
+| `contract_balance`     | `text`   | NO       | Balance of EVM actor in attoFIL                     |
+| `eth_account_balance`  | `text`   | NO       | Balance of ETH account actor in attoFIL.            |
+| `placeholder_balance`  | `text`   | NO       | Balance of Placeholder Actor in attoFIL.            |
+| `contract_count`       | `bigint` | NO       | Number of contracts                                 |
+| `unique_contract_count`| `bigint` | NO       | Number of unique contracts                          |
+| `eth_account_count`    | `bigint` | NO       | Number of ETH account actors                        |
+| `placeholder_count`    | `bigint` | NO       | Number of placeholder actors                        |
+
+
+
 
 ## Deprecate
 ### actor_states
