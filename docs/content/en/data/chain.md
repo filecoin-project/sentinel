@@ -367,3 +367,38 @@ Data returned by an Ethereum client to represent the result of a particular tran
 | `logs_bloom`         | `text`   | YES      | Includes the bloom filter representation of the logs                                            |
 | `logs`               | `jsonb`  | NO       | Array of log objects, which this transaction generated.                                         |
 | `message`            | `text`   | NO       | The cid in filecoin                                                                             |
+
+
+### fevm_trace
+
+Messages sent internally through the VM not appearing on chain.
+
+- Task: `fevm_traces`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column                 | Type     | Nullable | Description                                                                                     |
+| -----------------------| -------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `height`               | `bigint` | NO       | Epoch when this trace been created.                                                             |
+| `message_state_toot`   | `text`   | NO       | StateRoot message was applied to.                                                               |
+| `message_cid`          | `text`   | NO       | On-chain message triggering the message.                                                        |
+| `transaction_hash`     | `text`   | NO       | On-chain message ETH transaction hash.                                                          |
+| `trace_cid`            | `text`   | NO       | Cid of the trace.                                                                               |
+| `from`                 | `text`   | NO       | Address of the sender.                                                                          |                                       
+| `to`                   | `text`   | YES      | Address of the receiver. null when its a contract creation transaction.                         |
+| `from_filecoin_address`| `text`   | NO       | Filecoin Address of the sender.                                                                 |
+| `to_filecoin_address`  | `text`   | YES      | Filecoin Address of the receive.                                                                |
+| `value`                | `numeric`| NO       | Value attoFIL contained in message.                                                             |
+| `method`               | `bigint` | NO       | Method called on To (receiver).                                                                 |
+| `parsed_method`        | `text`   | NO       | Method in readable name.                                                                        |
+| `actor_code`           | `text`   | NO       | ActorCode of To (receiver).                                                                     |
+| `exit_code`            | `bigint` | NO       | ExitCode of message execution.                                                                  |
+| `params`               | `text`   | NO       | Params contained in message encode in eth bytes.                                                |
+| `returns`              | `text`   | NO       | Returns value of message receipt encode in eth bytes.                                           |
+| `index`                | `bigint` | NO       | Index indicating the order of the messages execution.                                           |
+| `parsed_params`        | `jsonb`  | NO       | Parsed `Params` contained in message.                                                           |
+| `parsed_returns`       | `jsonb`  | NO       | Parsed `Returns` value of message receipt.                                                      |
+| `params_codec`         | `bigint` | NO       | Params codec.                                                                                   |
+| `returns_codec`        | `bigint` | NO       | Returns codec.                                                                                  |
+
+
