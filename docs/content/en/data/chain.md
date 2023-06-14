@@ -285,3 +285,31 @@ Gas economics for all messages in all blocks at each epoch.
 | `gas_capacity_ratio`     | `double precision` | YES      | The gas_limit_unique_total / target gas limit total for all blocks.                                                                       |
 | `gas_waste_ratio`        | `double precision` | YES      | (gas_limit_total - gas_limit_unique_total) / target gas limit total for all blocks.                                                       |
 | `height`                 | `bigint`           | NO       | Epoch these economics apply to.                                                                                                           |
+
+
+## FEVM
+### fevm_block_headers
+
+Blocks included in tipsets at an epoch.
+
+- Task: `fevm_block_header`
+- Network Range: [`v0` - `v∞`)
+- Epoch Range: [`0` - `∞`)
+
+| Column              | Type     | Nullable | Description                                                                                     |
+| ------------------- | -------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `height`            | `bigint` | NO       | Epoch when this block was mined.                                                                |
+| `hash`              | `text`   | NO       | Block hash.                                                                                     |
+| `parent_hash`       | `text`   | NO       | The hash of the preceding block.                                                                |
+| `miner`             | `text`   | NO       | ETH Address of the miner who mined this block.                                                  |
+| `state_root`        | `text`   | NO       | Block state root ETH hash.                                                                      |
+| `transactions_root` | `text`   | NO       | Set to a hardcoded value which is used by some clients to determine if has no transactions.     |                                       
+| `receipts_root`     | `text`   | NO       | Hash of the transaction receipts trie.                                                          |
+| `difficulty`        | `bigint` | NO       | ETH mining difficulty.                                                                          |
+| `number`            | `bigint` | NO       | The number of the current block.                                                                |
+| `gas_limit`         | `bigint` | NO       | Maximum gas allowed in this block.                                                              |
+| `gas_used`          | `bigint` | NO       | The actual amount of gas used in this block.                                                    |
+| `timestamp`         | `bigint` | NO       | The block time.                                                                                 |
+| `extra_data`        | `text`   | YES      | Arbitrary additional data as raw bytes.                                                         |
+| `base_fee_per_gas`  | `text`   | NO       | The base fee value.                                                                             |
+| `size`              | `bigint` | NO       | Block size.                                                                                     |
