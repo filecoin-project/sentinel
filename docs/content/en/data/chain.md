@@ -334,7 +334,7 @@ Transactions, which change the state of the EVM, need to be broadcast to the who
 | `from`                    | `text`   | NO       | Address of the sender.                                                                          |    
 | `to`                      | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
 | `chain_id`                | `bigint` | NO       | EVM network id.                                                                                 |
-| `value`                   | `text`   | NO       | Amount of ETH to transfer from sender to recipient.                                             |
+| `value`                   | `text`   | NO       | Amount of attoFIL to transfer from sender to recipient.                                             |
 | `input`                   | `text`   | NO       | The data sent along with the transaction.                                                       |
 | `type`                    | `text`   | NO       | Type of transactions.                                                                           |
 | `gas`                     | `bigint` | NO       | Gas provided by the sender.                                                                     |
