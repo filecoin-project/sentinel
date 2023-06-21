@@ -14,24 +14,9 @@ toc: true
 ---
 
 ## Raw Actor States
-### actor_states
-
-Actor states that were changed at an epoch. Associates actors states as single-level trees with CIDs pointing to complete state tree with the root CID (head) for that actor's state.
-
-- Task: `actor_state`
-- Network Range: [`v0` - `v∞`)
-- Epoch Range: [`0` - `∞`)
-
-| Column   | Type     | Nullable | Description                                      |
-| -------- | -------- | -------- | ------------------------------------------------ |
-| `head`   | `text`   | NO       | CID of the root of the state tree for the actor. |
-| `code`   | `text`   | NO       | CID identifier for the type of the actor.        |
-| `state`  | `jsonb`  | NO       | Top level of state data.                         |
-| `height` | `bigint` | NO       | Epoch when this state change happened.           |
-
 ### actors
 
-Actors on chain that were added or updated at an epoch. Associates the actor's state root CID (head) with the chain state root CID from which it descends. Includes account ID nonce and balance at each state.
+Actors on chain that were added or updated at an epoch. Associates the actor's state root CID (head) with the chain state root CID from which it descends. Includes account ID nonce, balance and state data at each state.
 
 - Task: `actor`
 - Network Range: [`v0` - `v∞`)
@@ -46,6 +31,8 @@ Actors on chain that were added or updated at an epoch. Associates the actor's s
 | `balance`    | `text`   | NO       | Actor balance in attoFIL.                                 |
 | `state_root` | `text`   | NO       | CID of the state root.                                    |
 | `height`     | `bigint` | NO       | Epoch when this actor was created or updated.             |
+| `state`      | `jsonb`  | NO       | Top level of state data.                                  |
+
 
 ## DataCap Actor
 ### data_cap_balance
@@ -499,3 +486,59 @@ Verifier on-chain per each verified client state change.
 | `address`    | `text`         | NO       | Address of verified client this state change applies to. |
 | `data_cap`   | `numeric`      | NO       | DataCap of verified client at this state change.         |
 | `event`      | `USER-DEFINED` | NO       | Name of the event that occurred.                         |
+
+## FEVM Actor
+### fevm_actor_stats
+
+FEVM Actor related statistical data.
+
+- Task: `fevm_actor_stats`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column                 | Type     | Nullable | Description                                         |
+| -----------------------| ---------| -------- | --------------------------------------------------- |
+| `height`               | `bigint` | NO       | Epoch                                               |
+| `contract_balance`     | `text`   | NO       | Balance of EVM actor in attoFIL                     |
+| `eth_account_balance`  | `text`   | NO       | Balance of ETH account actor in attoFIL.            |
+| `placeholder_balance`  | `text`   | NO       | Balance of Placeholder Actor in attoFIL.            |
+| `contract_count`       | `bigint` | NO       | Number of contracts                                 |
+| `unique_contract_count`| `bigint` | NO       | Number of unique contracts                          |
+| `eth_account_count`    | `bigint` | NO       | Number of ETH account actors                        |
+| `placeholder_count`    | `bigint` | NO       | Number of placeholder actors                        |
+
+### fevm_contracts
+
+The table is designed to maintain a comprehensive record of changes made to contracts in the FEVM system. This table captures both the creation of new contracts and any subsequent updates or modifications made to existing contracts.
+
+- Task: `fevm_contract`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+| Column          | Type     | Nullable | Description                                              |
+| ----------------| ---------| -------- | ---------------------------------------------------------|
+| `height`        | `bigint` | NO       | Epoch at contract was added or changed.                  |
+| `actor_id`      | `text`   | NO       | Actor address.                                           |
+| `eth_address`   | `text`   | NO       | Actor ETH address.                                       |
+| `byte_code`     | `text`   | NO       | Contract Bytecode.                                       |
+| `byte_code_hash`| `text`   | NO       | Contract Bytecode is encoded in hash by Keccak256.       |
+| `balance`       | `numeric`| NO       | Balance of EVM actor in attoFIL.                         |
+| `nonce`         | `bigint` | NO       | The next actor nonce that is expected to appear on chain.|
+
+
+
+## Deprecate
+### actor_states
+
+Actor states that were changed at an epoch. Associates actors states as single-level trees with CIDs pointing to complete state tree with the root CID (head) for that actor's state.
+
+- Task: `actor_state`
+- Network Range: [`v0` - `v∞`)
+- Epoch Range: [`0` - `∞`)
+
+| Column   | Type     | Nullable | Description                                      |
+| -------- | -------- | -------- | ------------------------------------------------ |
+| `head`   | `text`   | NO       | CID of the root of the state tree for the actor. |
+| `code`   | `text`   | NO       | CID identifier for the type of the actor.        |
+| `state`  | `jsonb`  | NO       | Top level of state data.                         |
+| `height` | `bigint` | NO       | Epoch when this state change happened.           |
