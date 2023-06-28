@@ -77,7 +77,7 @@ cp ./lily /usr/local/bin/lily
 
 #### M1-based Macs
 
-Because of the novel architecture of the M1-based Mac computers, some specific environment variables must be set before creating the lily executable:
+Because of the novel architecture of the M1-based Mac computers, some specific environment variables have been pre-set in the `Makefile`:
 
 ```console
 export GOARCH=arm64
@@ -85,8 +85,6 @@ export CGO_ENABLED=1
 export LIBRARY_PATH=/opt/homebrew/lib
 export FFI_BUILD_FROM_SOURCE=1
 ```
-
-Make sure these are defined before running the `make` commands above.
 
 ---
 
