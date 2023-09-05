@@ -43,13 +43,13 @@ DataCap on-chain per each DataCap balance state change.
 - Network Range: [`v17` - `v∞`)
 - Epoch Range: [`2383680` - `∞`)
 
-| Column       | Type                              | Nullable | Description                                                                                   |
-| ------------ | --------------------------------- | -------- | --------------------------------------------------------------------------------------------- |
-| `height`     | `bigint`                          | NO       | Epoch when this actors balances map was modified.                                             |
-| `state_root` | `text`                            | NO       | StateRoot when this actor balances map was modified.                                          |
-| `address`    | `text`                            | NO       | Address of the actor whose balance was created or modified.                                   |
-| `data_cap`   | `numeric`                         | NO       | Datacap (Tokenized StoragePower) of the actor with `address` after it was created or modified.|
-| `event`      | `ADDED`, `MODIFIED`, or `REMOVED` | NO       | Event identifying how an actors balance was modified. (One of: `ADDED`, `REMOVED`,`MODIFIED`) |
+| Column       | Type                              | Nullable | Description                                                                                    |
+| ------------ | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `height`     | `bigint`                          | NO       | Epoch when this actors balances map was modified.                                              |
+| `state_root` | `text`                            | NO       | StateRoot when this actor balances map was modified.                                           |
+| `address`    | `text`                            | NO       | Address of the actor whose balance was created or modified.                                    |
+| `data_cap`   | `numeric`                         | NO       | Datacap (Tokenized StoragePower) of the actor with `address` after it was created or modified. |
+| `event`      | `ADDED`, `MODIFIED`, or `REMOVED` | NO       | Event identifying how an actors balance was modified. (One of: `ADDED`, `REMOVED`,`MODIFIED`)  |
 
 ## Init Actor
 ### id_addresses
@@ -496,16 +496,34 @@ FEVM Actor related statistical data.
 - Network Range: [`v18` - `v∞`)
 - Epoch Range: [`2683348` - `∞`)
 
-| Column                 | Type     | Nullable | Description                                         |
-| -----------------------| ---------| -------- | --------------------------------------------------- |
-| `height`               | `bigint` | NO       | Epoch                                               |
-| `contract_balance`     | `text`   | NO       | Balance of EVM actor in attoFIL                     |
-| `eth_account_balance`  | `text`   | NO       | Balance of ETH account actor in attoFIL.            |
-| `placeholder_balance`  | `text`   | NO       | Balance of Placeholder Actor in attoFIL.            |
-| `contract_count`       | `bigint` | NO       | Number of contracts                                 |
-| `unique_contract_count`| `bigint` | NO       | Number of unique contracts                          |
-| `eth_account_count`    | `bigint` | NO       | Number of ETH account actors                        |
-| `placeholder_count`    | `bigint` | NO       | Number of placeholder actors                        |
+| Column                  | Type     | Nullable | Description                              |
+| ----------------------- | -------- | -------- | ---------------------------------------- |
+| `height`                | `bigint` | NO       | Epoch                                    |
+| `contract_balance`      | `text`   | NO       | Balance of EVM actor in attoFIL          |
+| `eth_account_balance`   | `text`   | NO       | Balance of ETH account actor in attoFIL. |
+| `placeholder_balance`   | `text`   | NO       | Balance of Placeholder Actor in attoFIL. |
+| `contract_count`        | `bigint` | NO       | Number of contracts                      |
+| `unique_contract_count` | `bigint` | NO       | Number of unique contracts               |
+| `eth_account_count`     | `bigint` | NO       | Number of ETH account actors             |
+| `placeholder_count`     | `bigint` | NO       | Number of placeholder actors             |
+
+### fevm_actor_dumps
+- Task: `fevm_actor_dump`
+- Network Range: [`v18` - `v∞`)
+- Epoch Range: [`2683348` - `∞`)
+
+The fevm_actor_dumps table serves as a repository for capturing the full dump of the status of various actors associated with the FEVM at specific block heights. These actors encompass three main categories: evm, ethaccount, and placeholder.
+
+| Column           | Type      | Nullable | Description                                                                                     |
+| ---------------- | --------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `height`         | `bigint`  | NO       | Epoch at contract was added or changed.                                                         |
+| `actor_id`       | `text`    | NO       | Actor Filecoin address.                                                                         |
+| `eth_address`    | `text`    | NO       | Actor ETH address.                                                                              |
+| `byte_code`      | `text`    | YES      | Contract Bytecode. null when actor is ethaccount or placeholder.                                |
+| `byte_code_hash` | `text`    | YES      | Contract Bytecode is encoded in hash by Keccak256. null when actor is ethaccount or placeholder |
+| `balance`        | `numeric` | NO       | Balance of EVM actor in attoFIL.                                                                |
+| `nonce`          | `bigint`  | NO       | The next actor nonce that is expected to appear on chain.                                       |
+| `actor_name`     | `text`    | NO       | Human-readable identifier of actor.                                                             |
 
 ### fevm_contracts
 
@@ -515,15 +533,15 @@ The table is designed to maintain a comprehensive record of changes made to cont
 - Network Range: [`v18` - `v∞`)
 - Epoch Range: [`2683348` - `∞`)
 
-| Column          | Type     | Nullable | Description                                              |
-| ----------------| ---------| -------- | ---------------------------------------------------------|
-| `height`        | `bigint` | NO       | Epoch at contract was added or changed.                  |
-| `actor_id`      | `text`   | NO       | Actor address.                                           |
-| `eth_address`   | `text`   | NO       | Actor ETH address.                                       |
-| `byte_code`     | `text`   | NO       | Contract Bytecode.                                       |
-| `byte_code_hash`| `text`   | NO       | Contract Bytecode is encoded in hash by Keccak256.       |
-| `balance`       | `numeric`| NO       | Balance of EVM actor in attoFIL.                         |
-| `nonce`         | `bigint` | NO       | The next actor nonce that is expected to appear on chain.|
+| Column           | Type      | Nullable | Description                                               |
+| ---------------- | --------- | -------- | --------------------------------------------------------- |
+| `height`         | `bigint`  | NO       | Epoch at contract was added or changed.                   |
+| `actor_id`       | `text`    | NO       | Actor Filecoin address.                                   |
+| `eth_address`    | `text`    | NO       | Actor ETH address.                                        |
+| `byte_code`      | `text`    | NO       | Contract Bytecode.                                        |
+| `byte_code_hash` | `text`    | NO       | Contract Bytecode is encoded in hash by Keccak256.        |
+| `balance`        | `numeric` | NO       | Balance of EVM actor in attoFIL.                          |
+| `nonce`          | `bigint`  | NO       | The next actor nonce that is expected to appear on chain. |
 
 
 
