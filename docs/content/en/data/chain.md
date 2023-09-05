@@ -114,6 +114,8 @@ Message receipts after being applied to chain state by message CID and parent st
 | `gas_used`   | `bigint` | NO       | A measure of the amount of resources (or units of gas) consumed, in order to execute a message.                                                                                                                                             |
 | `height`     | `bigint` | NO       | Epoch the message was executed and receipt generated.                                                                                                                                                                                       |
 
+| `return`     | `bytea` | YES       | Returns value of message receipt.                                                                                                                                                                                       |
+| `parsed_return`     | `jsonb` | YES       | Result returned from executing a message parsed and serialized as a JSON object.                                                                                                                                                                                       |
 ### parsed_messages
 
 Messages parsed to extract useful information.
@@ -296,23 +298,23 @@ Blocks included in tipsets at an epoch.
 - Network Range: [`v18` - `v∞`)
 - Epoch Range: [`2683348` - `∞`)
 
-| Column              | Type     | Nullable | Description                                                                                     |
-| ------------------- | -------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `height`            | `bigint` | NO       | Epoch when this block was mined.                                                                |
-| `hash`              | `text`   | NO       | Block hash.                                                                                     |
-| `parent_hash`       | `text`   | NO       | The hash of the preceding block.                                                                |
-| `miner`             | `text`   | NO       | ETH Address of the miner who mined this block.                                                  |
-| `state_root`        | `text`   | NO       | Block state root ETH hash.                                                                      |
-| `transactions_root` | `text`   | NO       | Set to a hardcoded value which is used by some clients to determine if has no transactions.     |                                       
-| `receipts_root`     | `text`   | NO       | Hash of the transaction receipts trie.                                                          |
-| `difficulty`        | `bigint` | NO       | ETH mining difficulty.                                                                          |
-| `number`            | `bigint` | NO       | The number of the current block.                                                                |
-| `gas_limit`         | `bigint` | NO       | Maximum gas allowed in this block.                                                              |
-| `gas_used`          | `bigint` | NO       | The actual amount of gas used in this block.                                                    |
-| `timestamp`         | `bigint` | NO       | The block time.                                                                                 |
-| `extra_data`        | `text`   | YES      | Arbitrary additional data as raw bytes.                                                         |
-| `base_fee_per_gas`  | `text`   | NO       | The base fee value.                                                                             |
-| `size`              | `bigint` | NO       | Block size.                                                                                     |
+| Column              | Type     | Nullable | Description                                                                                 |
+| ------------------- | -------- | -------- | ------------------------------------------------------------------------------------------- |
+| `height`            | `bigint` | NO       | Epoch when this block was mined.                                                            |
+| `hash`              | `text`   | NO       | Block hash.                                                                                 |
+| `parent_hash`       | `text`   | NO       | The hash of the preceding block.                                                            |
+| `miner`             | `text`   | NO       | ETH Address of the miner who mined this block.                                              |
+| `state_root`        | `text`   | NO       | Block state root ETH hash.                                                                  |
+| `transactions_root` | `text`   | NO       | Set to a hardcoded value which is used by some clients to determine if has no transactions. |
+| `receipts_root`     | `text`   | NO       | Hash of the transaction receipts trie.                                                      |
+| `difficulty`        | `bigint` | NO       | ETH mining difficulty.                                                                      |
+| `number`            | `bigint` | NO       | The number of the current block.                                                            |
+| `gas_limit`         | `bigint` | NO       | Maximum gas allowed in this block.                                                          |
+| `gas_used`          | `bigint` | NO       | The actual amount of gas used in this block.                                                |
+| `timestamp`         | `bigint` | NO       | The block time.                                                                             |
+| `extra_data`        | `text`   | YES      | Arbitrary additional data as raw bytes.                                                     |
+| `base_fee_per_gas`  | `text`   | NO       | The base fee value.                                                                         |
+| `size`              | `bigint` | NO       | Block size.                                                                                 |
 
 ### fevm_transactions
 
@@ -323,26 +325,31 @@ Transactions, which change the state of the EVM, need to be broadcast to the who
 - Network Range: [`v18` - `v∞`)
 - Epoch Range: [`2683348` - `∞`)
 
-| Column                    | Type     | Nullable | Description                                                                                     |
-| --------------------------| -------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `height`                  | `bigint` | NO       | Epoch when this transaction been created.                                                       |
-| `hash`                    | `text`   | NO       | Hash of transaction.                                                                            |
-| `transaction_index`       | `bigint` | NO       | Integer of the transactions index position in the block.                                        |
-| `block_hash`              | `text`   | NO       | Hash of the block where this transaction was in.                                                |
-| `block_number`            | `bigint` | NO       | Block number where this transaction was in.                                                     |
-| `nonce`                   | `bigint` | NO       | A sequentially incrementing counter which indicates the transaction number from the account.    |
-| `from`                    | `text`   | NO       | Address of the sender.                                                                          |    
-| `to`                      | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
-| `chain_id`                | `bigint` | NO       | EVM network id.                                                                                 |
-| `value`                   | `text`   | NO       | Amount of attoFIL to transfer from sender to recipient.                                             |
-| `input`                   | `text`   | NO       | The data sent along with the transaction.                                                       |
-| `type`                    | `text`   | NO       | Type of transactions.                                                                           |
-| `gas`                     | `bigint` | NO       | Gas provided by the sender.                                                                     |
-| `max_fee_per_gas`         | `numeric`| NO       | The maximum fee per unit of gas willing to be paid for the transaction.                         |
-| `max_priority_fee_per_gas`| `numeric`| NO       | The maximum price of the consumed gas to be included as a tip to the validator.                 |
-| `v`                       | `bigint` | NO       | Transaction’s signature. Recovery Identifier.                                                   |
-| `r`                       | `bigint` | NO       | Transaction’s signature. Outputs of an ECDSA signature.                                         |
-| `s`                       | `bigint` | NO       | Transaction’s signature. Putputs of an ECDSA signature.                                         |
+| Column                     | Type      | Nullable | Description                                                                                  |
+| -------------------------- | --------- | -------- | -------------------------------------------------------------------------------------------- |
+| `height`                   | `bigint`  | NO       | Epoch when this transaction been created.                                                    |
+| `hash`                     | `text`    | NO       | Hash of transaction.                                                                         |
+| `transaction_index`        | `bigint`  | NO       | Integer of the transactions index position in the block.                                     |
+| `block_hash`               | `text`    | NO       | Hash of the block where this transaction was in.                                             |
+| `block_number`             | `bigint`  | NO       | Block number where this transaction was in.                                                  |
+| `nonce`                    | `bigint`  | NO       | A sequentially incrementing counter which indicates the transaction number from the account. |
+| `from`                     | `text`    | NO       | Address of the sender.                                                                       |
+| `to`                       | `text`    | YES      | Address of the receiver. null when its a contract creation transaction.                      |
+| `chain_id`                 | `bigint`  | NO       | EVM network id.                                                                              |
+| `value`                    | `text`    | NO       | Amount of attoFIL to transfer from sender to recipient.                                      |
+| `input`                    | `text`    | NO       | The data sent along with the transaction.                                                    |
+| `type`                     | `text`    | NO       | Type of transactions.                                                                        |
+| `gas`                      | `bigint`  | NO       | Gas provided by the sender.                                                                  |
+| `max_fee_per_gas`          | `numeric` | NO       | The maximum fee per unit of gas willing to be paid for the transaction.                      |
+| `max_priority_fee_per_gas` | `numeric` | NO       | The maximum price of the consumed gas to be included as a tip to the validator.              |
+| `v`                        | `bigint`  | NO       | Transaction’s signature. Recovery Identifier.                                                |
+| `r`                        | `bigint`  | NO       | Transaction’s signature. Outputs of an ECDSA signature.                                      |
+| `s`                        | `bigint`  | NO       | Transaction’s signature. Putputs of an ECDSA signature.                                      |
+| `from_filecoin_address`    | `text`    | NO       | Filecoin Address of the sender.                                                              |
+| `to_filecoin_address`      | `text`    | YES      | Filecoin Address of the receiver.                                                            |
+| `from_actor_name`          | `text`    | NO       | Human-readable identifier of sender (From).                                                  |
+| `to_actor_name`            | `text`    | YES      | Human-readable identifier of receiver (To).                                                  |
+| `message_cid`              | `text`    | NO       | On-chain message cid.                                                                        |
 
 
 ### fevm_receipts
@@ -353,23 +360,23 @@ Data returned by an Ethereum client to represent the result of a particular tran
 - Network Range: [`v18` - `v∞`)
 - Epoch Range: [`2683348` - `∞`)
 
-| Column               | Type     | Nullable | Description                                                                                     |
-| ---------------------| -------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `height`             | `bigint` | NO       | Epoch when this receipt been created.                                                           |
-| `transaction_hash`   | `text`   | NO       | Hash of transaction.                                                                            |
-| `transaction_index`  | `bigint` | NO       | Integer of the transactions index position in the block.                                        |
-| `block_hash`         | `text`   | NO       | Hash of the block where this transaction was in.                                                |
-| `block_number`       | `bigint` | NO       | Block number where this transaction was in.                                                     |
-| `from`               | `text`   | NO       | Address of the sender.                                                                          |                                       
-| `to`                 | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                         |
-| `contract_address`   | `text`   | YES      | The contract address created, if the transaction was a contract creation, otherwise null.       |
-| `status`             | `bigint` | NO       | 0 indicates transaction failure , 1 indicates transaction succeeded.                            |
-| `cumulative_gas_used`| `bigint` | NO       | The total amount of gas used when this transaction was executed in the block.                   |
-| `gas_used`           | `bigint` | NO       | The actual amount of gas used in this block.                                                    |
-| `effective_gas_price`| `bigint` | NO       | The actual value per gas deducted from the senders account.                                     |
-| `logs_bloom`         | `text`   | YES      | Includes the bloom filter representation of the logs.                                           |
-| `logs`               | `jsonb`  | NO       | Array of log objects, which this transaction generated.                                         |
-| `message`            | `text`   | NO       | The cid in filecoin                                                                             |
+| Column                | Type     | Nullable | Description                                                                               |
+| --------------------- | -------- | -------- | ----------------------------------------------------------------------------------------- |
+| `height`              | `bigint` | NO       | Epoch when this receipt been created.                                                     |
+| `transaction_hash`    | `text`   | NO       | Hash of transaction.                                                                      |
+| `transaction_index`   | `bigint` | NO       | Integer of the transactions index position in the block.                                  |
+| `block_hash`          | `text`   | NO       | Hash of the block where this transaction was in.                                          |
+| `block_number`        | `bigint` | NO       | Block number where this transaction was in.                                               |
+| `from`                | `text`   | NO       | Address of the sender.                                                                    |
+| `to`                  | `text`   | NO       | Address of the receiver. null when its a contract creation transaction.                   |
+| `contract_address`    | `text`   | YES      | The contract address created, if the transaction was a contract creation, otherwise null. |
+| `status`              | `bigint` | NO       | 0 indicates transaction failure , 1 indicates transaction succeeded.                      |
+| `cumulative_gas_used` | `bigint` | NO       | The total amount of gas used when this transaction was executed in the block.             |
+| `gas_used`            | `bigint` | NO       | The actual amount of gas used in this block.                                              |
+| `effective_gas_price` | `bigint` | NO       | The actual value per gas deducted from the senders account.                               |
+| `logs_bloom`          | `text`   | YES      | Includes the bloom filter representation of the logs.                                     |
+| `logs`                | `jsonb`  | NO       | Array of log objects, which this transaction generated.                                   |
+| `message`             | `text`   | NO       | The cid in filecoin                                                                       |
 
 
 ### fevm_trace
@@ -380,28 +387,30 @@ Messages sent internally through the VM not appearing on chain.
 - Network Range: [`v18` - `v∞`)
 - Epoch Range: [`2683348` - `∞`)
 
-| Column                 | Type     | Nullable | Description                                                                                     |
-| -----------------------| -------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `height`               | `bigint` | NO       | Epoch when this trace been created.                                                             |
-| `message_state_toot`   | `text`   | NO       | StateRoot message was applied to.                                                               |
-| `message_cid`          | `text`   | NO       | On-chain message triggering the message.                                                        |
-| `transaction_hash`     | `text`   | NO       | On-chain message ETH transaction hash.                                                          |
-| `trace_cid`            | `text`   | NO       | Cid of the trace.                                                                               |
-| `from`                 | `text`   | NO       | Address of the sender.                                                                          |                                       
-| `to`                   | `text`   | YES      | Address of the receiver. null when its a contract creation transaction.                         |
-| `from_filecoin_address`| `text`   | NO       | Filecoin Address of the sender.                                                                 |
-| `to_filecoin_address`  | `text`   | YES      | Filecoin Address of the receive.                                                                |
-| `value`                | `numeric`| NO       | Value attoFIL contained in message.                                                             |
-| `method`               | `bigint` | NO       | Method called on To (receiver).                                                                 |
-| `parsed_method`        | `text`   | NO       | Method in readable name.                                                                        |
-| `actor_code`           | `text`   | NO       | ActorCode of To (receiver).                                                                     |
-| `exit_code`            | `bigint` | NO       | ExitCode of message execution.                                                                  |
-| `params`               | `text`   | NO       | Params contained in message encode in eth bytes.                                                |
-| `returns`              | `text`   | NO       | Returns value of message receipt encode in eth bytes.                                           |
-| `index`                | `bigint` | NO       | Index indicating the order of the messages execution.                                           |
-| `parsed_params`        | `jsonb`  | NO       | Parsed `Params` contained in message.                                                           |
-| `parsed_returns`       | `jsonb`  | NO       | Parsed `Returns` value of message receipt.                                                      |
-| `params_codec`         | `bigint` | NO       | Params codec.                                                                                   |
-| `returns_codec`        | `bigint` | NO       | Returns codec.                                                                                  |
+| Column                  | Type      | Nullable | Description                                                             |
+| ----------------------- | --------- | -------- | ----------------------------------------------------------------------- |
+| `height`                | `bigint`  | NO       | Epoch when this trace been created.                                     |
+| `message_state_toot`    | `text`    | NO       | StateRoot message was applied to.                                       |
+| `message_cid`           | `text`    | NO       | On-chain message triggering the message.                                |
+| `transaction_hash`      | `text`    | NO       | On-chain message ETH transaction hash.                                  |
+| `trace_cid`             | `text`    | NO       | Cid of the trace.                                                       |
+| `from`                  | `text`    | NO       | Address of the sender.                                                  |
+| `to`                    | `text`    | YES      | Address of the receiver. null when its a contract creation transaction. |
+| `from_filecoin_address` | `text`    | NO       | Filecoin Address of the sender.                                         |
+| `to_filecoin_address`   | `text`    | YES      | Filecoin Address of the receive.                                        |
+| `value`                 | `numeric` | NO       | Value attoFIL contained in message.                                     |
+| `method`                | `bigint`  | NO       | Method called on To (receiver).                                         |
+| `parsed_method`         | `text`    | NO       | Method in readable name.                                                |
+| `actor_code`            | `text`    | NO       | ActorCode of To (receiver).                                             |
+| `exit_code`             | `bigint`  | NO       | ExitCode of message execution.                                          |
+| `params`                | `text`    | NO       | Params contained in message encode in eth bytes.                        |
+| `returns`               | `text`    | NO       | Returns value of message receipt encode in eth bytes.                   |
+| `index`                 | `bigint`  | NO       | Index indicating the order of the messages execution.                   |
+| `parsed_params`         | `jsonb`   | NO       | Parsed `Params` contained in message.                                   |
+| `parsed_returns`        | `jsonb`   | NO       | Parsed `Returns` value of message receipt.                              |
+| `params_codec`          | `bigint`  | NO       | Params codec.                                                           |
+| `returns_codec`         | `bigint`  | NO       | Returns codec.                                                          |
+| `from_actor_name`       | `text`    | NO       | Human-readable identifier of sender (From).                             |
+| `to_actor_name`         | `text`    | YES      | Human-readable identifier of receiver (To).                             |
 
 
