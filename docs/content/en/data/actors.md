@@ -117,6 +117,7 @@ All storage deal state transitions detected on-chain.
 - Task: `miner_actor_dump`
 - Network Range: [`v17` - `v∞`)
 - Epoch Range: [`2383680` - `∞`)
+
 | Column                      | Type      | Nullable | Description                                                                                                                                                                                       |
 | --------------------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `height`                    | `bigint`  | NO       | Epoch                                                                                                                                                                                             |
