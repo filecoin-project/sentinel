@@ -113,7 +113,37 @@ All storage deal state transitions detected on-chain.
 | `height`             | `bigint` | NO       | Epoch at which this deal was added or changed.                                            |
 
 ## Storage Miner Actor
+### miner_actor_dumps
+- Task: `miner_actor_dump`
+- Network Range: [`v17` - `v∞`)
+- Epoch Range: [`2383680` - `∞`)
 ### miner_beneficiary
+| Column                      | Type      | Nullable | Description                                                                                                                                                                                       |
+| --------------------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `height`                    | `bigint`  | NO       | Epoch                                                                                                                                                                                             |
+| `state_root`                | `text`    | NO       | CID of the parent state root at which this beneficiary was added or change.                                                                                                                       |
+| `miner_id`                  | `text`    | NO       | Address of the miner.                                                                                                                                                                             |
+| `miner_address`             | `text`    | NO       | Robust Address of the miner.                                                                                                                                                                      |
+| `owner_id`                  | `text`    | NO       | Address of actor designated as the owner. The owner address is the address that created the miner, paid the collateral, and has block rewards paid out to it.                                     |
+| `owner_address`             | `text`    | NO       | Robust Address of actor designated as the owner.                                                                                                                                                  |
+| `worker_id`                 | `text`    | NO       | Address of actor designated as the worker.                                                                                                                                                        |
+| `worker_address`            | `text`    | NO       | Robust Address of actor designated as the worker.                                                                                                                                                 |
+| `consensus_faulted_elapsed` | `bigint`  | NO       | The next epoch this miner is eligible for certain permissioned actor methods and winning block elections as a result of being reported for a consensus fault.                                     |
+| `peer_id`                   | `text`    | NO       | Current libp2p Peer ID of the miner.                                                                                                                                                              |
+| `control_addresses`         | `jsonb`   | NO       | JSON array of control addresses. Control addresses are used to submit WindowPoSts proofs to the chain.                                                                                            |
+| `beneficiary`               | `text`    | NO       | Address of the beneficiary. The beneficiary is set to the same address of Owner when initiating a miner without specifying a beneficiary address (for back-compatibility).                        |
+| `beneficiary_address`       | `text`    | NO       | Robust Address of the beneficiary.                                                                                                                                                                |
+| `sector_size`               | `bigint`  | NO       | Size of a sector.                                                                                                                                                                                 |
+| `num_live_sectors`          | `bigint`  | NO       | The number of live sectors.                                                                                                                                                                       |
+| `raw_bytes_power`           | `numeric` | NO       | The storage power in bytes.                                                                                                                                                                       |
+| `quality_adj_power`         | `numeric` | NO       | The quality adjusted storage power in bytes.                                                                                                                                                      |
+| `total_locked_funds`        | `numeric` | NO       | vesting funds + initial pledge + PreCommit deposits.                                                                                                                                              |
+| `vesting_funds`             | `numeric` | NO       | Amount of FIL (in attoFIL) locked due to vesting.                                                                                                                                                 |
+| `initial_pledge`            | `numeric` | NO       | Amount of FIL (in attoFIL) locked due to it being pledged as collateral. When a Miner ProveCommits a Sector, they must supply an "initial pledge" for the Sector, which acts as collateral.       |
+| `pre_commit_deposits`       | `numeric` | NO       | Amount of FIL (in attoFIL) locked due to it being used as a PreCommit deposit. When a Miner PreCommits a Sector, they must supply a "precommit deposit" for the Sector, which acts as collateral. |
+| `available_balance`         | `numeric` | NO       | balance - total_locked_funds.                                                                                                                                                                     |
+| `balance`                   | `numeric` | NO       | Miner balance in attoFIL.                                                                                                                                                                         |
+| `fee_debt`                  | `numeric` | NO       | Absolute value of debt this miner owes from unpaid fees in attoFIL.                                                                                                                               |
 
 - Task: `miner_beneficiary`
 - Network Range: [`v17` - `v∞`)
@@ -516,7 +546,7 @@ The fevm_actor_dumps table serves as a repository for capturing the full dump of
 
 | Column           | Type      | Nullable | Description                                                                                     |
 | ---------------- | --------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `height`         | `bigint`  | NO       | Epoch at contract was added or changed.                                                         |
+| `height`         | `bigint`  | NO       | Epoch                                                                                           |
 | `actor_id`       | `text`    | NO       | Actor Filecoin address.                                                                         |
 | `eth_address`    | `text`    | NO       | Actor ETH address.                                                                              |
 | `byte_code`      | `text`    | YES      | Contract Bytecode. null when actor is ethaccount or placeholder.                                |
