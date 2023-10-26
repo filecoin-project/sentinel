@@ -117,7 +117,6 @@ All storage deal state transitions detected on-chain.
 - Task: `miner_actor_dump`
 - Network Range: [`v17` - `v∞`)
 - Epoch Range: [`2383680` - `∞`)
-### miner_beneficiary
 | Column                      | Type      | Nullable | Description                                                                                                                                                                                       |
 | --------------------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `height`                    | `bigint`  | NO       | Epoch                                                                                                                                                                                             |
@@ -145,6 +144,7 @@ All storage deal state transitions detected on-chain.
 | `balance`                   | `numeric` | NO       | Miner balance in attoFIL.                                                                                                                                                                         |
 | `fee_debt`                  | `numeric` | NO       | Absolute value of debt this miner owes from unpaid fees in attoFIL.                                                                                                                               |
 
+### miner_beneficiary
 - Task: `miner_beneficiary`
 - Network Range: [`v17` - `v∞`)
 - Epoch Range: [`2383680` - `∞`)
