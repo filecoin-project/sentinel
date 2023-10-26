@@ -114,6 +114,9 @@ All storage deal state transitions detected on-chain.
 
 ## Storage Miner Actor
 ### miner_actor_dumps
+
+The miner_actor_dumps table serves as a repository for capturing the full dump of the status of miner at specific block heights.
+
 - Task: `miner_actor_dump`
 - Network Range: [`v17` - `v∞`)
 - Epoch Range: [`2383680` - `∞`)
