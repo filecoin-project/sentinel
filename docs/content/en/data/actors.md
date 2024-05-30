@@ -34,6 +34,42 @@ Actors on chain that were added or updated at an epoch. Associates the actor's s
 | `state`      | `jsonb`  | NO       | Top level of state data.                                  |
 
 
+## Builtin Actor Event
+### builtin_actor_events
+
+This table provides the events of built-in actors at each epoch, but it is very important to note that it does not include the operations of the cron actor. Therefore, events like sector-terminated and deal-activated are only subsets of all events.
+
+- Task: `builtin_actor_event`
+- Network Range: [`v22` - `v∞`)
+- Epoch Range: [`3855360` - `∞`)
+#### Supported events include:
+
+- `verifier-balance`
+- `allocation`
+- `allocation-removed`
+- `claim`
+- `claim-updated`
+- `claim-removed`
+- `deal-published`
+- `deal-activated`
+- `deal-terminated`
+- `deal-completed`
+- `sector-precommitted`
+- `sector-activated`
+- `sector-updated`
+- `sector-terminated`
+
+
+| Column          | Type     | Nullable | Description                                         |
+| --------------- | -------- | -------- | --------------------------------------------------- |
+| `height`        | `bigint` | NO       | Epoch when the event was created or updated.        |
+| `cid`           | `text`   | YES      | Content identifier related to the event.            |
+| `emitter`       | `text`   | YES      | Identifier of the entity that emitted the event.    |
+| `event_type`    | `text`   | YES      | Type or category of the event.                      |
+| `event_entries` | `jsonb`  | YES      | JSON array containing entries related to the event. |
+| `event_idx` .   | `bigint` | YES      | Event index at the specific height.                 |
+| `event_payload` | `jsonb`  | YES      | Convert the event_entries into key-value pairs.     |
+
 ## DataCap Actor
 ### data_cap_balance
 
@@ -294,13 +330,15 @@ Information on sector PreCommits for actors v9+ and above.
 | `replace_sector_number`    | `bigint`  | YES      | ID of the committed capacity sector to replace.                                                                                          |
 | `height`                   | `bigint`  | NO       | Epoch this PreCommit information was added/changed.                                                                                      |
 
-### miner_sector_deals
+
+### miner_sector_deals_v2
 
 Mapping of Deal IDs to their respective Miner and Sector IDs.
 
-- Task: `miner_sector_deal`
-- Network Range: [`v0` - `v∞`)
-- Epoch Range: [`0` - `∞`)
+- Task: `miner_sector_deal_v2`
+- Network Range: [`v22` - `v∞`)
+- Epoch Range: [`3855360` - `∞`)
+
 
 | Column      | Type     | Nullable | Description                                       |
 | ----------- | -------- | -------- | ------------------------------------------------- |
@@ -594,3 +632,18 @@ Actor states that were changed at an epoch. Associates actors states as single-l
 | `code`   | `text`   | NO       | CID identifier for the type of the actor.        |
 | `state`  | `jsonb`  | NO       | Top level of state data.                         |
 | `height` | `bigint` | NO       | Epoch when this state change happened.           |
+
+### miner_sector_deals
+
+Mapping of Deal IDs to their respective Miner and Sector IDs.
+
+- Task: `miner_sector_deal`
+- Network Range: [`v0` - `v21`)
+- Epoch Range: [`0` - `3855360`)
+
+| Column      | Type     | Nullable | Description                                       |
+| ----------- | -------- | -------- | ------------------------------------------------- |
+| `miner_id`  | `text`   | NO       | Address of the miner the deal is with.            |
+| `sector_id` | `bigint` | NO       | Numeric identifier of the sector the deal is for. |
+| `deal_id`   | `bigint` | NO       | Numeric identifier for the deal.                  |
+| `height`    | `bigint` | NO       | Epoch at which this deal was added/updated.       |
