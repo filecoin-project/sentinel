@@ -12,14 +12,6 @@ weight: 20
 
 ---
 
-> **Warning**
-> 
-> We will be deprecating this bucket soon and introducing a new service with higher quality and more up-to-date data.
-> The new data is accessible via GCS on these links: 
->   - **Raw data** at `gs://fil-mainnet-archive/raw/`. This folder contains data as [it was exported by `lily-archiver`](https://github.com/filecoin-project/lily-archiver/). Might contain duplicated and missing days.
->   - **Parquet** at `gs://fil-mainnet-archive/parquet/`. Daily partitioned parquet files. Eventually should be the source of truth as we are deduplicating and correcting any other potential errors.
->   - **CSVs** at `gs://fil-mainnet-archive/csv/`. Daily partitioned gzip compressed CSV files. They contain the same data than the parquet files.
-
 ## Latest data dump
 
 The following is a snapshot of what is available as of 2023-01-06:
@@ -108,6 +100,17 @@ Networks:
   - mainnet
 ```
 
+## GCP BigQuery
+
+We now offer the BigQuery public dataset: `lily-data.lily`.
+
+To be able to search for `lily-data.lily` in BigQuery, you need:
+
+1. Make sure that billing is enabled for your Google Cloud project.
+2. Have `roles/bigquery.jobUser` permission.
+3. In the BigQuery Explorer pane, use the search bar: `Search BigQuery resources` to find dataset `lily-data.lily` .
+
+For more Google BigQuery public dataset information, visit https://cloud.google.com/bigquery/public-data.
 
 ## S3 bucket
 
