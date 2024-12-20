@@ -112,53 +112,13 @@ To be able to search for `lily-data.lily` in BigQuery, you need:
 
 For more Google BigQuery public dataset information, visit https://cloud.google.com/bigquery/public-data.
 
-## S3 bucket
+### Pricing
+1. check the pricing in bigquery: https://cloud.google.com/bigquery/pricing
 
-Full archives of filecoin network data are available at the following bucket (**requester pays**):
+### Trouble Shooting
+1. If you can not find the dataset in Bigquery console, set the location to `us-east4` in the query setting.
+   1. Find the *More* icon <br></br> <img width="600" alt="bigquery_tutorial_4" src="https://github.com/user-attachments/assets/c89049f2-b45e-47a4-bfcd-3ef2933f7731" />
+   3. Click the *Query setting* <br></br> <img width="600" alt="bigquery_tutorial_4" src="https://github.com/user-attachments/assets/c89049f2-b45e-47a4-bfcd-3ef2933f7731" />
+   4. Set the *Location type* in *Advanced options* <br></br> <img width="600" alt="bigquery_tutorial_6" src="https://github.com/user-attachments/assets/f21ae82e-6c39-4bea-a7a8-27365ca25dfe" />
+   5. Run the SQL <br></br> <img width="600" alt="bigquery_tutorial_7" src="https://github.com/user-attachments/assets/5229da9b-2bf0-461d-85d9-6bd8cef49d2a" />
 
-`https://fil-archive.s3.us-east-2.amazonaws.com`
-
-The data is partitioned into separate **tables** defined by the [Lily schema](https://github.com/filecoin-project/lily/tree/master/schemas).
-Archive files for each table are produced daily, covering a 24 hour period from midnight UTC. 
-Production will be delayed until at least one finality (900 epochs) after the end of the period. 
-Normally extraction starts at 07:30 UTC and may take up to 24 hours to complete and be shipped to the S3 bucket. 
-Currently archive files are available as CSV compressed using gzip.
-
-Archive files are organised in a directory hierarchy following the pattern `network/format/schema/table/year`
-
- - Top level is the network name (for example: mainnet)
- - Second level is the format of the data (for example: csv)
- - Third level is the major schema version number being used for the extract (for example: 1)
- - Fourth level is the name of table (for example: messages)
- - Fifth level is the four digit year (for example: 2021)
-
-File names in each directory use following pattern: `table-year-month-day.format.compression`
-
-Example of file in directory hierarchy: 
-
-`https://fil-archive.s3.us-east-2.amazonaws.com/mainnet/csv/1/messages/2021/messages-2021-08-02.csv.gz`
-
-An import script to import from S3 into TimescaleDB is available in the same
-bucket: 
-
-`https://fil-archive.s3.us-east-2.amazonaws.com/import_from_fil_archive.sh`
-
-
-Header files providing column names for each table are in each table's folder. For example:
-
-`https://fil-archive.s3.us-east-2.amazonaws.com/mainnet/csv/1/messages/messages.header`
-
-A basic postgresql compatible schema definition is also published in each table’s folder. 
-For example:
-
-`https://fil-archive.s3.us-east-2.amazonaws.com/mainnet/csv/1/messages/messages.schema`
-
-For help converting between epochs and date, see the import script linked above.
-
-The data layout can be previewed with the AWS CLI:
-
-```sh 
-aws s3 ls "s3://fil-archive/" # See items root folder
-aws s3 ls "s3://fil-archive/mainnet/csv/1/" # See tables available for schema version 1
-aws s3 ls "s3://fil-archive/mainnet/csv/1/messages/2022/" # List CSV files for messages table in 2022.
-```
