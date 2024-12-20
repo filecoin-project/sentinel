@@ -118,7 +118,8 @@ For more Google BigQuery public dataset information, visit https://cloud.google.
 ### Trouble Shooting
 1. If you can not find the dataset in Bigquery console, set the location to `us-east4` in the query setting.
    1. Find the *More* icon <br></br> <img width="600" alt="bigquery_tutorial_4" src="https://github.com/user-attachments/assets/c89049f2-b45e-47a4-bfcd-3ef2933f7731" />
-   3. Click the *Query setting* <br></br> <img width="600" alt="bigquery_tutorial_4" src="https://github.com/user-attachments/assets/c89049f2-b45e-47a4-bfcd-3ef2933f7731" />
-   4. Set the *Location type* in *Advanced options* <br></br> <img width="600" alt="bigquery_tutorial_6" src="https://github.com/user-attachments/assets/f21ae82e-6c39-4bea-a7a8-27365ca25dfe" />
-   5. Run the SQL <br></br> <img width="600" alt="bigquery_tutorial_7" src="https://github.com/user-attachments/assets/5229da9b-2bf0-461d-85d9-6bd8cef49d2a" />
+   2. Click the *Query setting* <br></br> <img width="600" alt="bigquery_tutorial_5" src="https://github.com/user-attachments/assets/1b0e7145-5921-458b-aea7-624a1473c050" />
+
+   3. Set the *Location type* in *Advanced options* <br></br> <img width="600" alt="bigquery_tutorial_6" src="https://github.com/user-attachments/assets/f21ae82e-6c39-4bea-a7a8-27365ca25dfe" />
+   4. Run the SQL <br></br> <img width="600" alt="bigquery_tutorial_7" src="https://github.com/user-attachments/assets/5229da9b-2bf0-461d-85d9-6bd8cef49d2a" />
 
